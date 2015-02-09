@@ -9438,7 +9438,6 @@ form {
 
 /* Mobile Layout */
 @media screen and (max-width: 360px) {
-    /*
     .nav-title {
         width: 0;
         display: none;
@@ -9447,7 +9446,6 @@ form {
         width: 0;
 		display: none;
 	}
-    */
 }
 
 /* Layer Control */
