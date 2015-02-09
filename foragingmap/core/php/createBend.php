@@ -7,10 +7,11 @@
     function getConnection() {
         $db = new database;
         $dbhost = $db->host;
+        $dbport = $db->port;
         $dbuser = $db->username;
         $dbpass = $db->password; 
         $dbname = $db->db_name;
-        $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+        $dbh = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $dbh;
     }
@@ -31,10 +32,31 @@
     
     
     function create() {
+        $pid = -1;
+        
+        $sql = "SELECT * FROM `fm_item` WHERE `serial` = :serial";
+        $params = array(
+            "serial" => $_GET["sid"],
+        );
+        try {
+            $pdo = getConnection();
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            
+            $rows = $stmt->fetchAll(PDO::FETCH_OBJ);
+            
+            foreach ($rows as $row) {
+                $pid = $row->id;
+            }
+            
+        } catch(PDOException $e) {
+            echo '{"error":{"text":'. $e->getMessage() .'}}';
+        }
+    
         $sql = "INSERT INTO `fm_bend` VALUES ( NULL, :pid, :type, :value, :date, :update )";
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
-            "pid" => $_GET["pid"],
+            "pid" => $pid,
             "type" => 1,
             "value" => $_GET["value"],
             "date" => date("Y-m-d H:i:s"),

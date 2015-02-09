@@ -1,16 +1,17 @@
 ﻿<?php
-    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header("Cache-Control: post-check=0, pre-check=0", false);
-    header("Pragma: no-cache");
+    //header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    //header("Cache-Control: post-check=0, pre-check=0", false);
+    //header("Pragma: no-cache");
     
     require('database.php');	
     function getConnection() {
         $db = new database;
         $dbhost = $db->host;
+        $dbport = $db->port;
         $dbuser = $db->username;
         $dbpass = $db->password; 
         $dbname = $db->db_name;
-        $dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+        $dbh = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $dbh;
     }
