@@ -94,8 +94,12 @@ module ForagingMap {
                                 weight: 1,
                             });
                         } else if (item.get("type") == ItemType.Fruit) {
+
+                            var layer: Layer = FMM.getLayers().findWhere({ id: item.get("sort") });
+                            var icon: Icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
+
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
-                                icon: that.iconBlank,
+                                icon: icon.icon,
                                 draggable: false,
                                 riseOnHover: true,
                             }).bindPopup(item.get("name"), {
@@ -130,6 +134,8 @@ module ForagingMap {
                         // event listeners
                         that.removeEventListener(item);
                         that.addEventListener(item);
+                        // update marker
+                        that.updateMarker(item);
                     } else {
                         // update marker
                         that.updateMarker(item);
@@ -159,6 +165,20 @@ module ForagingMap {
             var result: number = 0;
             $.each(that.markerGroups, function (index: number, iLayer: L.FeatureGroup<L.ILayer>) {
                 if (iLayer.sid == id) {
+                    result = index;
+                    return result;
+                }
+            });
+            return result;
+        }
+        getIndexOfMarkerGroups3(layer: Layer): number {
+            var that: ForagingMap.MarkersView = this;
+            if (layer.id == undefined) {
+                return 0;
+            }
+            var result: number = 0;
+            $.each(that.markerGroups, function (index: number, iLayer: L.FeatureGroup<L.ILayer>) {
+                if (iLayer.sid == parseInt(layer.id)) {
                     result = index;
                     return result;
                 }
@@ -209,6 +229,20 @@ module ForagingMap {
             item.marker = null;
             item.circle = null;
         }
+        removeMarkers(layer: Layer) {
+            var that: MarkersView = this;
+            var i = FMV.getMapView().getMarkersView().getIndexOfMarkerGroups3(layer);
+            $.each(FMM.getItems().models, function (index: number, item: Item) {
+                if (item.marker != null && that.markerGroups[i].hasLayer(item.marker)) {
+                    that.markerGroups[i].removeLayer(item.marker);
+                    item.marker = null;
+                }
+                if (item.circle != null && that.circleGroups[i].hasLayer(item.circle)) {
+                    that.circleGroups[i].removeLayer(item.circle);
+                    item.circle = null;
+                }
+            });
+        }
         removeEventListener(item: Item): void {
             item.marker.off("click");
             item.marker.off("popupclose");
@@ -256,7 +290,6 @@ module ForagingMap {
                     item.save(
                         { lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng },
                         {
-                            wait: true,
                             success: function (model, response) {
                                 FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewMarkerSaveSuccessMsg());
                             },

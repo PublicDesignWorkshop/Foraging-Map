@@ -15,13 +15,29 @@ module ForagingMap {
                 "name": "",
                 "desc": "",
                 "type": 0,
+                "icon": "",
             };
             that.off("change");
             that.on("change", function (model, options) {
                 if (that.isSavable == false) return;
-                model.save();
-                FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
-                FMV.getUIView().render();
+
+                var i = FMV.getMapView().getMarkersView().removeMarkers(that);
+                model.save(
+                    {},
+                    {
+                        wait: true,
+                        success: function (model: Layer, response: any) {
+                            FMV.getUIView().render();
+                            FMV.getMapView().getMarkersView().render();
+                            //FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
+                            FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
+                        },
+                        error: function (error) {
+                            FMV.getUIView().render();
+                            FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                        },
+                    }
+                );
             });
         }
         parse(response: any, options?: any): any {
@@ -99,6 +115,44 @@ module ForagingMap {
             var result = new Array();
             _.each(that.models, function (item) {
                 result.push([item.get("name"), item.get("type")]);
+            });
+            return result;
+        }
+    }
+
+    export class Icon extends Backbone.Model {
+        icon: L.Icon;
+        constructor(attributes?: any, options?: any) {
+            super(attributes, options);
+            this.defaults = <any>{
+                "name": "",
+                "src": "",
+            };
+        }
+        parse(response: any, options?: any): any {
+            if (response.id != null) {
+                response.id = parseInt(response.id);
+            }
+            return super.parse(response, options);
+        }
+        toJSON(options?: any): any {
+            var clone = this.clone().attributes;
+            if (this.id != null) {
+                clone["id"] = this.id;
+            }
+            return clone;
+        }
+    }
+    export class Icons extends Backbone.Collection<Icon> {
+        constructor(models?: Type[], options?: any) {
+            super(models, options);
+            this.model = Icon;
+        }
+        toArray(): any {
+            var that: Icons = this;
+            var result = new Array();
+            _.each(that.models, function (item) {
+                result.push([item.get("name"), item.get("src")]);
             });
             return result;
         }

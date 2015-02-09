@@ -7,6 +7,7 @@ var ForagingMap;
         Controller.prototype.initialize = function () {
             FMV = new ForagingMap.View({ el: $("#fm-view-main") });
             FMM = new ForagingMap.Model();
+            FMC.fetchIcons();
             FMC.fetchLayers();
             FMC.addKeyEventListener();
         };
@@ -28,7 +29,7 @@ var ForagingMap;
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -127,7 +128,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: ItemType.None,
+                type: 0 /* None */,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -141,6 +142,20 @@ var ForagingMap;
         Controller.prototype.removeItem = function (item) {
             FMM.getItems().remove(item);
             return item;
+        };
+        Controller.prototype.fetchIcons = function () {
+            FMM.getIcons().add(new ForagingMap.Icon({ name: "Blank (Red)", src: "marker-blank.png" }));
+            FMM.getIcons().add(new ForagingMap.Icon({ name: "Heart (Blue)", src: "marker-heart.png" }));
+            $.each(FMM.getIcons().models, function (index, model) {
+                model.icon = new L.Icon({
+                    iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + model.get("src"),
+                    shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
+                    iconSize: new L.Point(40, 40),
+                    iconAnchor: new L.Point(20, 40),
+                    shadowAnchor: new L.Point(9, 38),
+                    popupAnchor: new L.Point(0, -40),
+                });
+            });
         };
         return Controller;
     })();

@@ -89,8 +89,10 @@ var ForagingMap;
                             });
                         }
                         else if (item.get("type") == ItemType.Fruit) {
+                            var layer = FMM.getLayers().findWhere({ id: item.get("sort") });
+                            var icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
-                                icon: that.iconBlank,
+                                icon: icon.icon,
                                 draggable: false,
                                 riseOnHover: true,
                             }).bindPopup(item.get("name"), {
@@ -124,6 +126,7 @@ var ForagingMap;
                         that.circleGroups[i].addLayer(item.circle);
                         that.removeEventListener(item);
                         that.addEventListener(item);
+                        that.updateMarker(item);
                     }
                     else {
                         that.updateMarker(item);
@@ -153,6 +156,20 @@ var ForagingMap;
             var result = 0;
             $.each(that.markerGroups, function (index, iLayer) {
                 if (iLayer.sid == id) {
+                    result = index;
+                    return result;
+                }
+            });
+            return result;
+        };
+        MarkersView.prototype.getIndexOfMarkerGroups3 = function (layer) {
+            var that = this;
+            if (layer.id == undefined) {
+                return 0;
+            }
+            var result = 0;
+            $.each(that.markerGroups, function (index, iLayer) {
+                if (iLayer.sid == parseInt(layer.id)) {
                     result = index;
                     return result;
                 }
@@ -204,6 +221,20 @@ var ForagingMap;
             item.marker = null;
             item.circle = null;
         };
+        MarkersView.prototype.removeMarkers = function (layer) {
+            var that = this;
+            var i = FMV.getMapView().getMarkersView().getIndexOfMarkerGroups3(layer);
+            $.each(FMM.getItems().models, function (index, item) {
+                if (item.marker != null && that.markerGroups[i].hasLayer(item.marker)) {
+                    that.markerGroups[i].removeLayer(item.marker);
+                    item.marker = null;
+                }
+                if (item.circle != null && that.circleGroups[i].hasLayer(item.circle)) {
+                    that.circleGroups[i].removeLayer(item.circle);
+                    item.circle = null;
+                }
+            });
+        };
         MarkersView.prototype.removeEventListener = function (item) {
             item.marker.off("click");
             item.marker.off("popupclose");
@@ -248,7 +279,6 @@ var ForagingMap;
                 }
                 else {
                     item.save({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng }, {
-                        wait: true,
                         success: function (model, response) {
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewMarkerSaveSuccessMsg());
                         },

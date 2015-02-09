@@ -57,13 +57,14 @@
     }
     
     function update() {
-        $sql = "UPDATE `fm_layer` SET `name` = :name, `desc` = :desc, `type` = :type WHERE (`id` = :id)";
+        $sql = "UPDATE `fm_layer` SET `name` = :name, `desc` = :desc, `type` = :type, `icon` =:icon WHERE (`id` = :id)";
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
             "id" => $data->{'id'},
             "name" => $data->{'name'},
             "desc" => $data->{'desc'},
             "type" => $data->{'type'},
+            "icon" => $data->{'icon'},
         );
         
         try {
@@ -108,12 +109,13 @@
     }
     
     function create() {
-        $sql = "INSERT INTO `fm_layer` VALUES ( NULL, :name, :desc, :type )";
+        $sql = "INSERT INTO `fm_layer` VALUES ( NULL, :name, :desc, :type, :icon )";
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
             "name" => $data->{'name'},
             "desc" => $data->{'desc'},
             "type" => $data->{'type'},
+            "icon" => $data->{'icon'},
         );
         
         try {

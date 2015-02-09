@@ -1,5 +1,6 @@
 ﻿module ForagingMap {
     export class Model {
+        private icons: Icons;
         private layers: Layers;
         private types: Types;
         private items: Items;
@@ -15,6 +16,10 @@
             this.types = new Types();
             this.types.add(new Type({ name: "Fruit", type: 1 }));
             //this.types.add(new Type({ name: "Station", type: 2 }));
+            this.icons = new Icons();
+        }
+        getIcons(): Icons {
+            return this.icons;
         }
         getTypes(): Types {
             return this.types;

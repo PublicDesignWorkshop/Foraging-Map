@@ -338,8 +338,8 @@ var thresholdAddColumn = [
 
 var layerColumn = [
     {
-        name: "type",
-        label: "Type",
+        name: "icon",
+        label: "Icon",
         editable: true,
         /*
         cell: Backgrid.SelectCell.extend({
@@ -401,8 +401,8 @@ var LayerAddCell = Backgrid.Cell.extend({
 
 var layerAddColumn = [
     {
-        name: "type",
-        label: "Type",
+        name: "icon",
+        label: "Icon",
         editable: true,
         /*
         cell: Backgrid.SelectCell.extend({

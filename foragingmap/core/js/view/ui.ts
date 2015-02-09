@@ -589,8 +589,9 @@ module ForagingMap {
             });
             // Grid instance for data
             layerColumn[0].cell = Backgrid.SelectCell.extend({
-                optionValues: FMM.getTypes().toArray(),
+                optionValues: FMM.getIcons().toArray(),
             })
+            
             var gridData = new Backgrid.Grid({
                 columns: layerColumn,
                 collection: FMM.getLayers(),
@@ -601,9 +602,10 @@ module ForagingMap {
             that.$(".ui-body #layer-list-grid").append(gridData.el);
             // Grid instance for adding
             layerAddColumn[0].cell = Backgrid.SelectCell.extend({
-                optionValues: FMM.getTypes().toArray(),
+                optionValues: FMM.getIcons().toArray(),
             })
-            var layer: Layer = new Layer({ name: "", desc: "", type: 1 });
+            
+            var layer: Layer = new Layer({ name: "", desc: "", type: 1, icon: "marker-blank.png" });
             layer.setIsSavable(false);
             var layers: Layers = new Layers();
             layers.add(layer);

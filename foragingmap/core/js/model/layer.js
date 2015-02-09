@@ -18,14 +18,25 @@ var ForagingMap;
                 "name": "",
                 "desc": "",
                 "type": 0,
+                "icon": "",
             };
             that.off("change");
             that.on("change", function (model, options) {
                 if (that.isSavable == false)
                     return;
-                model.save();
-                FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
-                FMV.getUIView().render();
+                var i = FMV.getMapView().getMarkersView().removeMarkers(that);
+                model.save({}, {
+                    wait: true,
+                    success: function (model, response) {
+                        FMV.getUIView().render();
+                        FMV.getMapView().getMarkersView().render();
+                        FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
+                    },
+                    error: function (error) {
+                        FMV.getUIView().render();
+                        FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                    },
+                });
             });
         }
         Layer.prototype.parse = function (response, options) {
@@ -115,4 +126,46 @@ var ForagingMap;
         return Types;
     })(Backbone.Collection);
     ForagingMap.Types = Types;
+    var Icon = (function (_super) {
+        __extends(Icon, _super);
+        function Icon(attributes, options) {
+            _super.call(this, attributes, options);
+            this.defaults = {
+                "name": "",
+                "src": "",
+            };
+        }
+        Icon.prototype.parse = function (response, options) {
+            if (response.id != null) {
+                response.id = parseInt(response.id);
+            }
+            return _super.prototype.parse.call(this, response, options);
+        };
+        Icon.prototype.toJSON = function (options) {
+            var clone = this.clone().attributes;
+            if (this.id != null) {
+                clone["id"] = this.id;
+            }
+            return clone;
+        };
+        return Icon;
+    })(Backbone.Model);
+    ForagingMap.Icon = Icon;
+    var Icons = (function (_super) {
+        __extends(Icons, _super);
+        function Icons(models, options) {
+            _super.call(this, models, options);
+            this.model = Icon;
+        }
+        Icons.prototype.toArray = function () {
+            var that = this;
+            var result = new Array();
+            _.each(that.models, function (item) {
+                result.push([item.get("name"), item.get("src")]);
+            });
+            return result;
+        };
+        return Icons;
+    })(Backbone.Collection);
+    ForagingMap.Icons = Icons;
 })(ForagingMap || (ForagingMap = {}));

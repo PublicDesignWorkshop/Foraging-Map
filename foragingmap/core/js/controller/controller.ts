@@ -17,6 +17,7 @@ module ForagingMap {
             // intialize model
             FMM = new ForagingMap.Model();
             // fetch layer info
+            FMC.fetchIcons();
             FMC.fetchLayers();
             FMC.addKeyEventListener();
         }
@@ -175,6 +176,20 @@ module ForagingMap {
         removeItem(item: Item): Item {
             FMM.getItems().remove(item);
             return item;
+        }
+        fetchIcons(): void {
+            FMM.getIcons().add(new Icon({ name: "Blank (Red)", src: "marker-blank.png" }));
+            FMM.getIcons().add(new Icon({ name: "Heart (Blue)", src: "marker-heart.png" }));
+            $.each(FMM.getIcons().models, function (index: number, model: Icon) {
+                model.icon = new L.Icon({
+                    iconUrl: Setting.BASE_URL + FMS.getImageDir() + model.get("src"),
+                    shadowUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
+                    iconSize: new L.Point(40, 40),
+                    iconAnchor: new L.Point(20, 40),
+                    shadowAnchor: new L.Point(9, 38),
+                    popupAnchor: new L.Point(0, -40),
+                });
+            });
         }
     }
 }

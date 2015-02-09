@@ -45819,6 +45819,7 @@ var ForagingMap;
         Controller.prototype.initialize = function () {
             FMV = new ForagingMap.View({ el: $("#fm-view-main") });
             FMM = new ForagingMap.Model();
+            FMC.fetchIcons();
             FMC.fetchLayers();
             FMC.addKeyEventListener();
         };
@@ -45840,7 +45841,7 @@ var ForagingMap;
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -45939,7 +45940,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: ItemType.None,
+                type: 0 /* None */,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -45953,6 +45954,20 @@ var ForagingMap;
         Controller.prototype.removeItem = function (item) {
             FMM.getItems().remove(item);
             return item;
+        };
+        Controller.prototype.fetchIcons = function () {
+            FMM.getIcons().add(new ForagingMap.Icon({ name: "Blank (Red)", src: "marker-blank.png" }));
+            FMM.getIcons().add(new ForagingMap.Icon({ name: "Heart (Blue)", src: "marker-heart.png" }));
+            $.each(FMM.getIcons().models, function (index, model) {
+                model.icon = new L.Icon({
+                    iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + model.get("src"),
+                    shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
+                    iconSize: new L.Point(40, 40),
+                    iconAnchor: new L.Point(20, 40),
+                    shadowAnchor: new L.Point(9, 38),
+                    popupAnchor: new L.Point(0, -40),
+                });
+            });
         };
         return Controller;
     })();
@@ -46787,7 +46802,7 @@ var ForagingMap;
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -46911,7 +46926,7 @@ var ForagingMap;
                     if (!$(this).hasClass("layer-active")) {
                         that.resetControls();
                         $(this).addClass("layer-active");
-                        FMV.getUIView().show(UIMode.LAYER);
+                        FMV.getUIView().show(5 /* LAYER */);
                     }
                     else {
                         $(this).removeClass("layer-active");
@@ -46926,7 +46941,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("info-active");
-                            FMV.getUIView().show(UIMode.INFO);
+                            FMV.getUIView().show(2 /* INFO */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -46945,7 +46960,7 @@ var ForagingMap;
                     that.resetControls();
                     $(this).addClass("add-active");
                     FMC.setSelectedItem(FMC.createItem());
-                    FMV.getUIView().show(UIMode.ADD);
+                    FMV.getUIView().show(1 /* ADD */);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -46968,7 +46983,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("data-active");
-                            FMV.getUIView().show(UIMode.DATA);
+                            FMV.getUIView().show(3 /* DATA */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -46988,7 +47003,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("picture-active");
-                            FMV.getUIView().show(UIMode.PICTURE);
+                            FMV.getUIView().show(4 /* PICTURE */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -47008,7 +47023,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("threshold-active");
-                            FMV.getUIView().show(UIMode.THRESHOLD);
+                            FMV.getUIView().show(6 /* THRESHOLD */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -47341,7 +47356,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == ItemType.None) {
+                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -47366,7 +47381,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().set("type", 0 /* None */);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -47401,7 +47416,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("date", "descending");
             that.$(".ui-body").append(gridData.el);
-            var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
             bend.setIsSavable(false);
             var bends = new ForagingMap.Bends();
             bends.add(bend);
@@ -47427,7 +47442,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("date", "descending");
             that.$(".ui-body").append(gridData.el);
-            var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
             threshold.setIsSavable(false);
             var thresholds = new ForagingMap.Thresholds();
             thresholds.add(threshold);
@@ -47570,7 +47585,7 @@ var ForagingMap;
                 that.isLayerCollapsedIn = !that.isLayerCollapsedIn;
             });
             layerColumn[0].cell = Backgrid.SelectCell.extend({
-                optionValues: FMM.getTypes().toArray(),
+                optionValues: FMM.getIcons().toArray(),
             });
             var gridData = new Backgrid.Grid({
                 columns: layerColumn,
@@ -47581,9 +47596,9 @@ var ForagingMap;
             gridData.sort("name", "ascending");
             that.$(".ui-body #layer-list-grid").append(gridData.el);
             layerAddColumn[0].cell = Backgrid.SelectCell.extend({
-                optionValues: FMM.getTypes().toArray(),
+                optionValues: FMM.getIcons().toArray(),
             });
-            var layer = new ForagingMap.Layer({ name: "", desc: "", type: 1 });
+            var layer = new ForagingMap.Layer({ name: "", desc: "", type: 1, icon: "marker-blank.png" });
             layer.setIsSavable(false);
             var layers = new ForagingMap.Layers();
             layers.add(layer);
@@ -47790,8 +47805,10 @@ var ForagingMap;
                             });
                         }
                         else if (item.get("type") == ItemType.Fruit) {
+                            var layer = FMM.getLayers().findWhere({ id: item.get("sort") });
+                            var icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
-                                icon: that.iconBlank,
+                                icon: icon.icon,
                                 draggable: false,
                                 riseOnHover: true,
                             }).bindPopup(item.get("name"), {
@@ -47825,6 +47842,7 @@ var ForagingMap;
                         that.circleGroups[i].addLayer(item.circle);
                         that.removeEventListener(item);
                         that.addEventListener(item);
+                        that.updateMarker(item);
                     }
                     else {
                         that.updateMarker(item);
@@ -47854,6 +47872,20 @@ var ForagingMap;
             var result = 0;
             $.each(that.markerGroups, function (index, iLayer) {
                 if (iLayer.sid == id) {
+                    result = index;
+                    return result;
+                }
+            });
+            return result;
+        };
+        MarkersView.prototype.getIndexOfMarkerGroups3 = function (layer) {
+            var that = this;
+            if (layer.id == undefined) {
+                return 0;
+            }
+            var result = 0;
+            $.each(that.markerGroups, function (index, iLayer) {
+                if (iLayer.sid == parseInt(layer.id)) {
                     result = index;
                     return result;
                 }
@@ -47905,6 +47937,20 @@ var ForagingMap;
             item.marker = null;
             item.circle = null;
         };
+        MarkersView.prototype.removeMarkers = function (layer) {
+            var that = this;
+            var i = FMV.getMapView().getMarkersView().getIndexOfMarkerGroups3(layer);
+            $.each(FMM.getItems().models, function (index, item) {
+                if (item.marker != null && that.markerGroups[i].hasLayer(item.marker)) {
+                    that.markerGroups[i].removeLayer(item.marker);
+                    item.marker = null;
+                }
+                if (item.circle != null && that.circleGroups[i].hasLayer(item.circle)) {
+                    that.circleGroups[i].removeLayer(item.circle);
+                    item.circle = null;
+                }
+            });
+        };
         MarkersView.prototype.removeEventListener = function (item) {
             item.marker.off("click");
             item.marker.off("popupclose");
@@ -47949,7 +47995,6 @@ var ForagingMap;
                 }
                 else {
                     item.save({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng }, {
-                        wait: true,
                         success: function (model, response) {
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewMarkerSaveSuccessMsg());
                         },
@@ -48484,8 +48529,8 @@ var thresholdAddColumn = [
 
 var layerColumn = [
     {
-        name: "type",
-        label: "Type",
+        name: "icon",
+        label: "Icon",
         editable: true,
         /*
         cell: Backgrid.SelectCell.extend({
@@ -48547,8 +48592,8 @@ var LayerAddCell = Backgrid.Cell.extend({
 
 var layerAddColumn = [
     {
-        name: "type",
-        label: "Type",
+        name: "icon",
+        label: "Icon",
         editable: true,
         /*
         cell: Backgrid.SelectCell.extend({
@@ -48584,7 +48629,11 @@ var ForagingMap;
             this.pictures = new ForagingMap.Pictures();
             this.types = new ForagingMap.Types();
             this.types.add(new ForagingMap.Type({ name: "Fruit", type: 1 }));
+            this.icons = new ForagingMap.Icons();
         }
+        Model.prototype.getIcons = function () {
+            return this.icons;
+        };
         Model.prototype.getTypes = function () {
             return this.types;
         };
@@ -48769,6 +48818,7 @@ var ForagingMap;
                     return;
                 that.isSavable = false;
                 model.save({}, {
+                    wait: true,
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
@@ -49043,14 +49093,25 @@ var ForagingMap;
                 "name": "",
                 "desc": "",
                 "type": 0,
+                "icon": "",
             };
             that.off("change");
             that.on("change", function (model, options) {
                 if (that.isSavable == false)
                     return;
-                model.save();
-                FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
-                FMV.getUIView().render();
+                var i = FMV.getMapView().getMarkersView().removeMarkers(that);
+                model.save({}, {
+                    wait: true,
+                    success: function (model, response) {
+                        FMV.getUIView().render();
+                        FMV.getMapView().getMarkersView().render();
+                        FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
+                    },
+                    error: function (error) {
+                        FMV.getUIView().render();
+                        FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                    },
+                });
             });
         }
         Layer.prototype.parse = function (response, options) {
@@ -49140,5 +49201,47 @@ var ForagingMap;
         return Types;
     })(Backbone.Collection);
     ForagingMap.Types = Types;
+    var Icon = (function (_super) {
+        __extends(Icon, _super);
+        function Icon(attributes, options) {
+            _super.call(this, attributes, options);
+            this.defaults = {
+                "name": "",
+                "src": "",
+            };
+        }
+        Icon.prototype.parse = function (response, options) {
+            if (response.id != null) {
+                response.id = parseInt(response.id);
+            }
+            return _super.prototype.parse.call(this, response, options);
+        };
+        Icon.prototype.toJSON = function (options) {
+            var clone = this.clone().attributes;
+            if (this.id != null) {
+                clone["id"] = this.id;
+            }
+            return clone;
+        };
+        return Icon;
+    })(Backbone.Model);
+    ForagingMap.Icon = Icon;
+    var Icons = (function (_super) {
+        __extends(Icons, _super);
+        function Icons(models, options) {
+            _super.call(this, models, options);
+            this.model = Icon;
+        }
+        Icons.prototype.toArray = function () {
+            var that = this;
+            var result = new Array();
+            _.each(that.models, function (item) {
+                result.push([item.get("name"), item.get("src")]);
+            });
+            return result;
+        };
+        return Icons;
+    })(Backbone.Collection);
+    ForagingMap.Icons = Icons;
 })(ForagingMap || (ForagingMap = {}));
 
