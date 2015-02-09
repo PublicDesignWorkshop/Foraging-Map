@@ -1,0 +1,460 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+html, body {
+    width: 100%;
+    height: 100%;
+    -ms-overflow-style: none; /*-ms-overflow-style: auto | none | scrollbar | -ms-autohiding-scrollbar*/
+}
+.clear {
+    clear: both;
+}
+
+#fm-view-main {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+#fm-view-body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+#fm-view-map {
+    height: 100%;
+    padding-bottom: 55px;
+    overflow: hidden;
+}
+#leaflet-view-ui {
+    position: relative;
+    width: 500px;
+    height: 100%;
+    float: right;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+#leaflet-view-map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+#leaflet-view-msg {
+    position: absolute;
+    top: 55px;
+    padding: 10px;
+    padding-left: 5px;
+    z-index: 5555;
+}
+
+
+/* Map View */
+.view-map-half {
+    border-right: 1px solid #2D313D;
+}
+
+
+/* View Header */
+.panel-primary {
+    border-color: #2D313D;
+}
+.panel-primary>.panel-heading {
+    height: 55px;
+    color: #EAEAEA;
+    background-color: #2D313D;
+    border-color: #2D313D;
+}
+.nav-title {
+    float: left;
+    height: 34px;
+    display: table-cell;
+    vertical-align: middle;
+    /*padding-right: 15px;*/
+    font-size: 20px;
+    font-weight: 600;
+}
+.nav-primary {
+    float: left;
+    position: absolute;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.nav-secondary {
+    position: absolute;
+    right: 0;
+    /*padding-left: 15px;*/
+    padding-right: 15px;
+}
+.nav-secondary .glyphicon {
+    top: 2px;
+}
+
+
+/* Leaflet Control */
+.leaflet-popup {
+    z-index: 7777;
+}
+.leaflet-right .leaflet-control {
+    margin-right: 0;
+}
+.leaflet-top {
+    z-index: 8888;
+}
+.leaflet-control .control-button {
+    display: block;
+    height: 40px;
+    width: 40px;
+    background-color: #333;
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 4px 0 0 4px;
+    margin-bottom: 10px;
+    outline: none;
+}
+.leaflet-control .control-button:hover {
+    background-color: #333;
+    background-color: rgba(0,0,0,0.8);
+}
+.leaflet-control .zoomin {
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 4px 0 0 0;
+    background-image: url('../image/icon-plus-active.png');
+}
+.leaflet-control .zoomout {
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 0 0 0 0;
+    background-image: url('../image/icon-minus-active.png');
+}
+.leaflet-control .locate {
+    cursor: pointer;
+    margin-bottom: 5px;
+    border-radius: 0 0 0 4px;
+    background-image: url('../image/icon-arrow-inactive.png');
+}
+.locate-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-arrow-active.png') !important;
+}
+
+.leaflet-control .add {
+    cursor: pointer;
+    margin-bottom: 5px;
+    border-radius: 4px 0 0 4px;
+    background-image: url('../image/icon-add-inactive.png');
+}
+.add-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-add-active.png') !important;
+}
+.leaflet-control .layer {
+    cursor: pointer;
+    margin-bottom: 5px;
+    border-radius: 4px 0 0 4px;
+    background-image: url('../image/icon-layer-inactive.png');
+}
+.layer-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-layer-active.png') !important;
+}
+.leaflet-control .info {
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 4px 0 0 0;
+    background-image: url('../image/icon-info-inactive.png');
+}
+.info-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-info-active.png') !important;
+}
+.leaflet-control .data {
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 0 0 0 0;
+    background-image: url('../image/icon-data-inactive.png');
+}
+.data-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-data-active.png') !important;
+}
+.leaflet-control .threshold {
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 0 0 0 0;
+    background-image: url('../image/icon-threshold-inactive.png');
+}
+.threshold-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-threshold-active.png') !important;
+}
+.leaflet-control .picture {
+    cursor: pointer;
+    margin-bottom: 5px;
+    border-radius: 0 0 0 4px;
+    background-image: url('../image/icon-picture-inactive.png');
+}
+.picture-active {
+    background-color: rgba(0,0,0,0.8) !important;
+    background-image: url('../image/icon-picture-active.png') !important;
+}
+
+
+
+
+/* UI */
+.ui-header {
+    padding: 10px;
+    padding-left: 20px;
+    vertical-align: middle;
+    color: #fff;
+    font-size: large;
+    font-weight: 500;
+    background-color: #333;
+    background-color: rgba(0,0,0,0.7);
+}
+.ui-body {
+    padding: 10px;
+}
+.label {
+    font-size: large;
+    font-weight: 500;
+}
+.form-group {
+    margin-bottom: 5px;
+}
+.input-group-addon {
+    min-width: 35px;
+}
+.input-group-addon-click {
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../image/addon-calendar.png');
+}
+.input-group-addon-calendar-left {
+    width: 29px;
+    height: 29px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../image/addon-calendar.png');
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+}
+
+.input-group-addon-calendar-right {
+    width: 29px;
+    height: 29px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('../image/addon-calendar.png');
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+}
+
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: 100%;
+}
+
+table {
+    font-size: 11px;
+}
+table th{
+    text-align: center;
+}
+table.backgrid {
+    margin-top: 10px;
+    font-size: 11px;
+}
+table.backgrid th:last-child {
+    width: 50px;
+    max-width: 50px;
+}
+table.backgrid td:last-child {
+    width: 50px;
+    max-width: 50px;
+}
+
+.backgrid th, .backgrid td {
+    text-align: center;
+}
+
+.btn-table {
+    width: 100%;
+    height: 19px;
+    padding-top: 2px;
+}
+
+.btn-primary {
+    color: #fff !important;
+    background-color: #428bca !important;
+    border-color: #357ebd !important;
+}
+.picture-thumbnail {
+    max-width: 150px;
+    padding: 2px;
+    margin-bottom: 0;
+    border-radius: 4px 4px 4px 4px;
+}
+.picture-frame {
+    max-width: 154px;
+}
+.ui-picture .backgrid th:first-child {
+    width: 160px;
+}
+#picture-add-panel .backgrid th:first-child {
+    width: 160px;
+}
+#picture-add-panel input[type=file] {
+    max-width: 150px;
+}
+.btn {
+    font-size: 11px;
+}
+.form-control {
+    font-size: 11px;
+}
+form {
+    margin-bottom: 5px;
+}
+
+/* Galleria */
+#leaflet-view-galleria {
+    display: none;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 55px;
+    overflow: hidden;
+}
+
+.galleria {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 0 0 4px 4px;
+}
+
+#btn-galleria-close {
+    height: 55px;
+}
+
+.galleria-show {
+    z-index: 9999;
+    display: block !important;
+}
+
+/* Slider */
+#date-slider {
+    background: #ffd899; /* Old browsers */
+    background: -moz-linear-gradient(left,  #ffd899 0%, #f39c12 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffd899), color-stop(100%,#f39c12)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  #ffd899 0%,#f39c12 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  #ffd899 0%,#f39c12 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  #ffd899 0%,#f39c12 100%); /* IE10+ */
+    background: linear-gradient(to right,  #ffd899 0%,#f39c12 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd899', endColorstr='#f39c12',GradientType=1 ); /* IE6-9 */
+}
+
+.nav-float {
+    float: left;
+}
+.date-slider-wrapper {
+    padding-top: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Mobile Layout */
+@media screen and (max-width: 360px) {
+    /*
+    .nav-title {
+        width: 0;
+        display: none;
+    }
+	.nav-secondary {
+        width: 0;
+		display: none;
+	}
+    */
+}
+
+/* Layer Control */
+.layer-checkbox {
+    font-size: small;
+    margin-bottom: 10px;
+    padding: 0;
+    padding-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    text-align: left;
+}
+.layer-checkbox label {
+    width: 100%;
+    height: 100%;
+    margin: 6px;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+.label-header {
+    margin-left: 10px !important;
+    font-weight: bold !important;
+}
+.layer-checkbox-header {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 6px;
+}
+/* btn-negative */
+.btn-negative {
+  color: #fff;
+  background-color: #34495e;
+  border-color: #2c3e50;
+}
+.btn-negative:hover,
+.btn-negative:focus,
+.btn-negative:active,
+.btn-negative.active,
+.open > .dropdown-toggle.btn-negative {
+  color: #fff;
+  background-color: #34495e;
+  border-color: #2c3e50;
+}
+.btn-negative:active,
+.btn-negative.active,
+.open > .dropdown-toggle.btn-negative {
+  background-image: none;
+}
+.btn-negative.disabled,
+.btn-negative[disabled],
+fieldset[disabled] .btn-negative,
+.btn-negative.disabled:hover,
+.btn-negative[disabled]:hover,
+fieldset[disabled] .btn-negative:hover,
+.btn-negative.disabled:focus,
+.btn-negative[disabled]:focus,
+fieldset[disabled] .btn-negative:focus,
+.btn-negative.disabled:active,
+.btn-negative[disabled]:active,
+fieldset[disabled] .btn-negative:active,
+.btn-negative.disabled.active,
+.btn-negative[disabled].active,
+fieldset[disabled] .btn-negative.active {
+  background-color: #34495e;
+  border-color: #2c3e50;
+}
+.btn-negative .badge {
+  color: #2c3e50;
+  background-color: #fff;
+}

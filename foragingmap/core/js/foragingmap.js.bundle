@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<bundle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://vswebessentials.com/schemas/v1/bundle.xsd">
+  <settings>
+    <!--Determines if the bundle file should be automatically optimized after creation/update.-->
+    <minify>true</minify>
+    <!--Determine whether to generate/re-generate this bundle on building the solution.-->
+    <runOnBuild>false</runOnBuild>
+    <!--Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
+    <outputDirectory />
+  </settings>
+  <!--The order of the <file> elements determines the order of the files in the bundle.-->
+  <files>
+    
+    <file>/core/lib/jquery/jquery-2.1.3.js</file>
+    <file>/core/lib/jquery-ui/jquery-ui.js</file>
+    <file>/core/lib/jquery-ui-slider-pips/jquery-ui-slider-pips.js</file>
+    <file>/core/lib/leaflet/leaflet.js</file>
+    <file>/core/lib/leaflet-boucemarker/leaflet-boucemarker.js</file>
+    <file>/core/lib/momentjs/moment.js</file>
+    <file>/core/lib/bootstrap/js/bootstrap.js</file>
+    <file>/core/lib/bootstrap-select/js/bootstrap-select.js</file>
+    <file>/core/lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js</file>
+    <file>/core/lib/underscore/underscore.js</file>
+    <file>/core/lib/backbone/backbone.js</file>
+    <file>/core/lib/backgrid/backgrid.js</file>
+    <file>/core/lib/backgrid-moment-cell/backgrid-moment-cell.js</file>
+    <file>/core/lib/galleria/galleria-1.4.2.js</file>
+    
+    <file>/core/js/controller/app.js</file>
+    <file>/core/js/controller/controller.js</file>
+    <file>/core/js/controller/router.js</file>
+    <file>/core/js/controller/localization.js</file>
+    <file>/core/js/controller/setting.js</file>
+    <file>/core/js/controller/uploader.js</file>
+    
+    <file>/core/js/view/template.js</file>
+    <file>/core/js/view/view.js</file>
+    <file>/core/js/view/map.js</file>
+    <file>/core/js/view/mapcontrol.js</file>
+    <file>/core/js/view/ui.js</file>
+    <file>/core/js/view/msg.js</file>
+    <file>/core/js/view/gallery.js</file>
+    <file>/core/js/view/markers.js</file>
+    <file>/core/js/view/slider.js</file>
+    <file>/core/js/view/gridformat.js</file>
+    
+    <file>/core/js/model/model.js</file>
+    <file>/core/js/model/item.js</file>
+    <file>/core/js/model/bend.js</file>
+    <file>/core/js/model/picture.js</file>
+    <file>/core/js/model/threshold.js</file>
+    <file>/core/js/model/layer.js</file>
+    
+  </files>
+</bundle>

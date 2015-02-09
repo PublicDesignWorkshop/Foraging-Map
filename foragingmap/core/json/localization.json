@@ -1,0 +1,58 @@
+﻿{
+    "en": {
+        "view": {
+            "title": "ForagingMap",
+            "creator": "Karl",
+            "list": "List",
+            "map": "Map",
+            "login": "Log In",
+            "signup": "Sign Up",
+            "menu": "Menu",
+            "map": {
+                "marker": {
+                    "saveSuccessMsg": "is successfully saved.",
+                    "saveErrorMsg": "Failed to update information."
+                }
+            },
+            "ui": {
+                "itemNotSelectedErrorMsg": "Please select a marker.",
+                "locate": {
+                    "successMsg": "It's moved to your location.",
+                    "errorMsg": "Pleaes allow Geo location access."
+                },
+                "info": {
+                    "header": "Item Information",
+                    "saveSuccessMsg": "is successfully saved.",
+                    "saveErrorMsg": "Failed to update information.",
+                    "deleteConfirmMsg": "Are you sure to delete this item?\nAll related data also will be deleted if you press 'OK'",
+                    "deleteSuccessMsg": "is successfully deleted.",
+                    "deleteErrorMsg": "Failed to delete item."
+                },
+                "add": {
+                    "header": "Add New Item",
+                    "tempName": "New Item",
+                    "typeSelectError":  "Please select the type of Item."
+                },
+                "data": {
+                    "header": "Data Control",
+                    "saveSuccessMsg": "is successfully saved.",
+                    "saveErrorMsg": "Failed to update data.",
+                    "deleteConfirmMsg": "Are you sure to delete this data?",
+                    "deleteSuccessMsg": "is successfully deleted.",
+                    "deleteErrorMsg": "Failed to delete data.",
+                    "noDataMsg": "No Data"
+                },
+                "picture": {
+                    "header": "Picture Control",
+                    "tempName": "New Picture"
+                },
+                "threshold": { 
+                    "header":  "Threshold Control"
+                },
+                "layer": { 
+                    "header":  "Layer Control"
+                }
+            }
+        }
+    }
+}
