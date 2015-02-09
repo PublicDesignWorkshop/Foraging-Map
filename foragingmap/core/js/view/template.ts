@@ -53,7 +53,14 @@ FMUIInfoLayerTemplate +=                        '<label for="item-info-desc" cla
 FMUIInfoLayerTemplate +=                         '<div class="col-xs-9">';
 FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
 FMUIInfoLayerTemplate +=                        '</div>';
-FMUIInfoLayerTemplate +=                    '</div>';
+FMUIInfoLayerTemplate += '</div>';
+// item-info-serial
+FMUIInfoLayerTemplate += '<div class="form-group">';
+FMUIInfoLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIInfoLayerTemplate += '<div class="col-xs-9">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '</div>';
 // item-info-type
 FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
@@ -150,6 +157,13 @@ FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '</div>';
+// item-info-serial
+FMUIAddLayerTemplate += '<div class="form-group">';
+FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIAddLayerTemplate += '<div class="col-xs-9">';
+FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 // item-info-type

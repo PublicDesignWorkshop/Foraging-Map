@@ -122,6 +122,7 @@
     <Content Include="core\php\bend.php">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="core\php\foragingmap.sql" />
     <Content Include="core\php\item.php" />
     <Content Include="index.html" />
     <Content Include="packages.config" />

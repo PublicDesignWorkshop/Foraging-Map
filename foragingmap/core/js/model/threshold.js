@@ -33,6 +33,7 @@ var ForagingMap;
                     return;
                 that.isSavable = false;
                 model.save({}, {
+                    wait: true,
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("min") + " - " + model.get("max") + "' " + FML.getViewUIDataSaveSuccessMsg());

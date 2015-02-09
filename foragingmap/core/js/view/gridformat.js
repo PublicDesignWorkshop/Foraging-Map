@@ -69,6 +69,7 @@ var BendAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);
@@ -103,6 +104,7 @@ var ThresholdAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);
@@ -377,6 +379,7 @@ var LayerAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);

@@ -57,12 +57,13 @@
     }
     
     function update() {
-        $sql = "UPDATE `fm_item` SET `name` = :name, `desc` = :desc, `type` = :type, `sort` = :sort, `amount` = :amount, `lat` = :lat, `lng` = :lng, `update` = :update  WHERE (`id` = :id)";
+        $sql = "UPDATE `fm_item` SET `name` = :name, `desc` = :desc, `serial` = :serial, `type` = :type, `sort` = :sort, `amount` = :amount, `lat` = :lat, `lng` = :lng, `update` = :update  WHERE (`id` = :id)";
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
             "id" => $data->{'id'},
             "name" => $data->{'name'},
             "desc" => $data->{'desc'},
+            "serial" => $data->{'serial'},
             "type" => $data->{'type'},
             "sort" => $data->{'sort'},
             "amount" => $data->{'amount'},
@@ -96,11 +97,12 @@
     }
     
     function create() {
-        $sql = "INSERT INTO `fm_item` VALUES ( NULL, :name, :desc, :type, :sort, :amount, :lat, :lng, :regdate, :update )";
+        $sql = "INSERT INTO `fm_item` VALUES ( NULL, :name, :desc, :serial, :type, :sort, :amount, :lat, :lng, :regdate, :update )";
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
             "name" => $data->{'name'},
             "desc" => $data->{'desc'},
+            "serial" => $data->{'serial'},
             "type" => $data->{'type'},
             "sort" => $data->{'sort'},
             "amount" => $data->{'amount'},

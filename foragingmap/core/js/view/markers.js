@@ -248,6 +248,7 @@ var ForagingMap;
                 }
                 else {
                     item.save({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng }, {
+                        wait: true,
                         success: function (model, response) {
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewMarkerSaveSuccessMsg());
                         },

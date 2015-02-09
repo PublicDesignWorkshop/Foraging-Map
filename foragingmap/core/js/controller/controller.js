@@ -126,6 +126,7 @@ var ForagingMap;
             var item = new ForagingMap.Item({
                 name: FML.getViewUIAddTempName(),
                 desc: "",
+                serial: "",
                 type: ItemType.None,
                 sort: 0,
                 amount: 0,

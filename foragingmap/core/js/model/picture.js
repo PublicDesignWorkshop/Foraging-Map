@@ -27,6 +27,7 @@ var ForagingMap;
                     return;
                 that.isSavable = false;
                 model.save({ update: moment(new Date()).format(FMS.getDateTimeFormat()) }, {
+                    wait: true,
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataSaveSuccessMsg());

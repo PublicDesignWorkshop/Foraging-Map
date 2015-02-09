@@ -19,6 +19,7 @@ module ForagingMap {
             this.defaults = <any>{
                 "name": "",
                 "desc": "",
+                "serial": "",
                 "type": ItemType.None,
                 "sort": 0,
                 "amount": 0,

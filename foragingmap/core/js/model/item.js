@@ -22,6 +22,7 @@ var ForagingMap;
             this.defaults = {
                 "name": "",
                 "desc": "",
+                "serial": "",
                 "type": 0 /* None */,
                 "sort": 0,
                 "amount": 0,

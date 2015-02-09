@@ -160,6 +160,7 @@ module ForagingMap {
             var item: Item = new Item({
                 name: FML.getViewUIAddTempName(),
                 desc: "",
+                serial: "",
                 type: ItemType.None,
                 sort: 0,
                 amount: 0,

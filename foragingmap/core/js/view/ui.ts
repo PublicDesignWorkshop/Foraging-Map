@@ -124,6 +124,7 @@ module ForagingMap {
                 "id": FMC.getSelectedItem().get("id"),
                 "name": FMC.getSelectedItem().get("name"),
                 "desc": FMC.getSelectedItem().get("desc"),
+                "serial": FMC.getSelectedItem().get("serial"),
                 "amount": FMC.getSelectedItem().get("amount"),
                 "type": FMC.getSelectedItem().get("type"),
                 "sort": FMC.getSelectedItem().get("sort"),
@@ -156,6 +157,7 @@ module ForagingMap {
                         amount: parseFloat($(this).val()),
                     },
                     {
+                        wait: true,
                         success: function (model: Item, response: any) {
                             FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -171,6 +173,7 @@ module ForagingMap {
                         lat: parseFloat($(this).val()),
                     },
                     {
+                        wait: true,
                         success: function (model: Item, response: any) {
                             FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -186,6 +189,7 @@ module ForagingMap {
                         lng: parseFloat($(this).val()),
                     },
                     {
+                        wait: true,
                         success: function (model: Item, response: any) {
                             FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -222,6 +226,7 @@ module ForagingMap {
                             id: that.$("#item-info-id").val(),
                             name: that.$("#item-info-name").val(),
                             desc: that.$("#item-info-desc").val(),
+                            serial: that.$("#item-info-serial").val(),
                             type: parseInt(optionSelected.attr("data-type")),
                             sort: parseInt(optionSelected.attr("data-sort")),
                             amount: that.$("#item-info-amount").val(),
@@ -229,11 +234,14 @@ module ForagingMap {
                             lng: that.$("#item-info-lng").val(),
                         },
                         {
+                            wait: true,
                             success: function (model: Item, response: any) {
                                 FMV.getMapView().getMarkersView().render();
                                 FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                             },
                             error: function (error) {
+                                that.render();
+                                FMV.getMapView().getMarkersView().render();
                                 FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                             },
                         });
@@ -274,6 +282,7 @@ module ForagingMap {
                 "header": FML.getViewUIAddHeader(),
                 "name": FMC.getSelectedItem().get("name"),
                 "desc": FMC.getSelectedItem().get("desc"),
+                "serial": FMC.getSelectedItem().get("serial"),
                 "amount": FMC.getSelectedItem().get("amount"),
                 "type": FMC.getSelectedItem().get("type"),
                 "sort": FMC.getSelectedItem().get("sort"),
@@ -319,9 +328,11 @@ module ForagingMap {
                         {
                             name: that.$("#item-info-name").val(),
                             desc: that.$("#item-info-desc").val(),
+                            serial: that.$("#item-info-serial").val(),
                             amount: that.$("#item-info-amount").val(),
                         },
                         {
+                            wait: true,
                             success: function (model: Item, response: any) {
                                 FMV.getMapView().getControlView().resetControls();
                                 if (FMC.hasSelectedItem()) {
@@ -333,6 +344,10 @@ module ForagingMap {
                                 }
                             },
                             error: function (error) {
+                                that.render();
+                                FMC.getSelectedItem().set("type", ItemType.None);
+                                FMC.getSelectedItem().setIsRemoved(false);
+                                FMV.getMapView().getMarkersView().render();
                                 FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                             },
                         }

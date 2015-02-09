@@ -45938,6 +45938,7 @@ var ForagingMap;
             var item = new ForagingMap.Item({
                 name: FML.getViewUIAddTempName(),
                 desc: "",
+                serial: "",
                 type: ItemType.None,
                 sort: 0,
                 amount: 0,
@@ -46491,6 +46492,12 @@ FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder=""
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
+FMUIInfoLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIInfoLayerTemplate += '<div class="col-xs-9">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<select id="item-info-type" class="selectpicker">';
@@ -46560,6 +46567,12 @@ FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '<div class="form-group">';
+FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIAddLayerTemplate += '<div class="col-xs-9">';
+FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '<div class="form-group">';
@@ -47170,6 +47183,7 @@ var ForagingMap;
                 "id": FMC.getSelectedItem().get("id"),
                 "name": FMC.getSelectedItem().get("name"),
                 "desc": FMC.getSelectedItem().get("desc"),
+                "serial": FMC.getSelectedItem().get("serial"),
                 "amount": FMC.getSelectedItem().get("amount"),
                 "type": FMC.getSelectedItem().get("type"),
                 "sort": FMC.getSelectedItem().get("sort"),
@@ -47196,6 +47210,7 @@ var ForagingMap;
                 FMC.getSelectedItem().save({
                     amount: parseFloat($(this).val()),
                 }, {
+                    wait: true,
                     success: function (model, response) {
                         FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                         FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -47209,6 +47224,7 @@ var ForagingMap;
                 FMC.getSelectedItem().save({
                     lat: parseFloat($(this).val()),
                 }, {
+                    wait: true,
                     success: function (model, response) {
                         FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                         FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -47222,6 +47238,7 @@ var ForagingMap;
                 FMC.getSelectedItem().save({
                     lng: parseFloat($(this).val()),
                 }, {
+                    wait: true,
                     success: function (model, response) {
                         FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                         FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
@@ -47239,17 +47256,21 @@ var ForagingMap;
                         id: that.$("#item-info-id").val(),
                         name: that.$("#item-info-name").val(),
                         desc: that.$("#item-info-desc").val(),
+                        serial: that.$("#item-info-serial").val(),
                         type: parseInt(optionSelected.attr("data-type")),
                         sort: parseInt(optionSelected.attr("data-sort")),
                         amount: that.$("#item-info-amount").val(),
                         lat: that.$("#item-info-lat").val(),
                         lng: that.$("#item-info-lng").val(),
                     }, {
+                        wait: true,
                         success: function (model, response) {
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                         },
                         error: function (error) {
+                            that.render();
+                            FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                         },
                     });
@@ -47287,6 +47308,7 @@ var ForagingMap;
                 "header": FML.getViewUIAddHeader(),
                 "name": FMC.getSelectedItem().get("name"),
                 "desc": FMC.getSelectedItem().get("desc"),
+                "serial": FMC.getSelectedItem().get("serial"),
                 "amount": FMC.getSelectedItem().get("amount"),
                 "type": FMC.getSelectedItem().get("type"),
                 "sort": FMC.getSelectedItem().get("sort"),
@@ -47328,8 +47350,10 @@ var ForagingMap;
                     FMC.getSelectedItem().save({
                         name: that.$("#item-info-name").val(),
                         desc: that.$("#item-info-desc").val(),
+                        serial: that.$("#item-info-serial").val(),
                         amount: that.$("#item-info-amount").val(),
                     }, {
+                        wait: true,
                         success: function (model, response) {
                             FMV.getMapView().getControlView().resetControls();
                             if (FMC.hasSelectedItem()) {
@@ -47341,6 +47365,10 @@ var ForagingMap;
                             }
                         },
                         error: function (error) {
+                            that.render();
+                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().setIsRemoved(false);
+                            FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                         },
                     });
@@ -47921,6 +47949,7 @@ var ForagingMap;
                 }
                 else {
                     item.save({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng }, {
+                        wait: true,
                         success: function (model, response) {
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewMarkerSaveSuccessMsg());
                         },
@@ -48186,6 +48215,7 @@ var BendAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);
@@ -48220,6 +48250,7 @@ var ThresholdAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);
@@ -48494,6 +48525,7 @@ var LayerAddCell = Backgrid.Cell.extend({
             //update: moment(new Date()).format(FMS.getDateTimeFormat())
             {},
             {
+                wait: true,
                 success: function (model, response) {
                     FMV.getUIView().render();
                     model.setIsSavable(true);
@@ -48620,6 +48652,7 @@ var ForagingMap;
             this.defaults = {
                 "name": "",
                 "desc": "",
+                "serial": "",
                 "type": 0 /* None */,
                 "sort": 0,
                 "amount": 0,
@@ -48834,6 +48867,7 @@ var ForagingMap;
                     return;
                 that.isSavable = false;
                 model.save({ update: moment(new Date()).format(FMS.getDateTimeFormat()) }, {
+                    wait: true,
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataSaveSuccessMsg());
@@ -48918,6 +48952,7 @@ var ForagingMap;
                     return;
                 that.isSavable = false;
                 model.save({}, {
+                    wait: true,
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("min") + " - " + model.get("max") + "' " + FML.getViewUIDataSaveSuccessMsg());

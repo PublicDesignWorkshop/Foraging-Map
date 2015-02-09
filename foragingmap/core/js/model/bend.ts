@@ -28,6 +28,7 @@ module ForagingMap {
                 model.save(
                     {},
                     {
+                        wait: true,
                         success: function (model: Bend, response: any) {
                             model.isSavable = true;
                             FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
