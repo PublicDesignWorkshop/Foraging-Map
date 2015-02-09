@@ -73,7 +73,7 @@ var ForagingMap;
                 if (!item.getIsRemoved()) {
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
-                        if (item.get("type") == ItemType.None) {
+                        if (item.get("type") == 0 /* None */) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
                                 draggable: false,
@@ -88,7 +88,7 @@ var ForagingMap;
                                 weight: 1,
                             });
                         }
-                        else if (item.get("type") == ItemType.Fruit) {
+                        else if (item.get("type") == 1 /* Fruit */) {
                             var layer = FMM.getLayers().findWhere({ id: item.get("sort") });
                             var icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
@@ -105,7 +105,7 @@ var ForagingMap;
                                 weight: 1,
                             });
                         }
-                        else if (item.get("type") == ItemType.Station) {
+                        else if (item.get("type") == 2 /* Station */) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconDollar,
                                 draggable: false,
@@ -253,7 +253,7 @@ var ForagingMap;
             var that = this;
             item.marker.on("click", function () {
                 if (that.isSelectable) {
-                    if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
+                    if (!FMV.getUIView().getIsLocked() || item.get("type") == 0 /* None */) {
                         this.openPopup();
                         FMV.getUIView().render();
                     }
@@ -274,7 +274,7 @@ var ForagingMap;
                 item.circle.setLatLng(item.marker.getLatLng());
             });
             item.marker.on("dragend", function (event) {
-                if (item.get("type") == ItemType.None || item.id == undefined) {
+                if (item.get("type") == 0 /* None */ || item.id == undefined) {
                     item.set({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng });
                 }
                 else {
@@ -287,7 +287,7 @@ var ForagingMap;
                         }
                     });
                 }
-                if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
+                if (FMV.getUIView().getMode() == 2 /* INFO */ || FMV.getUIView().getMode() == 1 /* ADD */) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }

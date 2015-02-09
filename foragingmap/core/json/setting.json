@@ -20,14 +20,21 @@
         "fruitCircleColor": "#ffffff",
         "stationCircleColor": "#3498db",
         "zeroAlpha": 0,
-        "inactiveAlpha": 0.25,
-        "halfAplha": 0.4,
-        "activeAlpha": 0.65,
+        "inactiveAlpha": 0.4,
+        "halfAplha": 0.5,
+        "activeAlpha": 0.75,
         "fullAlpha": 1,
         "fetchDataDelay": 1500,
         "markerIcons": [
             { "name": "Blank (Red)", "src": "marker-blank.png" },
-            { "name": "Heart (Blue)", "src": "marker-heart.png" }
+            { "name": "Apple", "src": "marker-apple-nephritis.png" },
+            { "name": "Banana", "src": "marker-banana-sunflower.png" },
+            { "name": "Berry", "src": "marker-berry-alizarin.png" },
+            { "name": "Grapes", "src": "marker-grapes-wisteria.png" },
+            { "name": "Peach", "src": "marker-peach-orange.png" },
+            { "name": "StrawBerry", "src": "marker-strawberry-pomegranate.png" },
+            { "name": "Tomato", "src": "marker-tomato-pumpkin.png" }
+            
         ]
     }
 }

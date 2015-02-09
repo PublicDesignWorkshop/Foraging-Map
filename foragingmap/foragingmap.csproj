@@ -45,11 +45,20 @@
     <Content Include="core\image\icon-plus-active.png" />
     <Content Include="core\image\icon-threshold-active.png" />
     <Content Include="core\image\icon-threshold-inactive.png" />
+    <Content Include="core\image\marker-apple-nephritis.png" />
+    <Content Include="core\image\marker-apple-pomegranate.png" />
+    <Content Include="core\image\marker-banana-orange.png" />
+    <Content Include="core\image\marker-banana-sunflower.png" />
+    <Content Include="core\image\marker-berry-alizarin.png" />
     <Content Include="core\image\marker-blank.png" />
     <Content Include="core\image\marker-dollar.png" />
+    <Content Include="core\image\marker-grapes-wisteria.png" />
     <Content Include="core\image\marker-heart.png" />
     <Content Include="core\image\marker-new.png" />
+    <Content Include="core\image\marker-peach-orange.png" />
     <Content Include="core\image\marker-shadow.png" />
+    <Content Include="core\image\marker-strawberry-pomegranate.png" />
+    <Content Include="core\image\marker-tomato-pumpkin.png" />
     <Content Include="core\js\controller\uploader.js" />
     <Content Include="core\js\foragingmap.js">
       <DependentUpon>foragingmap.js.bundle</DependentUpon>
@@ -113,8 +122,8 @@
     <Content Include="core\lib\leaflet\images\marker-icon.png" />
     <Content Include="core\lib\leaflet\images\marker-shadow.png" />
     <Content Include="core\lib\leaflet\leaflet.css" />
+    <Content Include="core\lib\leaflet\leaflet_.js" />
     <Content Include="core\lib\leaflet\leaflet.js" />
-    <Content Include="core\lib\leaflet\leaflet__.js" />
     <Content Include="core\lib\momentjs\moment.js" />
     <Content Include="core\lib\underscore\underscore.js" />
     <Content Include="core\php\database.php" />
@@ -126,6 +135,7 @@
     <Content Include="core\php\item.php" />
     <Content Include="index.html" />
     <Content Include="packages.config" />
+    <Content Include="psd\ColorPallet_ForagingMap.png" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
