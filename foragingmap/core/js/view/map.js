@@ -45,7 +45,7 @@ var ForagingMap;
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -74,6 +74,12 @@ var ForagingMap;
         };
         MapView.prototype.getControlView = function () {
             return this.vControl;
+        };
+        MapView.prototype.show = function () {
+            $("#leaflet-view-map").removeClass("hidden");
+        };
+        MapView.prototype.hide = function () {
+            $("#leaflet-view-map").addClass("hidden");
         };
         MapView.prototype.resize = function (centerize) {
             var that = this;

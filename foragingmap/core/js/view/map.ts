@@ -76,6 +76,12 @@ module ForagingMap {
         getControlView(): MapControlView {
             return this.vControl;
         }
+        show(): void {
+            $("#leaflet-view-map").removeClass("hidden");
+        }
+        hide(): void {
+            $("#leaflet-view-map").addClass("hidden");
+        }
         resize(centerize: boolean): void {
             var that: MapView = this;
             if (FMV.getUIView().getIsOpen()) {

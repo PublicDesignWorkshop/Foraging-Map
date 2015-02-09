@@ -36,10 +36,12 @@ module ForagingMap {
                     that.$el.html("");
                 });
             });
+            FMV.getMapView().hide();
         }
         hide(): void {
             var that: GalleryView = this;
             that.$el.removeClass("galleria-show");
+            FMV.getMapView().show();
         }
     }
 }

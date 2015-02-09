@@ -38,10 +38,12 @@ var ForagingMap;
                     that.$el.html("");
                 });
             });
+            FMV.getMapView().hide();
         };
         GalleryView.prototype.hide = function () {
             var that = this;
             that.$el.removeClass("galleria-show");
+            FMV.getMapView().show();
         };
         return GalleryView;
     })(Backbone.View);
