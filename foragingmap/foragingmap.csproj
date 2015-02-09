@@ -183,6 +183,10 @@
     <Content Include="core\php\createBend.php" />
     <Content Include="core\php\layer.php" />
     <Content Include="core\php\layers.php" />
+    <Content Include="psd\addon-icon.psd" />
+    <Content Include="psd\control-button-icon.psd" />
+    <Content Include="psd\favicon.psd" />
+    <Content Include="psd\marker-icon.psd" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

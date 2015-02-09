@@ -45841,7 +45841,7 @@ var ForagingMap;
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -45940,7 +45940,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: 0 /* None */,
+                type: ItemType.None,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -45956,8 +45956,9 @@ var ForagingMap;
             return item;
         };
         Controller.prototype.fetchIcons = function () {
-            FMM.getIcons().add(new ForagingMap.Icon({ name: "Blank (Red)", src: "marker-blank.png" }));
-            FMM.getIcons().add(new ForagingMap.Icon({ name: "Heart (Blue)", src: "marker-heart.png" }));
+            $.each(FMS.getMarkerIcons(), function (index, item) {
+                FMM.getIcons().add(new ForagingMap.Icon({ name: item.name, src: item.src }));
+            });
             $.each(FMM.getIcons().models, function (index, model) {
                 model.icon = new L.Icon({
                     iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + model.get("src"),
@@ -46363,6 +46364,9 @@ var ForagingMap;
         };
         Setting.prototype.getFetchDataDelay = function () {
             return this.data.fetchDataDelay;
+        };
+        Setting.prototype.getMarkerIcons = function () {
+            return this.data.markerIcons;
         };
         return Setting;
     })();

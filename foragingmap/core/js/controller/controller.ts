@@ -178,8 +178,9 @@ module ForagingMap {
             return item;
         }
         fetchIcons(): void {
-            FMM.getIcons().add(new Icon({ name: "Blank (Red)", src: "marker-blank.png" }));
-            FMM.getIcons().add(new Icon({ name: "Heart (Blue)", src: "marker-heart.png" }));
+            $.each(FMS.getMarkerIcons(), function (index: number, item: any) {
+                FMM.getIcons().add(new Icon({ name: item.name, src: item.src }));
+            });
             $.each(FMM.getIcons().models, function (index: number, model: Icon) {
                 model.icon = new L.Icon({
                     iconUrl: Setting.BASE_URL + FMS.getImageDir() + model.get("src"),

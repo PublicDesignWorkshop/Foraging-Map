@@ -92,6 +92,9 @@
         getFetchDataDelay(): number {
             return this.data.fetchDataDelay;
         }
+        getMarkerIcons(): any {
+            return this.data.markerIcons;
+        }
     }
 }
 

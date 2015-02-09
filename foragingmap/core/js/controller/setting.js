@@ -90,6 +90,9 @@ var ForagingMap;
         Setting.prototype.getFetchDataDelay = function () {
             return this.data.fetchDataDelay;
         };
+        Setting.prototype.getMarkerIcons = function () {
+            return this.data.markerIcons;
+        };
         return Setting;
     })();
     ForagingMap.Setting = Setting;

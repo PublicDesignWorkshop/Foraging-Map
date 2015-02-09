@@ -29,7 +29,6 @@ module ForagingMap {
                         success: function (model: Layer, response: any) {
                             FMV.getUIView().render();
                             FMV.getMapView().getMarkersView().render();
-                            //FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                         },
                         error: function (error) {

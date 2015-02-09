@@ -1,5 +1,5 @@
 ﻿{
-    "setting": { 
+    "setting": {
         "defaultZoom": 13,
         "locateZoom": 15,
         "maxZoom": 17,
@@ -19,11 +19,15 @@
         "tempCircleColor": "#2c3e50",
         "fruitCircleColor": "#ffffff",
         "stationCircleColor": "#3498db",
-        "zeroAlpha":  0,
+        "zeroAlpha": 0,
         "inactiveAlpha": 0.25,
         "halfAplha": 0.4,
         "activeAlpha": 0.65,
         "fullAlpha": 1,
-        "fetchDataDelay": 1500
+        "fetchDataDelay": 1500,
+        "markerIcons": [
+            { "name": "Blank (Red)", "src": "marker-blank.png" },
+            { "name": "Heart (Blue)", "src": "marker-heart.png" }
+        ]
     }
 }
