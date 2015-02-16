@@ -25,6 +25,7 @@
         "activeAlpha": 0.75,
         "fullAlpha": 1,
         "fetchDataDelay": 1500,
+        "defaultInterval": 3600,
         "markerIcons": [
             { "name": "Blank (Red)", "src": "marker-blank.png" },
             { "name": "Apple", "src": "marker-apple-nephritis.png" },

@@ -11,7 +11,7 @@ var ForagingMap;
         function Router(options) {
             this.routes = {
                 "": "home",
-                "map/:zoom/:lat/:lon": "map",
+                "map/:zoom/:lat/:lng/:interval/:start/:end/:cur": "map",
             };
             _super.call(this, options);
         }
@@ -19,11 +19,12 @@ var ForagingMap;
         };
         Router.prototype.home = function () {
             console.log("we have loaded the home page");
-            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng(), { trigger: true, replace: true });
+            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng() + "/" + FMS.getDefaultInterval() + "/" + moment(new Date()).subtract(6, 'month').valueOf() + "/" + moment(new Date()).valueOf() + "/" + moment(new Date()).valueOf(), { trigger: true, replace: true });
         };
-        Router.prototype.map = function (zoom, lat, lng) {
+        Router.prototype.map = function (zoom, lat, lng, interval, start, end, cur) {
             console.log("we have loaded the map page with zoom: " + zoom + " | lat: " + lat + " | lng: " + lng);
             FMV.getMapView().renderMap(lat, lng, zoom);
+            FMV.getSliderView().renderSlider(interval, start, end, cur);
         };
         return Router;
     })(Backbone.Router);

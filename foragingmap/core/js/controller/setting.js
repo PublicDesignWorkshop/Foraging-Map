@@ -93,6 +93,9 @@ var ForagingMap;
         Setting.prototype.getMarkerIcons = function () {
             return this.data.markerIcons;
         };
+        Setting.prototype.getDefaultInterval = function () {
+            return this.data.defaultInterval;
+        };
         return Setting;
     })();
     ForagingMap.Setting = Setting;

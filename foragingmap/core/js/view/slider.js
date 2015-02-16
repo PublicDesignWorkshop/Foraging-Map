@@ -15,8 +15,20 @@ var ForagingMap;
             this.startDate = moment(new Date()).subtract(6, 'month').format(FMS.getDateTimeFormat());
             this.endDate = moment(new Date()).format(FMS.getDateTimeFormat());
             this.curDate = moment(new Date()).format(FMS.getDateTimeFormat());
-            this.render();
+            this.timeInterval = 60 * 60;
         }
+        SliderView.prototype.getTimeInterval = function () {
+            return this.timeInterval;
+        };
+        SliderView.prototype.getStartDateValue = function () {
+            return moment(this.startDate).valueOf();
+        };
+        SliderView.prototype.getEndDateValue = function () {
+            return moment(this.endDate).valueOf();
+        };
+        SliderView.prototype.getCurDateValue = function () {
+            return moment(this.curDate).valueOf();
+        };
         SliderView.prototype.render = function () {
             var that = this;
             var template = _.template(FMViewSliderTemplate);
@@ -32,7 +44,7 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "min", moment(that.startDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             $("#date-end", that.$el).datetimepicker({
                 defaultDate: that.endDate,
@@ -44,19 +56,19 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "max", moment(that.endDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
                 max: moment(that.endDate).valueOf(),
                 value: moment(new Date()).valueOf(),
-                step: 60 * 60 * 1000,
+                step: that.timeInterval * 1000,
             });
-            $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
             $("#date-slider", that.$el).bind('slide', function (event, ui) {
                 that.curDate = moment(ui.value).format(FMS.getDateTimeFormat());
                 FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
                 FMV.getMapView().getMarkersView().render();
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             if (that.isDraggable) {
                 that.slider.slider("enable");
@@ -68,6 +80,14 @@ var ForagingMap;
         SliderView.prototype.resize = function () {
             $("#fm-view-body .nav-primary").css({ width: $("#fm-view-body .panel-heading").innerWidth() - $("#fm-view-body .nav-title").outerWidth() - $("#fm-view-body .nav-secondary").outerWidth() });
             $("#fm-view-body .date-slider-wrapper").css({ width: $("#fm-view-body .panel-heading").innerWidth() - $("#fm-view-body .nav-title").outerWidth() - $("#fm-view-body .nav-secondary").outerWidth() - 100 });
+        };
+        SliderView.prototype.renderSlider = function (interval, start, end, cur) {
+            this.startDate = moment(parseInt(start)).format(FMS.getDateTimeFormat());
+            this.endDate = moment(parseInt(end)).format(FMS.getDateTimeFormat());
+            this.curDate = moment(parseInt(cur)).format(FMS.getDateTimeFormat());
+            this.timeInterval = interval;
+            this.render();
+            this.resize();
         };
         SliderView.prototype.getCurDate = function () {
             return this.curDate;

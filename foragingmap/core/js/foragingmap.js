@@ -45988,7 +45988,7 @@ var ForagingMap;
         function Router(options) {
             this.routes = {
                 "": "home",
-                "map/:zoom/:lat/:lon": "map",
+                "map/:zoom/:lat/:lng/:interval/:start/:end/:cur": "map",
             };
             _super.call(this, options);
         }
@@ -45996,11 +45996,12 @@ var ForagingMap;
         };
         Router.prototype.home = function () {
             console.log("we have loaded the home page");
-            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng(), { trigger: true, replace: true });
+            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng() + "/" + FMS.getDefaultInterval() + "/" + moment(new Date()).subtract(6, 'month').valueOf() + "/" + moment(new Date()).valueOf() + "/" + moment(new Date()).valueOf(), { trigger: true, replace: true });
         };
-        Router.prototype.map = function (zoom, lat, lng) {
+        Router.prototype.map = function (zoom, lat, lng, interval, start, end, cur) {
             console.log("we have loaded the map page with zoom: " + zoom + " | lat: " + lat + " | lng: " + lng);
             FMV.getMapView().renderMap(lat, lng, zoom);
+            FMV.getSliderView().renderSlider(interval, start, end, cur);
         };
         return Router;
     })(Backbone.Router);
@@ -46366,6 +46367,9 @@ var ForagingMap;
         };
         Setting.prototype.getMarkerIcons = function () {
             return this.data.markerIcons;
+        };
+        Setting.prototype.getDefaultInterval = function () {
+            return this.data.defaultInterval;
         };
         return Setting;
     })();
@@ -46796,7 +46800,7 @@ var ForagingMap;
                 that.lMap.touchZoom.disable();
                 that.lMap.doubleClickZoom.disable();
                 that.lMap.on("moveend", function (e) {
-                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng, { trigger: false, replace: true });
+                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
                     that.waitForFetchData();
                 });
                 that.lMap.whenReady(function () {
@@ -46935,7 +46939,7 @@ var ForagingMap;
                     if (!$(this).hasClass("layer-active")) {
                         that.resetControls();
                         $(this).addClass("layer-active");
-                        FMV.getUIView().show(5 /* LAYER */);
+                        FMV.getUIView().show(UIMode.LAYER);
                     }
                     else {
                         $(this).removeClass("layer-active");
@@ -46950,7 +46954,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("info-active");
-                            FMV.getUIView().show(2 /* INFO */);
+                            FMV.getUIView().show(UIMode.INFO);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -46969,7 +46973,7 @@ var ForagingMap;
                     that.resetControls();
                     $(this).addClass("add-active");
                     FMC.setSelectedItem(FMC.createItem());
-                    FMV.getUIView().show(1 /* ADD */);
+                    FMV.getUIView().show(UIMode.ADD);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -46992,7 +46996,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("data-active");
-                            FMV.getUIView().show(3 /* DATA */);
+                            FMV.getUIView().show(UIMode.DATA);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -47012,7 +47016,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("picture-active");
-                            FMV.getUIView().show(4 /* PICTURE */);
+                            FMV.getUIView().show(UIMode.PICTURE);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -47032,7 +47036,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("threshold-active");
-                            FMV.getUIView().show(6 /* THRESHOLD */);
+                            FMV.getUIView().show(UIMode.THRESHOLD);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -47058,7 +47062,7 @@ var ForagingMap;
         };
         MapControlView.prototype.updatePosition = function (position) {
             var that = this;
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             FMV.getMsgView().renderSuccess(FML.getViewUILocateSuccessMsg());
         };
         return MapControlView;
@@ -48107,8 +48111,20 @@ var ForagingMap;
             this.startDate = moment(new Date()).subtract(6, 'month').format(FMS.getDateTimeFormat());
             this.endDate = moment(new Date()).format(FMS.getDateTimeFormat());
             this.curDate = moment(new Date()).format(FMS.getDateTimeFormat());
-            this.render();
+            this.timeInterval = 60 * 60;
         }
+        SliderView.prototype.getTimeInterval = function () {
+            return this.timeInterval;
+        };
+        SliderView.prototype.getStartDateValue = function () {
+            return moment(this.startDate).valueOf();
+        };
+        SliderView.prototype.getEndDateValue = function () {
+            return moment(this.endDate).valueOf();
+        };
+        SliderView.prototype.getCurDateValue = function () {
+            return moment(this.curDate).valueOf();
+        };
         SliderView.prototype.render = function () {
             var that = this;
             var template = _.template(FMViewSliderTemplate);
@@ -48124,7 +48140,7 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "min", moment(that.startDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             $("#date-end", that.$el).datetimepicker({
                 defaultDate: that.endDate,
@@ -48136,19 +48152,19 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "max", moment(that.endDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
                 max: moment(that.endDate).valueOf(),
                 value: moment(new Date()).valueOf(),
-                step: 60 * 60 * 1000,
+                step: that.timeInterval * 1000,
             });
-            $("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
             $("#date-slider", that.$el).bind('slide', function (event, ui) {
                 that.curDate = moment(ui.value).format(FMS.getDateTimeFormat());
                 FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
                 FMV.getMapView().getMarkersView().render();
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             if (that.isDraggable) {
                 that.slider.slider("enable");
@@ -48160,6 +48176,14 @@ var ForagingMap;
         SliderView.prototype.resize = function () {
             $("#fm-view-body .nav-primary").css({ width: $("#fm-view-body .panel-heading").innerWidth() - $("#fm-view-body .nav-title").outerWidth() - $("#fm-view-body .nav-secondary").outerWidth() });
             $("#fm-view-body .date-slider-wrapper").css({ width: $("#fm-view-body .panel-heading").innerWidth() - $("#fm-view-body .nav-title").outerWidth() - $("#fm-view-body .nav-secondary").outerWidth() - 100 });
+        };
+        SliderView.prototype.renderSlider = function (interval, start, end, cur) {
+            this.startDate = moment(parseInt(start)).format(FMS.getDateTimeFormat());
+            this.endDate = moment(parseInt(end)).format(FMS.getDateTimeFormat());
+            this.curDate = moment(parseInt(cur)).format(FMS.getDateTimeFormat());
+            this.timeInterval = interval;
+            this.render();
+            this.resize();
         };
         SliderView.prototype.getCurDate = function () {
             return this.curDate;

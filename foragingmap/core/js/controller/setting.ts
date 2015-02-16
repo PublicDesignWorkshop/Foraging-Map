@@ -95,6 +95,9 @@
         getMarkerIcons(): any {
             return this.data.markerIcons;
         }
+        getDefaultInterval(): number {
+            return this.data.defaultInterval;
+        }
     }
 }
 
