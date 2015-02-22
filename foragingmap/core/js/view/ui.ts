@@ -1,12 +1,13 @@
 ﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
 /// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="template.ts" />
+/// <reference path="menu.ts" />
 enum UIMode {
     NONE, ADD, INFO, DATA, PICTURE, LAYER, THRESHOLD
 }
 
 module ForagingMap {
     export class UIView extends Backbone.View<Backbone.Model> {
+        private files: any;
         private mode: UIMode;
         private isLayerCollapsedIn: boolean;
         private isLocked: boolean;
@@ -199,6 +200,11 @@ module ForagingMap {
                         },
                     });
             });
+
+            //item-info-qrcode
+            that.$('input[type=file]').off('change');
+            that.$('input[type=file]').on('change', that.executeDecode);
+
             /*
             that.$('#item-info-type').on("change", function () {
                 var optionSelected = $("option:selected", this);
@@ -218,6 +224,7 @@ module ForagingMap {
             */
             // save & delete
             that.$("#item-info-btn-edit").on("click", function () {
+                var tempSerial = that.$("#item-info-serial").val();
                 var optionSelected = $("option:selected", that.$('#item-info-type'));
                 if (parseInt(optionSelected.attr("data-type")) != 0 && parseInt(optionSelected.attr("data-sort")) != 0) {
                     FMV.getMapView().getMarkersView().removeMarker(FMC.getSelectedItem());
@@ -239,10 +246,18 @@ module ForagingMap {
                                 FMV.getMapView().getMarkersView().render();
                                 FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                             },
-                            error: function (error) {
-                                that.render();
-                                FMV.getMapView().getMarkersView().render();
-                                FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                            error: function (model: Item, error: any) {
+                                console.log("error");
+                                if (error.responseText.indexOf("Duplicate:") > -1) {
+                                    var name: string = error.responseText.replace("Duplicate:", "");
+                                    that.render();
+                                    FMV.getMapView().getMarkersView().render();
+                                    FMV.getMsgView().renderError("'" + tempSerial +  "' is already registered in '" + name + "'");
+                                } else {
+                                    that.render();
+                                    FMV.getMapView().getMarkersView().render();
+                                    FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                                }
                             },
                         });
                 } else {
@@ -271,6 +286,31 @@ module ForagingMap {
                     });
                 }
             });
+        }
+
+        executeDecode(event: any): void {
+            var that: UIView = this;
+            that.files = event.target.files;
+            console.log(that.files);
+            var reader: FileReader = new FileReader();
+
+            reader.onload = function (event: FileEvent) {
+                qrcode.decode(event.target.result);
+            };
+            qrcode.callback = function (result) {
+                if (result == "error decoding QR Code") {
+                    FMV.getMsgView().renderError("Failed to decode QR Code.");
+                } else {
+                    FMV.getMsgView().renderSuccess("Serial Number: " + result);
+                    FMV.getMenuView().setSerial(result);
+                    $("#item-info-serial").val(result);
+                    //FMV.getMenuView().setSerial(result);
+                    console.log(FMV.getMenuView().getSerial());
+                }
+
+            };
+
+            reader.readAsDataURL(that.files[0]);
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

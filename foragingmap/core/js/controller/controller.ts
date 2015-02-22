@@ -173,6 +173,22 @@ module ForagingMap {
             FMM.getItems().add(item);
             return item;
         }
+        createItemWithInfo(latitude: any, longitude: any, serialnumber: any): Item {
+            var item: Item = new Item({
+                name: FML.getViewUIAddTempName(),
+                desc: "",
+                serial: serialnumber,
+                type: ItemType.None,
+                sort: 0,
+                amount: 0,
+                lat: latitude,
+                lng: longitude,
+                regdate: moment(new Date()).format(FMS.getDateTimeFormat()),
+                update: moment(new Date()).format(FMS.getDateTimeFormat()),
+            });
+            FMM.getItems().add(item);
+            return item;
+        }
         removeItem(item: Item): Item {
             FMM.getItems().remove(item);
             return item;

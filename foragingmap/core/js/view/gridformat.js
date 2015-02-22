@@ -426,3 +426,91 @@ var layerAddColumn = [
         cell: LayerAddCell,
     }
 ];
+
+
+
+
+
+
+
+var SetSerialCell = Backgrid.Cell.extend({
+    template: _.template(FMViewMenuSetSerialTemplate),
+    events: {
+        "click": "addRow"
+    },
+    addRow: function (e) {
+        e.preventDefault();
+        var model = this.model;
+        console.log(FMV.getMenuView().getSerial());
+        if (FMV.getMenuView().getSerial() != null) {
+            model.save(
+                {
+                    serial: FMV.getMenuView().getSerial(),
+                },
+                {
+                    wait: true,
+                    success: function (model, response) {
+                        FMV.getMsgView().renderSuccess("'" + model.get("name") + "' - " + FMV.getMenuView().getSerial());
+                    },
+                    error: function () {
+                        FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                    },
+                }
+            );
+
+        }
+        
+        
+
+        /*
+        var collection = this.model.collection;
+        collection.remove(model);
+        FMM.getLayers().add(model);
+        model.save(
+            //update: moment(new Date()).format(FMS.getDateTimeFormat())
+            {},
+            {
+                wait: true,
+                success: function (model, response) {
+                    FMV.getUIView().render();
+                    model.setIsSavable(true);
+                    FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                },
+                error: function () {
+                    FMV.getMsgView().renderError(FML.getViewUIDataSaveErrorMsg());
+                },
+            }
+        );
+        */
+
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        this.delegateEvents();
+        return this;
+    }
+});
+
+var itemColumn = [
+    {
+        name: "name",
+        label: "Name",
+        editable: false,
+        cell: "string" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "sort",
+        label: "Type",
+        editable: false,
+        //cell: "string"
+    }, {
+        name: "serial",
+        label: "Serial",
+        editable: false,
+        cell: "string"
+    }, {
+        label: "Set",
+        sortable: false,
+        editable: false,
+        cell: SetSerialCell,
+    }
+];

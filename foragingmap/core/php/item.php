@@ -93,7 +93,27 @@
                     echo '{"error":{"text":'. $e->getMessage() .'}}';
             }
         } catch(PDOException $e) {
-                echo '{"error":{"text":'. $e->getMessage() .'}}';
+            $pos = strpos($e->getMessage(), "Duplicate");
+            if ($pos !== false) {
+                $sql = "SELECT * FROM `fm_item` WHERE `serial` = :serial";
+                $params = array(
+                    "serial" => $data->{'serial'},
+                );
+                
+                try {
+                    $result = "Duplicate:";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute($params);
+                    $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    foreach ($arr as $titleData) {
+                        $result.=$titleData['name'];
+                    }
+                    echo $result;
+                } catch(PDOException $e) {
+                    
+                }
+            }
+            //echo '{"error":{"text":'. $e->getMessage() .'}}';
         }
     }
     

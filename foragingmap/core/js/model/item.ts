@@ -92,5 +92,22 @@ module ForagingMap {
         comparator(model: Item): any {
             return model.get("name");
         }
+
+        getNearItems(lat: any, lng: any): ForagingMap.Items {
+            console.log(lat);
+            console.log(lng);
+            var threshold: number = 0.005;
+            var that: Items = this;
+            var result = new Items();
+            $.each(that.models, function (index: number, model: ForagingMap.Item) {
+                if ((parseFloat(model.get("lat")) < parseFloat(lat) + threshold) && (parseFloat(model.get("lat")) > parseFloat(lat) - threshold)) {
+                    if ((parseFloat(model.get("lng")) < parseFloat(lng) + threshold) && (parseFloat(model.get("lng")) > parseFloat(lng) - threshold)) {
+                        result.add(model);
+                    }
+                }
+            });
+
+            return result;
+        }
     }
 }

@@ -16,14 +16,28 @@ var ForagingMap;
         }
         View.prototype.render = function () {
             var template = _.template(FMViewTemplate);
-            var data = { "title": FML.getViewTitle(), "list": FML.getViewList(), "map": FML.getViewMap(), "login": FML.getViewLogIn(), "signup": FML.getViewSignUp(), "menu": FML.getViewMenu() };
+            if (FMV.getOrigWidth() < 540) {
+                var data = { "title": FML.getViewTitle(), "list": FML.getViewList(), "map": FML.getViewMap(), "login": FML.getViewLogIn(), "signup": FML.getViewSignUp(), "menu": "" };
+            }
+            else {
+                var data = { "title": FML.getViewTitle(), "list": FML.getViewList(), "map": FML.getViewMap(), "login": FML.getViewLogIn(), "signup": FML.getViewSignUp(), "menu": FML.getViewMenu() };
+            }
             this.$el.html(template(data));
             this.vMap = new ForagingMap.MapView({ el: $("#leaflet-view-map") });
             this.vUI = new ForagingMap.UIView({ el: $("#leaflet-view-ui") });
             this.vMsg = new ForagingMap.MsgView({ el: $("#leaflet-view-msg") });
             this.vGallery = new ForagingMap.GalleryView({ el: $("#leaflet-view-galleria") });
             this.vSlider = new ForagingMap.SliderView({ el: $("#fm-view-slider") });
+            this.vMenu = new ForagingMap.MenuView({ el: $("#leaflet-view-menu") });
+            this.addEventListener();
             this.resize();
+        };
+        View.prototype.addEventListener = function () {
+            var that = this;
+            $("#btn-toggle-menu").off("click");
+            $("#btn-toggle-menu").on("click", function () {
+                that.vMenu.toggle();
+            });
         };
         View.prototype.resize = function () {
             this.origWidth = this.$el.innerWidth();
@@ -50,6 +64,9 @@ var ForagingMap;
         };
         View.prototype.getSliderView = function () {
             return this.vSlider;
+        };
+        View.prototype.getMenuView = function () {
+            return this.vMenu;
         };
         return View;
     })(Backbone.View);

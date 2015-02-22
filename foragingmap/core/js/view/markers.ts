@@ -264,6 +264,7 @@ module ForagingMap {
                     if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
                         this.openPopup();
                         FMV.getUIView().render();
+                        //FMV.getMenuView().hide();
                     }
                 }
             });

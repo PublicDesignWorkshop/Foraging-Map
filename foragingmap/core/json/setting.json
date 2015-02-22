@@ -28,13 +28,13 @@
         "defaultInterval": 3600,
         "markerIcons": [
             { "name": "Blank (Red)", "src": "marker-blank.png" },
-            { "name": "Apple", "src": "marker-apple-nephritis.png" },
-            { "name": "Banana", "src": "marker-banana-sunflower.png" },
-            { "name": "Berry", "src": "marker-berry-alizarin.png" },
-            { "name": "Grapes", "src": "marker-grapes-wisteria.png" },
-            { "name": "Peach", "src": "marker-peach-orange.png" },
-            { "name": "StrawBerry", "src": "marker-strawberry-pomegranate.png" },
-            { "name": "Tomato", "src": "marker-tomato-pumpkin.png" }
+            { "name": "Apple", "src": "marker-apple-midnightblue.png" },
+            { "name": "Banana", "src": "marker-banana-midnightblue.png" },
+            { "name": "Berry", "src": "marker-berry-midnightblue.png" },
+            { "name": "Grapes", "src": "marker-grapes-midnightblue.png" },
+            { "name": "Peach", "src": "marker-peach-midnightblue.png" },
+            { "name": "StrawBerry", "src": "marker-strawberry-midnightblue.png" },
+            { "name": "Tomato", "src": "marker-tomato-midnightblue.png" }
             
         ]
     }

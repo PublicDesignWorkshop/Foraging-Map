@@ -80,6 +80,14 @@ var ForagingMap;
             });
             return result;
         };
+        Layers.prototype.toArray = function () {
+            var that = this;
+            var result = new Array();
+            _.each(that.models, function (item) {
+                result.push([item.get("name"), item.get("id")]);
+            });
+            return result;
+        };
         return Layers;
     })(Backbone.Collection);
     ForagingMap.Layers = Layers;

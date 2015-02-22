@@ -45,19 +45,26 @@
     <Content Include="core\image\icon-plus-active.png" />
     <Content Include="core\image\icon-threshold-active.png" />
     <Content Include="core\image\icon-threshold-inactive.png" />
+    <Content Include="core\image\marker-apple-midnightblue.png" />
     <Content Include="core\image\marker-apple-nephritis.png" />
     <Content Include="core\image\marker-apple-pomegranate.png" />
+    <Content Include="core\image\marker-banana-midnightblue.png" />
     <Content Include="core\image\marker-banana-orange.png" />
     <Content Include="core\image\marker-banana-sunflower.png" />
     <Content Include="core\image\marker-berry-alizarin.png" />
+    <Content Include="core\image\marker-berry-midnightblue.png" />
     <Content Include="core\image\marker-blank.png" />
     <Content Include="core\image\marker-dollar.png" />
+    <Content Include="core\image\marker-grapes-midnightblue.png" />
     <Content Include="core\image\marker-grapes-wisteria.png" />
     <Content Include="core\image\marker-heart.png" />
     <Content Include="core\image\marker-new.png" />
+    <Content Include="core\image\marker-peach-midnightblue.png" />
     <Content Include="core\image\marker-peach-orange.png" />
     <Content Include="core\image\marker-shadow.png" />
+    <Content Include="core\image\marker-strawberry-midnightblue.png" />
     <Content Include="core\image\marker-strawberry-pomegranate.png" />
+    <Content Include="core\image\marker-tomato-midnightblue.png" />
     <Content Include="core\image\marker-tomato-pumpkin.png" />
     <Content Include="core\js\controller\uploader.js" />
     <Content Include="core\js\foragingmap.js">
@@ -125,6 +132,24 @@
     <Content Include="core\lib\leaflet\leaflet_.js" />
     <Content Include="core\lib\leaflet\leaflet.js" />
     <Content Include="core\lib\momentjs\moment.js" />
+    <Content Include="core\lib\qrcode\alignpat.js" />
+    <Content Include="core\lib\qrcode\bitmat.js" />
+    <Content Include="core\lib\qrcode\bmparser.js" />
+    <Content Include="core\lib\qrcode\datablock.js" />
+    <Content Include="core\lib\qrcode\databr.js" />
+    <Content Include="core\lib\qrcode\datamask.js" />
+    <Content Include="core\lib\qrcode\decoder.js" />
+    <Content Include="core\lib\qrcode\detector.js" />
+    <Content Include="core\lib\qrcode\errorlevel.js" />
+    <Content Include="core\lib\qrcode\findpat.js" />
+    <Content Include="core\lib\qrcode\formatinf.js" />
+    <Content Include="core\lib\qrcode\gf256.js" />
+    <Content Include="core\lib\qrcode\gf256poly.js" />
+    <Content Include="core\lib\qrcode\grid.js" />
+    <Content Include="core\lib\qrcode\llqrcode.js" />
+    <Content Include="core\lib\qrcode\qrcode.js" />
+    <Content Include="core\lib\qrcode\rsdecoder.js" />
+    <Content Include="core\lib\qrcode\version.js" />
     <Content Include="core\lib\underscore\underscore.js" />
     <Content Include="core\php\database.php" />
     <Content Include="core\php\bends.php" />
@@ -132,7 +157,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="core\php\foragingmap.sql" />
-    <Content Include="core\php\item.php" />
+    <Content Include="core\php\item.php">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="favicons\android-chrome-144x144.png" />
     <Content Include="favicons\android-chrome-192x192.png" />
     <Content Include="favicons\android-chrome-36x36.png" />
@@ -182,6 +209,7 @@
     <TypeScriptCompile Include="core\js\view\map.ts" />
     <TypeScriptCompile Include="core\js\view\mapcontrol.ts" />
     <TypeScriptCompile Include="core\js\view\markers.ts" />
+    <TypeScriptCompile Include="core\js\view\menu.ts" />
     <TypeScriptCompile Include="core\js\view\msg.ts" />
     <TypeScriptCompile Include="core\js\view\slider.ts" />
     <TypeScriptCompile Include="core\js\view\template.ts" />

@@ -139,6 +139,22 @@ var ForagingMap;
             FMM.getItems().add(item);
             return item;
         };
+        Controller.prototype.createItemWithInfo = function (latitude, longitude, serialnumber) {
+            var item = new ForagingMap.Item({
+                name: FML.getViewUIAddTempName(),
+                desc: "",
+                serial: serialnumber,
+                type: 0 /* None */,
+                sort: 0,
+                amount: 0,
+                lat: latitude,
+                lng: longitude,
+                regdate: moment(new Date()).format(FMS.getDateTimeFormat()),
+                update: moment(new Date()).format(FMS.getDateTimeFormat()),
+            });
+            FMM.getItems().add(item);
+            return item;
+        };
         Controller.prototype.removeItem = function (item) {
             FMM.getItems().remove(item);
             return item;

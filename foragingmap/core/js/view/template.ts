@@ -12,7 +12,7 @@ FMViewTemplate +=               '<div id="fm-view-slider"></div>';
 //FMViewTemplate +=               '<button type="button" class="btn btn-default"><%= map %></button>';
 FMViewTemplate +=           '</div>';
 FMViewTemplate +=           '<div class="btn-group nav-secondary" role="group" aria-label="nav-secondary">';
-FMViewTemplate +=               '<button type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> <%= menu %></button>';
+FMViewTemplate +=               '<button type="button" id="btn-toggle-menu" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> <%= menu %></button>';
 FMViewTemplate +=           '</div>';
 FMViewTemplate +=           '<div class="clear" />';
 FMViewTemplate +=       '</div>';
@@ -21,6 +21,7 @@ FMViewTemplate +=       '<div id="fm-view-map">';
 FMViewTemplate +=           '<div id="leaflet-view-ui"></div>';
 FMViewTemplate +=           '<div id="leaflet-view-map"></div>';
 FMViewTemplate +=           '<div id="leaflet-view-msg"></div>';
+FMViewTemplate +=           '<div id="leaflet-view-menu"></div>';
 FMViewTemplate +=           '<div id="leaflet-view-galleria">';
 FMViewTemplate +=           '</div>';
 FMViewTemplate +=       '</div>';
@@ -56,9 +57,17 @@ FMUIInfoLayerTemplate +=                        '</div>';
 FMUIInfoLayerTemplate += '</div>';
 // item-info-serial
 FMUIInfoLayerTemplate += '<div class="form-group">';
-FMUIInfoLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+//FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>" disabled>';
+FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '</div>';
+// item-info-serial-select TODO
+FMUIInfoLayerTemplate += '<div class="form-group">';
+FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">QRCode</label>';
+FMUIInfoLayerTemplate += '<div class="col-xs-9">';
+FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 // item-info-type
@@ -161,7 +170,7 @@ FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 // item-info-serial
 FMUIAddLayerTemplate += '<div class="form-group">';
-FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Sensor Serial</label>';
+FMUIAddLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
 FMUIAddLayerTemplate += '</div>';
@@ -309,3 +318,57 @@ FMViewLayerTemplate += '<label><input type="checkbox" value= "" data-type="1" da
 FMViewLayerTemplate += '</div>';
 FMViewLayerTemplate += '<% }); %>';
 FMViewLayerTemplate += '</div>';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var FMMenuTemplate = '';
+FMMenuTemplate += '';
+FMMenuTemplate += '<div class="ui-body">';
+FMMenuTemplate += '<form class="form-horizontal">';
+
+FMMenuTemplate += '<div class="form-group">';
+FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Username</label>';
+FMMenuTemplate += '<div class="col-xs-9">';
+FMMenuTemplate += '<input type="text" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '</div>';
+FMMenuTemplate += '</div>';
+
+FMMenuTemplate += '<div class="form-group">';
+FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Password</label>';
+FMMenuTemplate += '<div class="col-xs-9">';
+FMMenuTemplate += '<input type="password" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '</div>';
+FMMenuTemplate += '</div>';
+
+FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-ok"></span> Sign In</button>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '</form>';
+
+FMMenuTemplate += '<hr>';
+
+FMMenuTemplate += '<form class="form-horizontal">';
+FMMenuTemplate += '<div class="form-group">';
+FMMenuTemplate += '<label for="input-menu-qrcode" class="col-xs-3 control-label">QRCode</label>';
+FMMenuTemplate += '<div class="col-xs-9">';
+FMMenuTemplate += '<input class="fileupload" id="input-menu-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
+FMMenuTemplate += '</div>';
+FMMenuTemplate += '</div>';
+
+FMMenuTemplate += '<button type="button" id="btn-near-loc" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-screenshot"></span> Get Near Items</button>';
+FMMenuTemplate += '<div id="item-near-loc">';
+FMMenuTemplate += '</div>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+
+FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus-sign"></span> Create New Item</button>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '</form>';
+
+
+FMMenuTemplate += '</div>';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var FMViewMenuSetSerialTemplate = '';
+FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';

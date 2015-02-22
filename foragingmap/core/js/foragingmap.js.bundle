@@ -10,6 +10,28 @@
   </settings>
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
+
+    <file>/core/lib/qrcode/grid.js</file>
+    <file>/core/lib/qrcode/version.js</file>
+    <file>/core/lib/qrcode/detector.js</file>
+    <file>/core/lib/qrcode/formatinf.js</file>
+    <file>/core/lib/qrcode/errorlevel.js</file>
+    <file>/core/lib/qrcode/bitmat.js</file>
+    <file>/core/lib/qrcode/datablock.js</file>
+    <file>/core/lib/qrcode/bmparser.js</file>
+    <file>/core/lib/qrcode/datamask.js</file>
+    <file>/core/lib/qrcode/rsdecoder.js</file>
+    <file>/core/lib/qrcode/gf256poly.js</file>
+    <file>/core/lib/qrcode/gf256.js</file>
+    <file>/core/lib/qrcode/decoder.js</file>
+    <file>/core/lib/qrcode/qrcode.js</file>
+    <file>/core/lib/qrcode/findpat.js</file>
+    <file>/core/lib/qrcode/alignpat.js</file>
+    <file>/core/lib/qrcode/databr.js</file>
+    <!--
+    <file>/core/lib/qrcode/llqrcode.js</file>
+    -->
+    
     
     <file>/core/lib/jquery/jquery-2.1.3.js</file>
     <file>/core/lib/jquery-ui/jquery-ui.js</file>
@@ -25,7 +47,13 @@
     <file>/core/lib/backgrid/backgrid.js</file>
     <file>/core/lib/backgrid-moment-cell/backgrid-moment-cell.js</file>
     <file>/core/lib/galleria/galleria-1.4.2.js</file>
+
+
     
+
+
+
+
     <file>/core/js/controller/app.js</file>
     <file>/core/js/controller/controller.js</file>
     <file>/core/js/controller/router.js</file>
@@ -43,6 +71,7 @@
     <file>/core/js/view/markers.js</file>
     <file>/core/js/view/slider.js</file>
     <file>/core/js/view/gridformat.js</file>
+    <file>/core/js/view/menu.js</file>
     
     <file>/core/js/model/model.js</file>
     <file>/core/js/model/item.js</file>
@@ -50,6 +79,9 @@
     <file>/core/js/model/picture.js</file>
     <file>/core/js/model/threshold.js</file>
     <file>/core/js/model/layer.js</file>
+
+
+    
     
   </files>
 </bundle>

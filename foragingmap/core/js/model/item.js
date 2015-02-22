@@ -99,6 +99,21 @@ var ForagingMap;
         Items.prototype.comparator = function (model) {
             return model.get("name");
         };
+        Items.prototype.getNearItems = function (lat, lng) {
+            console.log(lat);
+            console.log(lng);
+            var threshold = 0.005;
+            var that = this;
+            var result = new Items();
+            $.each(that.models, function (index, model) {
+                if ((parseFloat(model.get("lat")) < parseFloat(lat) + threshold) && (parseFloat(model.get("lat")) > parseFloat(lat) - threshold)) {
+                    if ((parseFloat(model.get("lng")) < parseFloat(lng) + threshold) && (parseFloat(model.get("lng")) > parseFloat(lng) - threshold)) {
+                        result.add(model);
+                    }
+                }
+            });
+            return result;
+        };
         return Items;
     })(Backbone.Collection);
     ForagingMap.Items = Items;

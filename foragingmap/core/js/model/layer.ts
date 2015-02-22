@@ -79,6 +79,14 @@ module ForagingMap {
             });
             return result;
         }
+        toArray(): any {
+            var that: Layers = this;
+            var result = new Array();
+            _.each(that.models, function (item) {
+                result.push([item.get("name"), item.get("id")]);
+            });
+            return result;
+        }
     }
 
     export class Type extends Backbone.Model {

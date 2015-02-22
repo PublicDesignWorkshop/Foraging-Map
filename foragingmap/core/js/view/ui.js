@@ -191,7 +191,10 @@ var ForagingMap;
                     },
                 });
             });
+            that.$('input[type=file]').off('change');
+            that.$('input[type=file]').on('change', that.executeDecode);
             that.$("#item-info-btn-edit").on("click", function () {
+                var tempSerial = that.$("#item-info-serial").val();
                 var optionSelected = $("option:selected", that.$('#item-info-type'));
                 if (parseInt(optionSelected.attr("data-type")) != 0 && parseInt(optionSelected.attr("data-sort")) != 0) {
                     FMV.getMapView().getMarkersView().removeMarker(FMC.getSelectedItem());
@@ -211,10 +214,19 @@ var ForagingMap;
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                         },
-                        error: function (error) {
-                            that.render();
-                            FMV.getMapView().getMarkersView().render();
-                            FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                        error: function (model, error) {
+                            console.log("error");
+                            if (error.responseText.indexOf("Duplicate:") > -1) {
+                                var name = error.responseText.replace("Duplicate:", "");
+                                that.render();
+                                FMV.getMapView().getMarkersView().render();
+                                FMV.getMsgView().renderError("'" + tempSerial + "' is already registered in '" + name + "'");
+                            }
+                            else {
+                                that.render();
+                                FMV.getMapView().getMarkersView().render();
+                                FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                            }
                         },
                     });
                 }
@@ -243,6 +255,27 @@ var ForagingMap;
                     });
                 }
             });
+        };
+        UIView.prototype.executeDecode = function (event) {
+            var that = this;
+            that.files = event.target.files;
+            console.log(that.files);
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                qrcode.decode(event.target.result);
+            };
+            qrcode.callback = function (result) {
+                if (result == "error decoding QR Code") {
+                    FMV.getMsgView().renderError("Failed to decode QR Code.");
+                }
+                else {
+                    FMV.getMsgView().renderSuccess("Serial Number: " + result);
+                    FMV.getMenuView().setSerial(result);
+                    $("#item-info-serial").val(result);
+                    console.log(FMV.getMenuView().getSerial());
+                }
+            };
+            reader.readAsDataURL(that.files[0]);
         };
         UIView.prototype.renderUIAdd = function () {
             var that = this;
