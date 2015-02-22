@@ -191,16 +191,16 @@
     <Content Include="index.html" />
     <Content Include="packages.config" />
     <Content Include="psd\ColorPallet_ForagingMap.png" />
-    <Content Include="qrcodes\QR_BEND001.png" />
-    <Content Include="qrcodes\QR_BEND002.png" />
-    <Content Include="qrcodes\QR_BEND003.png" />
-    <Content Include="qrcodes\QR_BEND004.png" />
-    <Content Include="qrcodes\QR_BEND005.png" />
-    <Content Include="qrcodes\QR_BEND006.png" />
-    <Content Include="qrcodes\QR_BEND007.png" />
-    <Content Include="qrcodes\QR_BEND008.png" />
-    <Content Include="qrcodes\QR_BEND009.png" />
-    <Content Include="qrcodes\QR_BEND010.png" />
+    <Content Include="qrcodes\QR_BS001.png" />
+    <Content Include="qrcodes\QR_BS002.png" />
+    <Content Include="qrcodes\QR_BS003.png" />
+    <Content Include="qrcodes\QR_BS004.png" />
+    <Content Include="qrcodes\QR_BS005.png" />
+    <Content Include="qrcodes\QR_BS006.png" />
+    <Content Include="qrcodes\QR_BS007.png" />
+    <Content Include="qrcodes\QR_BS008.png" />
+    <Content Include="qrcodes\QR_BS009.png" />
+    <Content Include="qrcodes\QR_BS010.png" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
