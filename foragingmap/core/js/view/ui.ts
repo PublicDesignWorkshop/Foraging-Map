@@ -247,7 +247,7 @@ module ForagingMap {
                                 FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                             },
                             error: function (model: Item, error: any) {
-                                console.log("error");
+                                //console.log("error");
                                 if (error.responseText.indexOf("Duplicate:") > -1) {
                                     var name: string = error.responseText.replace("Duplicate:", "");
                                     that.render();
@@ -291,7 +291,7 @@ module ForagingMap {
         executeDecode(event: any): void {
             var that: UIView = this;
             that.files = event.target.files;
-            console.log(that.files);
+            //console.log(that.files);
             var reader: FileReader = new FileReader();
 
             reader.onload = function (event: FileEvent) {
@@ -305,7 +305,7 @@ module ForagingMap {
                     FMV.getMenuView().setSerial(result);
                     $("#item-info-serial").val(result);
                     //FMV.getMenuView().setSerial(result);
-                    console.log(FMV.getMenuView().getSerial());
+                    //console.log(FMV.getMenuView().getSerial());
                 }
 
             };
