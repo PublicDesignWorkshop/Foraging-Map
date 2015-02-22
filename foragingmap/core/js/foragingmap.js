@@ -50380,7 +50380,7 @@ FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder=""
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
-FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">QRCode</label>';
+FMUIInfoLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
@@ -50461,6 +50461,12 @@ FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '<div class="form-group">';
+FMUIAddLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
+FMUIAddLayerTemplate += '<div class="col-xs-9">';
+FMUIAddLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '<div class="form-group">';
@@ -51355,6 +51361,8 @@ var ForagingMap;
                     });
                 }
             });
+            that.$('input[type=file]').off('change');
+            that.$('input[type=file]').on('change', that.executeDecode);
             that.$("#item-info-btn-delete").on("click", function () {
                 FMV.getMapView().getControlView().resetControls();
                 if (FMC.hasSelectedItem()) {
@@ -52717,11 +52725,9 @@ var ForagingMap;
         MenuView.prototype.setSerial = function (serial) {
             var that = this;
             that.serial = serial;
-            console.log(that.serial);
         };
         MenuView.prototype.getSerial = function () {
             var that = this;
-            console.log(that.serial);
             return that.serial;
         };
         MenuView.prototype.show = function () {
@@ -52780,7 +52786,7 @@ var ForagingMap;
                     FMV.getMapView().getControlView().resetControls();
                     FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
                     FMC.setSelectedItem(FMC.createItemWithInfo(that.lat, that.lng, that.serial));
-                    FMV.getUIView().show(1 /* ADD */);
+                    FMV.getUIView().show(UIMode.ADD);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -52794,7 +52800,7 @@ var ForagingMap;
             FMV.getMapView().getControlView().resetControls();
             FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
             FMC.setSelectedItem(FMC.createItemWithInfo(FMV.getMenuView().lat, FMV.getMenuView().lng, FMV.getMenuView().serial));
-            FMV.getUIView().show(1 /* ADD */);
+            FMV.getUIView().show(UIMode.ADD);
             FMV.getMapView().resize(true);
             setTimeout(function () {
                 FMV.getMapView().getMarkersView().render();
@@ -52815,7 +52821,6 @@ var ForagingMap;
                 else {
                     FMV.getMsgView().renderSuccess("Serial Number: " + result);
                     FMV.getMenuView().setSerial(result);
-                    console.log(FMV.getMenuView().getSerial());
                 }
             };
             reader.readAsDataURL(that.files[0]);

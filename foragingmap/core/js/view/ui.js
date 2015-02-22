@@ -350,6 +350,8 @@ var ForagingMap;
                     });
                 }
             });
+            that.$('input[type=file]').off('change');
+            that.$('input[type=file]').on('change', that.executeDecode);
             that.$("#item-info-btn-delete").on("click", function () {
                 FMV.getMapView().getControlView().resetControls();
                 if (FMC.hasSelectedItem()) {

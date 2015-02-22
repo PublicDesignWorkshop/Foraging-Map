@@ -18,11 +18,11 @@
         setSerial(serial: string): void {
             var that: MenuView = this;
             that.serial = serial;
-            console.log(that.serial);
+            //console.log(that.serial);
         }
         getSerial(): String {
             var that: MenuView = this;
-            console.log(that.serial);
+            //console.log(that.serial);
             return that.serial;
         }
         show(): void {
@@ -136,7 +136,7 @@
                 } else {
                     FMV.getMsgView().renderSuccess("Serial Number: " + result);
                     FMV.getMenuView().setSerial(result);
-                    console.log(FMV.getMenuView().getSerial());
+                    //console.log(FMV.getMenuView().getSerial());
                 }
                 
             };

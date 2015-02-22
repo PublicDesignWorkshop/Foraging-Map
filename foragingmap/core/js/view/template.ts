@@ -65,7 +65,7 @@ FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 // item-info-serial-select TODO
 FMUIInfoLayerTemplate += '<div class="form-group">';
-FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">QRCode</label>';
+FMUIInfoLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
@@ -173,6 +173,13 @@ FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIAddLayerTemplate += '</div>';
+FMUIAddLayerTemplate += '</div>';
+// item-info-serial-select TODO
+FMUIAddLayerTemplate += '<div class="form-group">';
+FMUIAddLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
+FMUIAddLayerTemplate += '<div class="col-xs-9">';
+FMUIAddLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 // item-info-type
