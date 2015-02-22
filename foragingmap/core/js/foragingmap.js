@@ -50724,6 +50724,7 @@ var ForagingMap;
                     doubleClickZoom: false,
                 }).setView(new L.LatLng(lat, lng), zoom);
                 L.tileLayer(FMS.getTileMapAddress(), {
+                    minZoom: 3,
                     maxZoom: FMS.getMaxZoom(),
                 }).addTo(that.lMap);
                 that.lMap.invalidateSize(false);
