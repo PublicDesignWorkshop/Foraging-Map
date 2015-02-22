@@ -32,7 +32,8 @@
     }
     
     function read() {
-        $sql = "SELECT * FROM `fm_item` WHERE (`lat` BETWEEN :south AND :north) AND (`lng` BETWEEN :west AND :east)";
+        //$sql = "SELECT * FROM `fm_item` WHERE (`lat` BETWEEN :south AND :north) AND (`lng` BETWEEN :west AND :east)";
+        $sql = "SELECT * FROM `fm_item`";
         $data = json_decode(file_get_contents('php://input'));
         $params = null;
         if ($data != null) {
