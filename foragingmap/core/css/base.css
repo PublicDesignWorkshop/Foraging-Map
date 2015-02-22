@@ -56,6 +56,10 @@ html, body {
     z-index: 9999;
 }
 
+#fm-logo {
+    cursor: pointer;
+}
+
 
 /* Map View */
 .view-map-half {

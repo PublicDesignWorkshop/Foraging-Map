@@ -1,7 +1,7 @@
 var FMViewTemplate = '';
 FMViewTemplate += '<div id="fm-view-body" class="panel panel-primary">';
 FMViewTemplate += '<div class="panel-heading">';
-FMViewTemplate += '<div class="panel-title nav-title"><%= title %></div>';
+FMViewTemplate += '<div id="fm-logo" class="panel-title nav-title"><%= title %></div>';
 FMViewTemplate += '<div class="btn-group nav-primary" role="group" aria-label="nav-primary">';
 FMViewTemplate += '<div id="fm-view-slider"></div>';
 FMViewTemplate += '</div>';

@@ -50333,7 +50333,7 @@ function submitForm(event, data, model) {
 var FMViewTemplate = '';
 FMViewTemplate += '<div id="fm-view-body" class="panel panel-primary">';
 FMViewTemplate += '<div class="panel-heading">';
-FMViewTemplate += '<div class="panel-title nav-title"><%= title %></div>';
+FMViewTemplate += '<div id="fm-logo" class="panel-title nav-title"><%= title %></div>';
 FMViewTemplate += '<div class="btn-group nav-primary" role="group" aria-label="nav-primary">';
 FMViewTemplate += '<div id="fm-view-slider"></div>';
 FMViewTemplate += '</div>';
@@ -50651,6 +50651,10 @@ var ForagingMap;
             $("#btn-toggle-menu").off("click");
             $("#btn-toggle-menu").on("click", function () {
                 that.vMenu.toggle();
+            });
+            $("#fm-logo").off("click");
+            $("#fm-logo").on("click", function () {
+                location.reload();
             });
         };
         View.prototype.resize = function () {

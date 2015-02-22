@@ -45,6 +45,11 @@ module ForagingMap {
             $("#btn-toggle-menu").on("click", function () {
                 that.vMenu.toggle();
             });
+
+            $("#fm-logo").off("click");
+            $("#fm-logo").on("click", function () {
+                location.reload();
+            });
         }
         resize(): void {
             this.origWidth = this.$el.innerWidth();

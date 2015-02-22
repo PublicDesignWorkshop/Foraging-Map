@@ -38,6 +38,10 @@ var ForagingMap;
             $("#btn-toggle-menu").on("click", function () {
                 that.vMenu.toggle();
             });
+            $("#fm-logo").off("click");
+            $("#fm-logo").on("click", function () {
+                location.reload();
+            });
         };
         View.prototype.resize = function () {
             this.origWidth = this.$el.innerWidth();
