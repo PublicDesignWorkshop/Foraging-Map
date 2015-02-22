@@ -8,4 +8,4 @@ TODO List:
 - Create graph with sensor data.
 - Small interface bug from gallery mode to map mode
 - Create Thumbnail for picture list view
-
+- Slider doesn't work in mobile environment. (I am not sure it's because of default behavior of mobile environemnt, swiping, or slider library's bug itself.)
