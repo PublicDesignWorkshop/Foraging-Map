@@ -463,7 +463,7 @@ fieldset[disabled] .btn-negative.active {
 /* Menu */
 #leaflet-view-menu {
     position: absolute;
-    top: 56px;
+    top: 55px;
     right: 0;
     width: 542px;
     z-index: 8888;

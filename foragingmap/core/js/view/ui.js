@@ -314,7 +314,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == ItemType.None) {
+                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -339,7 +339,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().set("type", 0 /* None */);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -376,7 +376,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("date", "descending");
             that.$(".ui-body").append(gridData.el);
-            var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
             bend.setIsSavable(false);
             var bends = new ForagingMap.Bends();
             bends.add(bend);
@@ -402,7 +402,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("date", "descending");
             that.$(".ui-body").append(gridData.el);
-            var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
             threshold.setIsSavable(false);
             var thresholds = new ForagingMap.Thresholds();
             thresholds.add(threshold);

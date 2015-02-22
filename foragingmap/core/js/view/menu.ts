@@ -55,7 +55,7 @@
             if (FMV.getOrigWidth() < 540) {
                 this.$el.css({ width: FMV.getOrigWidth() });
             }
-            this.$el.css({ height: FMV.getOrigHeight() - 56 });
+            this.$el.css({ height: FMV.getOrigHeight() - 55 });
         }
         toggle(): void {
             if (this.getIsOpen()) {
