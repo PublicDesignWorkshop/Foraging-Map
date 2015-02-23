@@ -466,7 +466,7 @@ fieldset[disabled] .btn-negative.active {
 
 /* Menu */
 #leaflet-view-menu {
-    position: fixed;
+    position: absolute;
     top: 55px;
     right: 0;
     width: 542px;
