@@ -35,7 +35,7 @@ module ForagingMap {
                     maxZoom: FMS.getMaxZoom(),
                 }).addTo(that.lMap);
                 that.lMap.invalidateSize(false);
-                that.lMap.touchZoom.disable();
+                //that.lMap.touchZoom.disable();
                 that.lMap.doubleClickZoom.disable();
                 that.lMap.on("moveend", function (e) {
                     FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
@@ -101,12 +101,12 @@ module ForagingMap {
         SetIsMapPanZoomAvailable(isAvailable: boolean): void {
             if (isAvailable) {
                 FMV.getMapView().getMap().dragging.enable();
-                //FMV.getMapView().getMap().touchZoom.enable();
+                FMV.getMapView().getMap().touchZoom.enable();
                 //FMV.getMapView().getMap().doubleClickZoom.enable();
                 FMV.getMapView().getMap().scrollWheelZoom.enable();
             } else {
                 FMV.getMapView().getMap().dragging.disable();
-                //FMV.getMapView().getMap().touchZoom.disable();
+                FMV.getMapView().getMap().touchZoom.disable();
                 //FMV.getMapView().getMap().doubleClickZoom.disable();
                 FMV.getMapView().getMap().scrollWheelZoom.disable();
             }

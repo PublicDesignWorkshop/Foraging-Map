@@ -34,7 +34,6 @@ var ForagingMap;
                     maxZoom: FMS.getMaxZoom(),
                 }).addTo(that.lMap);
                 that.lMap.invalidateSize(false);
-                that.lMap.touchZoom.disable();
                 that.lMap.doubleClickZoom.disable();
                 that.lMap.on("moveend", function (e) {
                     FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
@@ -46,7 +45,7 @@ var ForagingMap;
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -100,10 +99,12 @@ var ForagingMap;
         MapView.prototype.SetIsMapPanZoomAvailable = function (isAvailable) {
             if (isAvailable) {
                 FMV.getMapView().getMap().dragging.enable();
+                FMV.getMapView().getMap().touchZoom.enable();
                 FMV.getMapView().getMap().scrollWheelZoom.enable();
             }
             else {
                 FMV.getMapView().getMap().dragging.disable();
+                FMV.getMapView().getMap().touchZoom.disable();
                 FMV.getMapView().getMap().scrollWheelZoom.disable();
             }
         };
