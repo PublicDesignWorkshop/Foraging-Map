@@ -169,6 +169,30 @@ var pictureColumn = [
 	}
 ];
 
+var pictureColumn2 = [
+	{
+	    name: "url",
+	    label: "Picture",
+	    editable: false,
+	    cell: PictureCell,
+	}, {
+	    name: "name",
+	    label: "Name",
+	    editable: false,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "date",
+	    label: "Date",
+	    editable: false,
+	    cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+	}, {
+	    label: "option",
+	    sortable: false,
+	    editable: false,
+	    cell: "",
+	}
+];
+
 
 var PictureSelectCell = Backgrid.Cell.extend({
     template: _.template(FMUIPictureSelectTemplate),
@@ -253,6 +277,32 @@ var dataColumn = [
     }
 ];
 
+var dataColumn2 = [
+    {
+        name: "value",
+        label: "Value (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "date",
+        label: "Date",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        name: "update",
+        label: "Updated",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        label: "option",
+        sortable: false,
+        editable: false,
+        cell: "string",
+    }
+];
+
+
+
 var dataAddColumn = [
     {
         name: "value",
@@ -303,6 +353,35 @@ var thresholdColumn = [
         sortable: false,
         editable: false,
         cell: DeleteCell,
+    }
+];
+
+var thresholdColumn2 = [
+    {
+        name: "min",
+        label: "Min (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "max",
+        label: "Max (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "date",
+        label: "Date",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        name: "update",
+        label: "Updated",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        label: "option",
+        sortable: false,
+        editable: false,
+        cell: "string",
     }
 ];
 

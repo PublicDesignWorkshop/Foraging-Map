@@ -26,6 +26,10 @@ var ForagingMap;
             FMV.getMapView().renderMap(lat, lng, zoom);
             FMV.getSliderView().renderSlider(interval, start, end, cur);
         };
+        Router.prototype.refresh = function () {
+            console.log("refresh");
+            window.location.reload();
+        };
         return Router;
     })(Backbone.Router);
     ForagingMap.Router = Router;

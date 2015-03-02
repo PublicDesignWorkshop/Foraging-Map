@@ -12,7 +12,9 @@ module ForagingMap {
         render(): any {
             var that: MapControlView = this;
             var template = _.template(FMMapControlViewTemplate);
-            var data = {};
+            var data = {
+                isAdmin: FMC.getUser().getIsAdmin(),
+            };
             that.$el.html(template(data));
             that.removeEventListener();
             that.addEventListener();
@@ -198,6 +200,10 @@ FMMapControlViewTemplate +=         '<div class="control-button layer"></div>';
 FMMapControlViewTemplate +=         '<div class="control-button info"></div>';
 FMMapControlViewTemplate +=         '<div class="control-button data"></div>';
 FMMapControlViewTemplate +=         '<div class="control-button threshold"></div>';
-FMMapControlViewTemplate +=         '<div class="control-button picture"></div>';
+FMMapControlViewTemplate += '<div class="control-button picture"></div>';
+
+FMMapControlViewTemplate += '<% if (isAdmin) { %>';   // if admin
 FMMapControlViewTemplate +=         '<div class="control-button add"></div>';
-FMMapControlViewTemplate +=     '</div>';
+FMMapControlViewTemplate += '<% } %>';
+
+FMMapControlViewTemplate += '</div>';

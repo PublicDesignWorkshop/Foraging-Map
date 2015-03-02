@@ -134,6 +134,7 @@ module ForagingMap {
                 "regdate": FMC.getSelectedItem().get("regdate"),
                 "update": FMC.getSelectedItem().get("update"),
                 "sort1": FMM.getLayers().where({ type: 1 }),
+                isAdmin: FMC.getUser().getIsAdmin(),
                 //"sort2": FMM.getLayers().where({ type: 2 }),
             };
             that.$el.html(template(data));
@@ -419,29 +420,48 @@ module ForagingMap {
             var template = _.template(FMViewUIDataLayerTemplate);
             var data = {
                 "header": FML.getViewUIDataHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
-            // Grid instance for data
-            var gridData = new Backgrid.Grid({
-                columns: dataColumn,
-                collection: new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
-            // Grid instance for add Data
-            var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            bend.setIsSavable(false);
-            var bends: Bends = new Bends();
-            bends.add(bend);
-            var gridAddData = new Backgrid.Grid({
-                columns: dataAddColumn,
-                collection: bends,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
 
-            that.$("#date-add-panel").append(gridAddData.render().el);
+
+            // Grid instance for data
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn,
+                    collection: new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            } else {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn2,
+                    collection: new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
+
+
+            // Grid instance for add Data
+            if (FMC.getUser().getIsAdmin()) {
+                var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                bend.setIsSavable(false);
+                var bends: Bends = new Bends();
+                bends.add(bend);
+                var gridAddData = new Backgrid.Grid({
+                    columns: dataAddColumn,
+                    collection: bends,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+
+                that.$("#date-add-panel").append(gridAddData.render().el);
+            }
+            
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -451,31 +471,45 @@ module ForagingMap {
             var template = _.template(FMViewUIThresholdLayerTemplate);
             var data = {
                 "header": FML.getViewUIThresholdHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
 
             // Grid instance for data
-            var gridData = new Backgrid.Grid({
-                columns: thresholdColumn,
-                collection: new Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: thresholdColumn,
+                    collection: new Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            } else {
+                var gridData = new Backgrid.Grid({
+                    columns: thresholdColumn2,
+                    collection: new Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
 
             // Grid instance for add Data
-            var threshold: Threshold = new Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            threshold.setIsSavable(false);
-            var thresholds: Thresholds = new Thresholds();
-            thresholds.add(threshold);
-            var gridAddData = new Backgrid.Grid({
-                columns: thresholdAddColumn,
-                collection: thresholds,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
+            if (FMC.getUser().getIsAdmin()) {
+                var threshold: Threshold = new Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                threshold.setIsSavable(false);
+                var thresholds: Thresholds = new Thresholds();
+                thresholds.add(threshold);
+                var gridAddData = new Backgrid.Grid({
+                    columns: thresholdAddColumn,
+                    collection: thresholds,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
 
-            that.$("#threshold-add-panel").append(gridAddData.render().el);
+                that.$("#threshold-add-panel").append(gridAddData.render().el);
+            }
             /*
             
             // Grid instance for add Data
@@ -502,33 +536,50 @@ module ForagingMap {
             var template = _.template(FMViewUILayerPictureTemplate);
             var data = {
                 "header": FML.getViewUIPictureHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
             // Grid instance for data
-            
-            var gridData = new Backgrid.Grid({
-                columns: pictureColumn,
-                collection: FMM.getPictures(),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
-            setTimeout(function () {
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn,
+                    collection: FMM.getPictures(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
                 gridData.sort("date", "descending");
-            }, 3000);
-            // Grid instance for add Picture
-            var picture: Picture = new Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            picture.setIsSavable(false);
-            var pictures: Pictures = new Pictures();
-            pictures.add(picture);
-            var gridAddData = new Backgrid.Grid({
-                columns: pictureAddColumn,
-                collection: pictures,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
+                that.$(".ui-body").append(gridData.el);
+                setTimeout(function () {
+                    gridData.sort("date", "descending");
+                }, 3000);
+            } else {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn2,
+                    collection: FMM.getPictures(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+                setTimeout(function () {
+                    gridData.sort("date", "descending");
+                }, 3000);
+            }
 
-            that.$("#picture-add-panel").append(gridAddData.render().el);
+            // Grid instance for add Picture
+            if (FMC.getUser().getIsAdmin()) {
+                var picture: Picture = new Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                picture.setIsSavable(false);
+                var pictures: Pictures = new Pictures();
+                pictures.add(picture);
+                var gridAddData = new Backgrid.Grid({
+                    columns: pictureAddColumn,
+                    collection: pictures,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+
+                that.$("#picture-add-panel").append(gridAddData.render().el);
+            }
             
         }
 
@@ -664,10 +715,13 @@ module ForagingMap {
 }
 
 declare var dataColumn;
+declare var dataColumn2;
 declare var dataAddColumn;
 declare var pictureColumn;
+declare var pictureColumn2;
 declare var pictureAddColumn;
 declare var thresholdColumn;
+declare var thresholdColumn2;
 declare var thresholdAddColumn;
 declare var layerColumn;
 declare var layerAddColumn;

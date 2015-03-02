@@ -3,13 +3,35 @@ var ForagingMap;
     var Controller = (function () {
         function Controller() {
             this.router = new ForagingMap.Router();
+            this.user = new ForagingMap.User({ username: "Guest", name: "Guest", auth: 0 });
         }
         Controller.prototype.initialize = function () {
-            FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-            FMM = new ForagingMap.Model();
-            FMC.fetchIcons();
-            FMC.fetchLayers();
-            FMC.addKeyEventListener();
+            FMC.getUser().fetch({
+                remove: false,
+                processData: true,
+                data: {
+                    logout: false,
+                },
+                success: function (model, response) {
+                    console.log(model);
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    FMM = new ForagingMap.Model();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error: function (error) {
+                    console.log("error");
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    FMM = new ForagingMap.Model();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+            });
+        };
+        Controller.prototype.getUser = function () {
+            return this.user;
         };
         Controller.prototype.getRouter = function () {
             return this.router;

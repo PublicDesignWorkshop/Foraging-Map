@@ -68,7 +68,8 @@
             var that: MenuView = this;
             var template = _.template(FMMenuTemplate);
             var data = {
-
+                username: FMC.getUser().get("username"),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
 
@@ -106,6 +107,47 @@
                     }, 500);
                     that.hide();
                 }
+            });
+            
+            that.$('#btn-menu-login').off('click');
+            that.$('#btn-menu-login').on('click', function () {
+                FMC.getUser().fetch({
+                    remove: false,	// if remove == false, it only adds new items, not removing old items.
+                    processData: true,
+                    data: {
+                        username: that.$('#input-menu-login-username').val(),
+                        password: that.$('#input-menu-login-password').val(),
+                    },
+                    success: function (model: Item, response: any) {
+                        if (model.get('auth') == 0) {
+                            FMV.getMsgView().renderError("Failed to log in.");
+                        } else {
+                            FMC.getRouter().refresh();
+                        }
+                        //FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
+                    },
+                    error: function (error) {
+                        FMV.getMsgView().renderError("Failed to log in.");
+                        //FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                    },
+                });
+            });
+
+            that.$('#btn-menu-logout').off('click');
+            that.$('#btn-menu-logout').on('click', function () {
+                FMC.getUser().fetch({
+                    remove: false,	// if remove == false, it only adds new items, not removing old items.
+                    processData: true,
+                    data: {
+                        logout: true,
+                    },
+                    success: function (model: Item, response: any) {
+                        FMC.getRouter().refresh();
+                    },
+                    error: function (error) {
+                        FMC.getRouter().refresh();
+                    },
+                });
             });
         }
 

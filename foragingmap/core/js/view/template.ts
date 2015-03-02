@@ -37,44 +37,50 @@ FMUIInfoLayerTemplate +=                '<form class="form-horizontal">';
 // item-info-id
 FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-id" class="col-xs-3 control-label">#id</label>';
-FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
-FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-id" value="<%= id %>" readonly>';
+FMUIInfoLayerTemplate += '<div class="col-xs-9">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-id" value="<%= id %>" readonly>';
 FMUIInfoLayerTemplate +=                        '</div>';
 FMUIInfoLayerTemplate +=                    '</div>';
 // item-info-name
 FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-name" class="col-xs-3 control-label">Name</label>';
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
-FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>">';
+FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate +=                        '</div>';
 FMUIInfoLayerTemplate +=                    '</div>';
 // item-info-desc
 FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIInfoLayerTemplate +=                         '<div class="col-xs-9">';
-FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
+FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate +=                        '</div>';
 FMUIInfoLayerTemplate += '</div>';
 // item-info-serial
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>"<% if (!isAdmin) { %>readonly<% } %>>';
 //FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>" disabled>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 // item-info-serial-select TODO
+
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';   // if admin
+
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+
+FMUIInfoLayerTemplate += '<% } %>';   // if non-admin
+
 // item-info-type
 FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
-FMUIInfoLayerTemplate +=                            '<select id="item-info-type" class="selectpicker">';
+FMUIInfoLayerTemplate +=                            '<select id="item-info-type" class="selectpicker" <% if (!isAdmin) { %>disabled<% } %>>';
 //FMUIInfoLayerTemplate += '<optgroup label="None">';
 //FMUIInfoLayerTemplate += '<option data-type="0" data-sort="0">None</option>';
 //FMUIInfoLayerTemplate += '</optgroup>';
@@ -96,7 +102,7 @@ FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-amount" class="col-xs-3 control-label">Amount</label>';
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
 FMUIInfoLayerTemplate +=                            '<div class="input-group">';
-FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-amount" value="<%= amount %>">';
+FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-amount" value="<%= amount %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate +=                                '<span class="input-group-addon">s</span>';
 FMUIInfoLayerTemplate +=                           '</div>';
 FMUIInfoLayerTemplate +=                        '</div>';
@@ -106,7 +112,7 @@ FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-lat" class="col-xs-3 control-label">Latitude</label>';
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
 FMUIInfoLayerTemplate +=                            '<div class="input-group">';
-FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-lat" value="<%= lat %>">';
+FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-lat" value="<%= lat %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate +=                                '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate +=                            '</div>';
 FMUIInfoLayerTemplate +=                        '</div>';
@@ -116,7 +122,7 @@ FMUIInfoLayerTemplate +=                    '<div class="form-group">';
 FMUIInfoLayerTemplate +=                        '<label for="item-info-lng" class="col-xs-3 control-label">Longitude</label>';
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
 FMUIInfoLayerTemplate +=                            '<div class="input-group">';
-FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-lng" value="<%= lng %>">';
+FMUIInfoLayerTemplate +=                                '<input type="text" class="form-control" placeholder="" id="item-info-lng" value="<%= lng %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate +=                                '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate +=                            '</div>';
 FMUIInfoLayerTemplate +=                        '</div>';
@@ -137,7 +143,9 @@ FMUIInfoLayerTemplate +=                        '<label for="item-info-reg" clas
 FMUIInfoLayerTemplate +=                        '<div class="col-xs-9">';
 FMUIInfoLayerTemplate +=                            '<input type="text" class="form-control" placeholder="" id="item-info-reg" value="<%= regdate %>" readonly>';
 FMUIInfoLayerTemplate +=                        '</div>';
-FMUIInfoLayerTemplate +=                    '</div>';
+FMUIInfoLayerTemplate += '</div>';
+
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';   // if admin
 // item-info-btn-edit
 FMUIInfoLayerTemplate +=                    '<button id="item-info-btn-edit" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-ok"></span> Save</button>';
 // item-info-btn-delete
@@ -145,6 +153,8 @@ FMUIInfoLayerTemplate +=                    '<button id="item-info-btn-delete" t
 FMUIInfoLayerTemplate +=                '<div style="clear:both;"/>'
 FMUIInfoLayerTemplate +=            '</form>';
 FMUIInfoLayerTemplate += '</div>';
+
+FMUIInfoLayerTemplate += '<% } %>';
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,21 +249,29 @@ FMUIAddLayerTemplate += '</div>';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var FMViewUIDataLayerTemplate =   '';
+var FMViewUIDataLayerTemplate = '';
+
+
 FMViewUIDataLayerTemplate +=      '<div class="ui-header"><%= header %></div>'
-FMViewUIDataLayerTemplate +=      '<div class="ui-body">';
+FMViewUIDataLayerTemplate += '<div class="ui-body">';
+FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>';   // if admin
 FMViewUIDataLayerTemplate +=          '<button type="button" data-toggle="collapse" data-target="#date-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Data</button>';
-FMViewUIDataLayerTemplate +=          '<div class="collapse" id="date-add-panel">';
+FMViewUIDataLayerTemplate += '<div class="collapse" id="date-add-panel">';
+FMViewUIDataLayerTemplate += '<% } %>';
 FMViewUIDataLayerTemplate +=          '</div>';
 FMViewUIDataLayerTemplate += '</div>';
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIThresholdLayerTemplate =    '';
 FMViewUIThresholdLayerTemplate +=       '<div class="ui-header"><%= header %></div>'
-FMViewUIThresholdLayerTemplate +=       '<div class="ui-body">';
+FMViewUIThresholdLayerTemplate += '<div class="ui-body">';
+FMViewUIThresholdLayerTemplate += '<% if (isAdmin) { %>';   // if admin
 FMViewUIThresholdLayerTemplate +=           '<button type="button" data-toggle="collapse" data-target="#threshold-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Threshold</button>';
-FMViewUIThresholdLayerTemplate +=               '<div class="collapse" id="threshold-add-panel">';
+FMViewUIThresholdLayerTemplate += '<div class="collapse" id="threshold-add-panel">';
+FMViewUIThresholdLayerTemplate += '<% } %>';
 FMViewUIThresholdLayerTemplate +=           '</div>';
 FMViewUIThresholdLayerTemplate +=       '</div>';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,9 +289,11 @@ FMViewUIDataLayerAddTemplate = '<button type="button" class="btn btn-default btn
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUILayerPictureTemplate =  '';
 FMViewUILayerPictureTemplate +=     '<div class="ui-header"><%= header %></div>'
-FMViewUILayerPictureTemplate +=     '<div class="ui-body ui-picture">';
+FMViewUILayerPictureTemplate += '<div class="ui-body ui-picture">';
+FMViewUILayerPictureTemplate += '<% if (isAdmin) { %>';   // if admin
 FMViewUILayerPictureTemplate +=         '<button type="button" data-toggle="collapse" data-target="#picture-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Picture</button>';
-FMViewUILayerPictureTemplate +=         '<div class="collapse" id="picture-add-panel">';
+FMViewUILayerPictureTemplate += '<div class="collapse" id="picture-add-panel">';
+FMViewUILayerPictureTemplate += '<% } %>';
 FMViewUILayerPictureTemplate +=         '</div>';
 FMViewUILayerPictureTemplate += '</div>';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,26 +354,36 @@ FMMenuTemplate += '';
 FMMenuTemplate += '<div class="ui-body">';
 FMMenuTemplate += '<form class="form-horizontal">';
 
+FMMenuTemplate += '<% if (!isAdmin) { %>';   // if non-admin
+
 FMMenuTemplate += '<div class="form-group">';
-FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Username</label>';
+FMMenuTemplate += '<label for="input-menu-login-username" class="col-xs-3 control-label">Username</label>';
 FMMenuTemplate += '<div class="col-xs-9">';
-FMMenuTemplate += '<input type="text" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '<input type="text" class="form-control" placeholder="" id="input-menu-login-username" value="">';
 FMMenuTemplate += '</div>';
 FMMenuTemplate += '</div>';
 
 FMMenuTemplate += '<div class="form-group">';
-FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Password</label>';
+FMMenuTemplate += '<label for="input-menu-login-password" class="col-xs-3 control-label">Password</label>';
 FMMenuTemplate += '<div class="col-xs-9">';
-FMMenuTemplate += '<input type="password" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '<input type="password" class="form-control" placeholder="" id="input-menu-login-password" value="">';
 FMMenuTemplate += '</div>';
 FMMenuTemplate += '</div>';
 
-FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-ok"></span> Sign In</button>';
+FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-in"></span> Sign In</button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 
-FMMenuTemplate += '<hr>';
+FMMenuTemplate += '<% } else { %>';   // if admin
 
+FMMenuTemplate += '<button id="btn-menu-logout" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-out"></span> Log Out from <strong><%= username %></strong></button>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '</form>';
+
+FMMenuTemplate += '<% } %>';   // if admin
+
+FMMenuTemplate += '<hr>';
+FMMenuTemplate += '<% if (isAdmin) { %>';   // if admin
 FMMenuTemplate += '<form class="form-horizontal">';
 FMMenuTemplate += '<div class="form-group">';
 FMMenuTemplate += '<label for="input-menu-qrcode" class="col-xs-3 control-label">QRCode</label>';
@@ -370,7 +400,7 @@ FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus-sign"></span> Create New Item</button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
-
+FMMenuTemplate += '<% } %>';
 
 FMMenuTemplate += '</div>';
 

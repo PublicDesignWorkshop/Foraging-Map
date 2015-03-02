@@ -58,118 +58,133 @@
     }
     
     function update() {
-        $sql = "UPDATE `fm_item` SET `name` = :name, `desc` = :desc, `serial` = :serial, `type` = :type, `sort` = :sort, `amount` = :amount, `lat` = :lat, `lng` = :lng, `update` = :update  WHERE (`id` = :id)";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "id" => $data->{'id'},
-            "name" => $data->{'name'},
-            "desc" => $data->{'desc'},
-            "serial" => $data->{'serial'},
-            "type" => $data->{'type'},
-            "sort" => $data->{'sort'},
-            "amount" => $data->{'amount'},
-            "lat" => $data->{'lat'},
-            "lng" => $data->{'lng'},
-            "update" => date("Y-m-d H:i:s"),
-        );
-        
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            
-            $sql = "SELECT * FROM `fm_item` WHERE `id` = :id";
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "UPDATE `fm_item` SET `name` = :name, `desc` = :desc, `serial` = :serial, `type` = :type, `sort` = :sort, `amount` = :amount, `lat` = :lat, `lng` = :lng, `update` = :update  WHERE (`id` = :id)";
+            $data = json_decode(file_get_contents('php://input'));
             $params = array(
-                    "id" => $data->{'id'},
+                "id" => $data->{'id'},
+                "name" => $data->{'name'},
+                "desc" => $data->{'desc'},
+                "serial" => $data->{'serial'},
+                "type" => $data->{'type'},
+                "sort" => $data->{'sort'},
+                "amount" => $data->{'amount'},
+                "lat" => $data->{'lat'},
+                "lng" => $data->{'lng'},
+                "update" => date("Y-m-d H:i:s"),
             );
-            
+        
             try {
+                $pdo = getConnection();
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+            
+                $sql = "SELECT * FROM `fm_item` WHERE `id` = :id";
+                $params = array(
+                        "id" => $data->{'id'},
+                );
+            
+                try {
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute($params);
+                        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                        $pdo = null;
+                        echo json_encode($result);
+                } catch(PDOException $e) {
+                        echo '{"error":{"text":'. $e->getMessage() .'}}';
+                }
+            } catch(PDOException $e) {
+                $pos = strpos($e->getMessage(), "Duplicate");
+                if ($pos !== false) {
+                    $sql = "SELECT * FROM `fm_item` WHERE `serial` = :serial";
+                    $params = array(
+                        "serial" => $data->{'serial'},
+                    );
+                
+                    try {
+                        $result = "Duplicate:";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute($params);
+                        $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        foreach ($arr as $titleData) {
+                            $result.=$titleData['name'];
+                        }
+                        echo $result;
+                    } catch(PDOException $e) {
+                    
+                    }
+                }
+                //echo '{"error":{"text":'. $e->getMessage() .'}}';
+            }
+        } else {    // non-admin
+            echo 'not authorized';
+        }
+    }
+    
+    function create() {
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "INSERT INTO `fm_item` VALUES ( NULL, :name, :desc, :serial, :type, :sort, :amount, :lat, :lng, :regdate, :update )";
+            $data = json_decode(file_get_contents('php://input'));
+            $params = array(
+                "name" => $data->{'name'},
+                "desc" => $data->{'desc'},
+                "serial" => $data->{'serial'},
+                "type" => $data->{'type'},
+                "sort" => $data->{'sort'},
+                "amount" => $data->{'amount'},
+                "lat" => $data->{'lat'},
+                "lng" => $data->{'lng'},
+                "regdate" => date("Y-m-d H:i:s"),
+                "update" => date("Y-m-d H:i:s"),
+            );
+        
+            try {
+                $pdo = getConnection();
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+            
+                $sql = "SELECT * FROM `fm_item` WHERE `id` = :id";
+                $params = array(
+                    "id" => $pdo->lastInsertId(),
+                );
+                try {
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute($params);
                     $result = $stmt->fetchAll(PDO::FETCH_OBJ);
                     $pdo = null;
                     echo json_encode($result);
-            } catch(PDOException $e) {
-                    echo '{"error":{"text":'. $e->getMessage() .'}}';
-            }
-        } catch(PDOException $e) {
-            $pos = strpos($e->getMessage(), "Duplicate");
-            if ($pos !== false) {
-                $sql = "SELECT * FROM `fm_item` WHERE `serial` = :serial";
-                $params = array(
-                    "serial" => $data->{'serial'},
-                );
-                
-                try {
-                    $result = "Duplicate:";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute($params);
-                    $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    foreach ($arr as $titleData) {
-                        $result.=$titleData['name'];
-                    }
-                    echo $result;
                 } catch(PDOException $e) {
-                    
+                    echo '{"error":{"text":'. $e->getMessage() .'}}';
                 }
+            } catch(PDOException $e) {
+                echo '{"error":{"text":'. $e->getMessage() .'}}';
             }
-            //echo '{"error":{"text":'. $e->getMessage() .'}}';
+        } else {    // non-admin
+            echo 'not authorized';
         }
     }
     
-    function create() {
-        $sql = "INSERT INTO `fm_item` VALUES ( NULL, :name, :desc, :serial, :type, :sort, :amount, :lat, :lng, :regdate, :update )";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "name" => $data->{'name'},
-            "desc" => $data->{'desc'},
-            "serial" => $data->{'serial'},
-            "type" => $data->{'type'},
-            "sort" => $data->{'sort'},
-            "amount" => $data->{'amount'},
-            "lat" => $data->{'lat'},
-            "lng" => $data->{'lng'},
-            "regdate" => date("Y-m-d H:i:s"),
-            "update" => date("Y-m-d H:i:s"),
-        );
-        
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            
-            $sql = "SELECT * FROM `fm_item` WHERE `id` = :id";
+    function delete() {
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "DELETE FROM `fm_item` WHERE `id` = :id";
+            $data = json_decode(file_get_contents('php://input'));
             $params = array(
-                "id" => $pdo->lastInsertId(),
+                "id" => $data->{'id'},
             );
             try {
+                $pdo = getConnection();
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute($params);
-                $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                $result = $stmt->execute($params);
                 $pdo = null;
                 echo json_encode($result);
             } catch(PDOException $e) {
                 echo '{"error":{"text":'. $e->getMessage() .'}}';
             }
-        } catch(PDOException $e) {
-            echo '{"error":{"text":'. $e->getMessage() .'}}';
-        }
-    }
-    
-    function delete() {
-        $sql = "DELETE FROM `fm_item` WHERE `id` = :id";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "id" => $data->{'id'},
-        );
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $result = $stmt->execute($params);
-            $pdo = null;
-            echo json_encode($result);
-        } catch(PDOException $e) {
-            echo '{"error":{"text":'. $e->getMessage() .'}}';
+        } else {    // non-admin
+            echo 'not authorized';
         }
     }
     

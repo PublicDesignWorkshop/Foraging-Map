@@ -21,5 +21,11 @@ module ForagingMap {
             FMV.getMapView().renderMap(lat, lng, zoom);
             FMV.getSliderView().renderSlider(interval, start, end, cur);
         }
+        refresh() {
+            console.log("refresh");
+            window.location.reload();
+            //FMC.getRouter().navigate('map/' + FMV.getMapView().getMap().getZoom() + "/" + FMV.getMapView().getMap().getCenter().lat + "/" + FMV.getMapView().getMap().getCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+            //    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+        }
     }
 }

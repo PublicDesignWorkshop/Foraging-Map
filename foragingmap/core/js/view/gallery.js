@@ -16,6 +16,7 @@ var ForagingMap;
         }
         GalleryView.prototype.render = function () {
             var that = this;
+            $("#leaflet-view-galleria").css({ width: $("#fm-view-map").innerWidth(), height: $("#fm-view-map").innerHeight() + 1 });
             var template = _.template(FMViewGalleryTemplate);
             var data = {
                 "pictures": FMM.getPictures().models,

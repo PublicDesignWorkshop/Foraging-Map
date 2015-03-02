@@ -49657,13 +49657,35 @@ var ForagingMap;
     var Controller = (function () {
         function Controller() {
             this.router = new ForagingMap.Router();
+            this.user = new ForagingMap.User({ username: "Guest", name: "Guest", auth: 0 });
         }
         Controller.prototype.initialize = function () {
-            FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-            FMM = new ForagingMap.Model();
-            FMC.fetchIcons();
-            FMC.fetchLayers();
-            FMC.addKeyEventListener();
+            FMC.getUser().fetch({
+                remove: false,
+                processData: true,
+                data: {
+                    logout: false,
+                },
+                success: function (model, response) {
+                    console.log(model);
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    FMM = new ForagingMap.Model();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error: function (error) {
+                    console.log("error");
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    FMM = new ForagingMap.Model();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+            });
+        };
+        Controller.prototype.getUser = function () {
+            return this.user;
         };
         Controller.prototype.getRouter = function () {
             return this.router;
@@ -49861,6 +49883,10 @@ var ForagingMap;
             console.log("we have loaded the map page with zoom: " + zoom + " | lat: " + lat + " | lng: " + lng);
             FMV.getMapView().renderMap(lat, lng, zoom);
             FMV.getSliderView().renderSlider(interval, start, end, cur);
+        };
+        Router.prototype.refresh = function () {
+            console.log("refresh");
+            window.location.reload();
         };
         return Router;
     })(Backbone.Router);
@@ -50364,31 +50390,33 @@ FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-name" class="col-xs-3 control-label">Name</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '<% } %>';
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
-FMUIInfoLayerTemplate += '<select id="item-info-type" class="selectpicker">';
+FMUIInfoLayerTemplate += '<select id="item-info-type" class="selectpicker" <% if (!isAdmin) { %>disabled<% } %>>';
 FMUIInfoLayerTemplate += '<optgroup label="Fruit">';
 FMUIInfoLayerTemplate += '<% _.each(sort1, function (sort) { %>';
 FMUIInfoLayerTemplate += '<option data-type="1" data-sort="<%= sort.get("id") %>"><%= sort.get("name") %></option>';
@@ -50401,7 +50429,7 @@ FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-amount" class="col-xs-3 control-label">Amount</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<div class="input-group">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-amount" value="<%= amount %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-amount" value="<%= amount %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '<span class="input-group-addon">s</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
@@ -50410,7 +50438,7 @@ FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-lat" class="col-xs-3 control-label">Latitude</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<div class="input-group">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-lat" value="<%= lat %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-lat" value="<%= lat %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
@@ -50419,7 +50447,7 @@ FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-lng" class="col-xs-3 control-label">Longitude</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<div class="input-group">';
-FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-lng" value="<%= lng %>">';
+FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-lng" value="<%= lng %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
@@ -50436,11 +50464,13 @@ FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-reg" value="<%= regdate %>" readonly>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';
 FMUIInfoLayerTemplate += '<button id="item-info-btn-edit" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-ok"></span> Save</button>';
 FMUIInfoLayerTemplate += '<button id="item-info-btn-delete" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-remove"></span> Delete</button>';
 FMUIInfoLayerTemplate += '<div style="clear:both;"/>';
 FMUIInfoLayerTemplate += '</form>';
 FMUIInfoLayerTemplate += '</div>';
+FMUIInfoLayerTemplate += '<% } %>';
 var FMUIAddLayerTemplate = '';
 FMUIAddLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMUIAddLayerTemplate += '<div class="ui-body">';
@@ -50519,15 +50549,19 @@ FMUIAddLayerTemplate += '</div>';
 var FMViewUIDataLayerTemplate = '';
 FMViewUIDataLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUIDataLayerTemplate += '<div class="ui-body">';
+FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>';
 FMViewUIDataLayerTemplate += '<button type="button" data-toggle="collapse" data-target="#date-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Data</button>';
 FMViewUIDataLayerTemplate += '<div class="collapse" id="date-add-panel">';
+FMViewUIDataLayerTemplate += '<% } %>';
 FMViewUIDataLayerTemplate += '</div>';
 FMViewUIDataLayerTemplate += '</div>';
 var FMViewUIThresholdLayerTemplate = '';
 FMViewUIThresholdLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUIThresholdLayerTemplate += '<div class="ui-body">';
+FMViewUIThresholdLayerTemplate += '<% if (isAdmin) { %>';
 FMViewUIThresholdLayerTemplate += '<button type="button" data-toggle="collapse" data-target="#threshold-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Threshold</button>';
 FMViewUIThresholdLayerTemplate += '<div class="collapse" id="threshold-add-panel">';
+FMViewUIThresholdLayerTemplate += '<% } %>';
 FMViewUIThresholdLayerTemplate += '</div>';
 FMViewUIThresholdLayerTemplate += '</div>';
 var FMViewUIDataLayerDeleteTemplate = '';
@@ -50537,8 +50571,10 @@ FMViewUIDataLayerAddTemplate = '<button type="button" class="btn btn-default btn
 var FMViewUILayerPictureTemplate = '';
 FMViewUILayerPictureTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUILayerPictureTemplate += '<div class="ui-body ui-picture">';
+FMViewUILayerPictureTemplate += '<% if (isAdmin) { %>';
 FMViewUILayerPictureTemplate += '<button type="button" data-toggle="collapse" data-target="#picture-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Picture</button>';
 FMViewUILayerPictureTemplate += '<div class="collapse" id="picture-add-panel">';
+FMViewUILayerPictureTemplate += '<% } %>';
 FMViewUILayerPictureTemplate += '</div>';
 FMViewUILayerPictureTemplate += '</div>';
 var FMViewUIPictureTemplate = '';
@@ -50577,22 +50613,29 @@ var FMMenuTemplate = '';
 FMMenuTemplate += '';
 FMMenuTemplate += '<div class="ui-body">';
 FMMenuTemplate += '<form class="form-horizontal">';
+FMMenuTemplate += '<% if (!isAdmin) { %>';
 FMMenuTemplate += '<div class="form-group">';
-FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Username</label>';
+FMMenuTemplate += '<label for="input-menu-login-username" class="col-xs-3 control-label">Username</label>';
 FMMenuTemplate += '<div class="col-xs-9">';
-FMMenuTemplate += '<input type="text" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '<input type="text" class="form-control" placeholder="" id="input-menu-login-username" value="">';
 FMMenuTemplate += '</div>';
 FMMenuTemplate += '</div>';
 FMMenuTemplate += '<div class="form-group">';
-FMMenuTemplate += '<label for="input-menu-login" class="col-xs-3 control-label">Password</label>';
+FMMenuTemplate += '<label for="input-menu-login-password" class="col-xs-3 control-label">Password</label>';
 FMMenuTemplate += '<div class="col-xs-9">';
-FMMenuTemplate += '<input type="password" class="form-control" placeholder="" id="input-menu-login" value="">';
+FMMenuTemplate += '<input type="password" class="form-control" placeholder="" id="input-menu-login-password" value="">';
 FMMenuTemplate += '</div>';
 FMMenuTemplate += '</div>';
-FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-ok"></span> Sign In</button>';
+FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-in"></span> Sign In</button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
+FMMenuTemplate += '<% } else { %>';
+FMMenuTemplate += '<button id="btn-menu-logout" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-out"></span> Log Out from <strong><%= username %></strong></button>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '</form>';
+FMMenuTemplate += '<% } %>';
 FMMenuTemplate += '<hr>';
+FMMenuTemplate += '<% if (isAdmin) { %>';
 FMMenuTemplate += '<form class="form-horizontal">';
 FMMenuTemplate += '<div class="form-group">';
 FMMenuTemplate += '<label for="input-menu-qrcode" class="col-xs-3 control-label">QRCode</label>';
@@ -50607,6 +50650,7 @@ FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus-sign"></span> Create New Item</button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
+FMMenuTemplate += '<% } %>';
 FMMenuTemplate += '</div>';
 var FMViewMenuSetSerialTemplate = '';
 FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';
@@ -50825,7 +50869,9 @@ var ForagingMap;
         MapControlView.prototype.render = function () {
             var that = this;
             var template = _.template(FMMapControlViewTemplate);
-            var data = {};
+            var data = {
+                isAdmin: FMC.getUser().getIsAdmin(),
+            };
             that.$el.html(template(data));
             that.removeEventListener();
             that.addEventListener();
@@ -51010,7 +51056,9 @@ FMMapControlViewTemplate += '<div class="control-button info"></div>';
 FMMapControlViewTemplate += '<div class="control-button data"></div>';
 FMMapControlViewTemplate += '<div class="control-button threshold"></div>';
 FMMapControlViewTemplate += '<div class="control-button picture"></div>';
+FMMapControlViewTemplate += '<% if (isAdmin) { %>';
 FMMapControlViewTemplate += '<div class="control-button add"></div>';
+FMMapControlViewTemplate += '<% } %>';
 FMMapControlViewTemplate += '</div>';
 
 ///#source 1 1 /core/js/view/ui.js
@@ -51151,6 +51199,7 @@ var ForagingMap;
                 "regdate": FMC.getSelectedItem().get("regdate"),
                 "update": FMC.getSelectedItem().get("update"),
                 "sort1": FMM.getLayers().where({ type: 1 }),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
             that.$('#item-info-type').selectpicker();
@@ -51382,52 +51431,82 @@ var ForagingMap;
             var template = _.template(FMViewUIDataLayerTemplate);
             var data = {
                 "header": FML.getViewUIDataHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
-            var gridData = new Backgrid.Grid({
-                columns: dataColumn,
-                collection: new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
-            var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            bend.setIsSavable(false);
-            var bends = new ForagingMap.Bends();
-            bends.add(bend);
-            var gridAddData = new Backgrid.Grid({
-                columns: dataAddColumn,
-                collection: bends,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            that.$("#date-add-panel").append(gridAddData.render().el);
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn,
+                    collection: new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn2,
+                    collection: new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
+            if (FMC.getUser().getIsAdmin()) {
+                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                bend.setIsSavable(false);
+                var bends = new ForagingMap.Bends();
+                bends.add(bend);
+                var gridAddData = new Backgrid.Grid({
+                    columns: dataAddColumn,
+                    collection: bends,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                that.$("#date-add-panel").append(gridAddData.render().el);
+            }
         };
         UIView.prototype.renderUIThreshold = function () {
             var that = this;
             var template = _.template(FMViewUIThresholdLayerTemplate);
             var data = {
                 "header": FML.getViewUIThresholdHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
-            var gridData = new Backgrid.Grid({
-                columns: thresholdColumn,
-                collection: new ForagingMap.Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
-            var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            threshold.setIsSavable(false);
-            var thresholds = new ForagingMap.Thresholds();
-            thresholds.add(threshold);
-            var gridAddData = new Backgrid.Grid({
-                columns: thresholdAddColumn,
-                collection: thresholds,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            that.$("#threshold-add-panel").append(gridAddData.render().el);
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: thresholdColumn,
+                    collection: new ForagingMap.Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: thresholdColumn2,
+                    collection: new ForagingMap.Bends(FMM.getThresholds().where({ pid: FMC.getSelectedItem().id })),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+            }
+            if (FMC.getUser().getIsAdmin()) {
+                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                threshold.setIsSavable(false);
+                var thresholds = new ForagingMap.Thresholds();
+                thresholds.add(threshold);
+                var gridAddData = new Backgrid.Grid({
+                    columns: thresholdAddColumn,
+                    collection: thresholds,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                that.$("#threshold-add-panel").append(gridAddData.render().el);
+            }
         };
         UIView.prototype.renderUIPicture = function () {
             FMC.fetchPictures(parseInt(FMC.getSelectedItem().get('id')));
@@ -51435,29 +51514,47 @@ var ForagingMap;
             var template = _.template(FMViewUILayerPictureTemplate);
             var data = {
                 "header": FML.getViewUIPictureHeader(),
+                isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
-            var gridData = new Backgrid.Grid({
-                columns: pictureColumn,
-                collection: FMM.getPictures(),
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            gridData.render();
-            gridData.sort("date", "descending");
-            that.$(".ui-body").append(gridData.el);
-            setTimeout(function () {
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn,
+                    collection: FMM.getPictures(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
                 gridData.sort("date", "descending");
-            }, 3000);
-            var picture = new ForagingMap.Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            picture.setIsSavable(false);
-            var pictures = new ForagingMap.Pictures();
-            pictures.add(picture);
-            var gridAddData = new Backgrid.Grid({
-                columns: pictureAddColumn,
-                collection: pictures,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-            that.$("#picture-add-panel").append(gridAddData.render().el);
+                that.$(".ui-body").append(gridData.el);
+                setTimeout(function () {
+                    gridData.sort("date", "descending");
+                }, 3000);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn2,
+                    collection: FMM.getPictures(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body").append(gridData.el);
+                setTimeout(function () {
+                    gridData.sort("date", "descending");
+                }, 3000);
+            }
+            if (FMC.getUser().getIsAdmin()) {
+                var picture = new ForagingMap.Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                picture.setIsSavable(false);
+                var pictures = new ForagingMap.Pictures();
+                pictures.add(picture);
+                var gridAddData = new Backgrid.Grid({
+                    columns: pictureAddColumn,
+                    collection: pictures,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                that.$("#picture-add-panel").append(gridAddData.render().el);
+            }
         };
         UIView.prototype.renderUILayer = function () {
             var that = this;
@@ -51657,6 +51754,7 @@ var ForagingMap;
         }
         GalleryView.prototype.render = function () {
             var that = this;
+            $("#leaflet-view-galleria").css({ width: $("#fm-view-map").innerWidth(), height: $("#fm-view-map").innerHeight() + 1 });
             var template = _.template(FMViewGalleryTemplate);
             var data = {
                 "pictures": FMM.getPictures().models,
@@ -51880,6 +51978,9 @@ var ForagingMap;
             that.circleGroups.push(markerGroup);
         };
         MarkersView.prototype.updateMarker = function (item) {
+            if (!FMC.getUser().getIsAdmin()) {
+                item.marker.dragging.disable();
+            }
             item.marker.setPopupContent(item.get("name"));
             var latlng = new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng")));
             item.marker.setLatLng(latlng);
@@ -52003,7 +52104,9 @@ var ForagingMap;
                             that.markerGroups[i].bringToFront();
                             that.circleGroups[i].bringToFront();
                             FMV.getMapView().SetIsMapPanZoomAvailable(true);
-                            item.marker.dragging.enable();
+                            if (FMC.getUser().getIsAdmin()) {
+                                item.marker.dragging.enable();
+                            }
                         });
                     }
                     else {
@@ -52120,7 +52223,7 @@ var ForagingMap;
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
                 max: moment(that.endDate).valueOf(),
-                value: moment(new Date()).valueOf(),
+                value: moment(that.curDate).valueOf(),
                 step: that.timeInterval * 1000,
             });
             $("#date-slider", that.$el).bind('slide', function (event, ui) {
@@ -52358,6 +52461,30 @@ var pictureColumn = [
 	}
 ];
 
+var pictureColumn2 = [
+	{
+	    name: "url",
+	    label: "Picture",
+	    editable: false,
+	    cell: PictureCell,
+	}, {
+	    name: "name",
+	    label: "Name",
+	    editable: false,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "date",
+	    label: "Date",
+	    editable: false,
+	    cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+	}, {
+	    label: "option",
+	    sortable: false,
+	    editable: false,
+	    cell: "",
+	}
+];
+
 
 var PictureSelectCell = Backgrid.Cell.extend({
     template: _.template(FMUIPictureSelectTemplate),
@@ -52442,6 +52569,32 @@ var dataColumn = [
     }
 ];
 
+var dataColumn2 = [
+    {
+        name: "value",
+        label: "Value (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "date",
+        label: "Date",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        name: "update",
+        label: "Updated",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        label: "option",
+        sortable: false,
+        editable: false,
+        cell: "string",
+    }
+];
+
+
+
 var dataAddColumn = [
     {
         name: "value",
@@ -52492,6 +52645,35 @@ var thresholdColumn = [
         sortable: false,
         editable: false,
         cell: DeleteCell,
+    }
+];
+
+var thresholdColumn2 = [
+    {
+        name: "min",
+        label: "Min (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "max",
+        label: "Max (°)",
+        editable: false,
+        cell: "number" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
+    }, {
+        name: "date",
+        label: "Date",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        name: "update",
+        label: "Updated",
+        editable: false,
+        cell: Backgrid.Cell.extend({ editor: DatePickerCellEditor }),
+    }, {
+        label: "option",
+        sortable: false,
+        editable: false,
+        cell: "string",
     }
 ];
 
@@ -52767,7 +52949,10 @@ var ForagingMap;
         MenuView.prototype.render = function () {
             var that = this;
             var template = _.template(FMMenuTemplate);
-            var data = {};
+            var data = {
+                username: FMC.getUser().get("username"),
+                isAdmin: FMC.getUser().getIsAdmin(),
+            };
             that.$el.html(template(data));
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
@@ -52795,6 +52980,44 @@ var ForagingMap;
                     }, 500);
                     that.hide();
                 }
+            });
+            that.$('#btn-menu-login').off('click');
+            that.$('#btn-menu-login').on('click', function () {
+                FMC.getUser().fetch({
+                    remove: false,
+                    processData: true,
+                    data: {
+                        username: that.$('#input-menu-login-username').val(),
+                        password: that.$('#input-menu-login-password').val(),
+                    },
+                    success: function (model, response) {
+                        if (model.get('auth') == 0) {
+                            FMV.getMsgView().renderError("Failed to log in.");
+                        }
+                        else {
+                            FMC.getRouter().refresh();
+                        }
+                    },
+                    error: function (error) {
+                        FMV.getMsgView().renderError("Failed to log in.");
+                    },
+                });
+            });
+            that.$('#btn-menu-logout').off('click');
+            that.$('#btn-menu-logout').on('click', function () {
+                FMC.getUser().fetch({
+                    remove: false,
+                    processData: true,
+                    data: {
+                        logout: true,
+                    },
+                    success: function (model, response) {
+                        FMC.getRouter().refresh();
+                    },
+                    error: function (error) {
+                        FMC.getRouter().refresh();
+                    },
+                });
             });
         };
         MenuView.prototype.createNewItem = function (position) {
@@ -53498,5 +53721,51 @@ var ForagingMap;
         return Icons;
     })(Backbone.Collection);
     ForagingMap.Icons = Icons;
+})(ForagingMap || (ForagingMap = {}));
+
+///#source 1 1 /core/js/model/user.js
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ForagingMap;
+(function (ForagingMap) {
+    var User = (function (_super) {
+        __extends(User, _super);
+        function User(attributes, options) {
+            _super.call(this, attributes, options);
+            this.isRemoved = false;
+            this.url = "core/php/user.php";
+            this.defaults = {
+                "username": "",
+                "name": "",
+                "auth": 0,
+            };
+        }
+        User.prototype.parse = function (response, options) {
+            if (response.id != null) {
+                response.id = parseInt(response.id);
+            }
+            response.auth = parseInt(response.auth);
+            return _super.prototype.parse.call(this, response, options);
+        };
+        User.prototype.toJSON = function (options) {
+            var clone = this.clone().attributes;
+            if (this.id != null) {
+                clone["id"] = this.id;
+            }
+            return clone;
+        };
+        User.prototype.getIsAdmin = function () {
+            if (this.get("auth") == 1) {
+                return true;
+            }
+            return false;
+        };
+        return User;
+    })(Backbone.Model);
+    ForagingMap.User = User;
 })(ForagingMap || (ForagingMap = {}));
 

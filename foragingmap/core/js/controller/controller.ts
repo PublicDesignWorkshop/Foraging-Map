@@ -7,19 +7,45 @@ module ForagingMap {
     export class Controller {
         private router: ForagingMap.Router;
         private selectedItem: Item;
+        private user: User;
         constructor() {
             // intialize router
             this.router = new ForagingMap.Router();
+            this.user = new User({ username: "Guest", name: "Guest", auth: 0 });
         }
         initialize(): void {
-            // intialize view
-            FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-            // intialize model
-            FMM = new ForagingMap.Model();
-            // fetch layer info
-            FMC.fetchIcons();
-            FMC.fetchLayers();
-            FMC.addKeyEventListener();
+            FMC.getUser().fetch({
+                remove: false,	// if remove == false, it only adds new items, not removing old items.
+                processData: true,
+                data: {
+                    logout: false,
+                },
+                success: function (model: Item, response: any) {
+                    console.log(model);
+                    // intialize view
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    // intialize model
+                    FMM = new ForagingMap.Model();
+                    // fetch layer info
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error: function (error) {
+                    console.log("error");
+                    // intialize view
+                    FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    // intialize model
+                    FMM = new ForagingMap.Model();
+                    // fetch layer info
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+            });
+        }
+        getUser(): User {
+            return this.user;
         }
         getRouter(): ForagingMap.Router {
             return this.router;

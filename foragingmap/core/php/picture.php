@@ -58,89 +58,104 @@
     }
     
     function update() {
-        $sql = "UPDATE `fm_picture` SET `pid` = :pid, `name` = :name, `url` = :url, `date` = :date, `update` = :update  WHERE (`id` = :id)";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "id" => $data->{'id'},
-            "pid" => $data->{'pid'},
-            "name" => $data->{'name'},
-            "url" => $data->{'url'},
-            "date" => $data->{'date'},
-            "update" => date("Y-m-d H:i:s"),
-        );
-        
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            
-            $sql = "SELECT * FROM `fm_picture` WHERE (`id` = :id)";
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "UPDATE `fm_picture` SET `pid` = :pid, `name` = :name, `url` = :url, `date` = :date, `update` = :update  WHERE (`id` = :id)";
+            $data = json_decode(file_get_contents('php://input'));
             $params = array(
                 "id" => $data->{'id'},
+                "pid" => $data->{'pid'},
+                "name" => $data->{'name'},
+                "url" => $data->{'url'},
+                "date" => $data->{'date'},
+                "update" => date("Y-m-d H:i:s"),
             );
-            
+        
             try {
+                $pdo = getConnection();
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute($params);
-                $result = $stmt->fetchAll(PDO::FETCH_OBJ);
-                $pdo = null;
-                echo json_encode($result);
+            
+                $sql = "SELECT * FROM `fm_picture` WHERE (`id` = :id)";
+                $params = array(
+                    "id" => $data->{'id'},
+                );
+            
+                try {
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute($params);
+                    $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    $pdo = null;
+                    echo json_encode($result);
+                } catch(PDOException $e) {
+                    echo '{"error":{"text":'. $e->getMessage() .'}}';
+                }
             } catch(PDOException $e) {
                 echo '{"error":{"text":'. $e->getMessage() .'}}';
             }
-        } catch(PDOException $e) {
-            echo '{"error":{"text":'. $e->getMessage() .'}}';
+        } else {    // non-admin
+            echo 'not authorized';
         }
     }
     
     function delete() {
-        $sql = "DELETE FROM `fm_picture` WHERE `id` = :id";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "id" => $data->{'id'},
-        );
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $result = $stmt->execute($params);
-            $pdo = null;
-            echo json_encode($result);
-        } catch(PDOException $e) {
-            echo '{"error":{"text":'. $e->getMessage() .'}}';
-        }
-    }
-    
-    function create() {
-        $sql = "INSERT INTO `fm_picture` VALUES ( NULL, :pid, :name, :url, :date, :update )";
-        $data = json_decode(file_get_contents('php://input'));
-        $params = array(
-            "pid" => $data->{'pid'},
-            "name" => $data->{'name'},
-            "url" => $data->{'url'},
-            "date" => $data->{'date'},
-            "update" => date("Y-m-d H:i:s"),
-        );
-        
-        try {
-            $pdo = getConnection();
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            
-            $sql = "SELECT * FROM `fm_picture` WHERE `id` = :id";
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "DELETE FROM `fm_picture` WHERE `id` = :id";
+            $data = json_decode(file_get_contents('php://input'));
             $params = array(
-                "id" => $pdo->lastInsertId(),
+                "id" => $data->{'id'},
             );
             try {
+                $pdo = getConnection();
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute($params);
-                $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                $result = $stmt->execute($params);
                 $pdo = null;
                 echo json_encode($result);
             } catch(PDOException $e) {
                 echo '{"error":{"text":'. $e->getMessage() .'}}';
             }
-        } catch(PDOException $e) {
-            echo '{"error":{"text":'. $e->getMessage() .'}}';
+        } else {    // non-admin
+            echo 'not authorized';
+        }
+    }
+    
+    function create() {
+        session_start();
+        if ($_SESSION['user_auth'] == 1) {    // admin
+            $sql = "INSERT INTO `fm_picture` VALUES ( NULL, :pid, :name, :url, :date, :update )";
+            $data = json_decode(file_get_contents('php://input'));
+            $params = array(
+                "pid" => $data->{'pid'},
+                "name" => $data->{'name'},
+                "url" => $data->{'url'},
+                "date" => $data->{'date'},
+                "update" => date("Y-m-d H:i:s"),
+            );
+        
+            try {
+                $pdo = getConnection();
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+            
+                $sql = "SELECT * FROM `fm_picture` WHERE `id` = :id";
+                $params = array(
+                    "id" => $pdo->lastInsertId(),
+                );
+                try {
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute($params);
+                    $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    $pdo = null;
+                    echo json_encode($result);
+                } catch(PDOException $e) {
+                    echo '{"error":{"text":'. $e->getMessage() .'}}';
+                }
+            } catch(PDOException $e) {
+                echo '{"error":{"text":'. $e->getMessage() .'}}';
+            }
+        } else {    // non-admin
+            echo 'not authorized';
         }
     }
 ?>

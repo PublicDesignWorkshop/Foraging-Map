@@ -77,7 +77,7 @@ module ForagingMap {
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
                 max: moment(that.endDate).valueOf(),
-                value: moment(new Date()).valueOf(),
+                value: moment(that.curDate).valueOf(),
                 step: that.timeInterval * 1000,
             });
 

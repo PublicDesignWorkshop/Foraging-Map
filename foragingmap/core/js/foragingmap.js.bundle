@@ -79,6 +79,7 @@
     <file>/core/js/model/picture.js</file>
     <file>/core/js/model/threshold.js</file>
     <file>/core/js/model/layer.js</file>
+    <file>/core/js/model/user.js</file>
 
 
     

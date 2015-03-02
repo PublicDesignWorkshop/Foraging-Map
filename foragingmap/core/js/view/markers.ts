@@ -195,6 +195,9 @@ module ForagingMap {
             that.circleGroups.push(markerGroup);
         }
         updateMarker(item: Item) {
+            if (!FMC.getUser().getIsAdmin()) {
+                item.marker.dragging.disable();
+            }
             item.marker.setPopupContent(item.get("name"));
             var latlng = new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng")));
             item.marker.setLatLng(latlng);
@@ -326,7 +329,9 @@ module ForagingMap {
                                 that.markerGroups[i].bringToFront();
                                 that.circleGroups[i].bringToFront();
                                 FMV.getMapView().SetIsMapPanZoomAvailable(true);
-                                item.marker.dragging.enable();
+                                if (FMC.getUser().getIsAdmin()) {
+                                    item.marker.dragging.enable();
+                                }
                                 /*
                                 // double click for focus event
                                 item.marker.off("dblclick");

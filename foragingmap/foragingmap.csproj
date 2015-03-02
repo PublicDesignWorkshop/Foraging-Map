@@ -215,6 +215,7 @@
     <TypeScriptCompile Include="core\js\controller\router.ts" />
     <TypeScriptCompile Include="core\js\model\picture.ts" />
     <TypeScriptCompile Include="core\js\model\threshold.ts" />
+    <TypeScriptCompile Include="core\js\model\user.ts" />
     <TypeScriptCompile Include="core\js\view\gallery.ts" />
     <TypeScriptCompile Include="core\js\view\map.ts" />
     <TypeScriptCompile Include="core\js\view\mapcontrol.ts" />
@@ -264,6 +265,7 @@
     <Content Include="psd\favicon.psd" />
     <Content Include="psd\marker-icon.psd" />
     <Content Include="favicons\manifest.json" />
+    <Content Include="core\php\user.php" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
