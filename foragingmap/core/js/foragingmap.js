@@ -50783,7 +50783,7 @@ var ForagingMap;
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();

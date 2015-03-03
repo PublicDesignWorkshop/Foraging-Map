@@ -2,7 +2,7 @@
     "setting": {
         "defaultZoom": 13,
         "locateZoom": 16,
-        "maxZoom": 17,
+        "maxZoom": 18,
         "defaultLat": 33.7689,
         "defaultLng": -84.3893,
         "tileMapAddress": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
