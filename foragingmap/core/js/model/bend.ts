@@ -32,6 +32,7 @@ module ForagingMap {
                         success: function (model: Bend, response: any) {
                             model.isSavable = true;
                             FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
+                            FMV.getUIView().drawChart();
                         },
                         error: function (error) {
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -88,6 +89,22 @@ module ForagingMap {
                 });
                 return result;
             }
+        }
+        getLabels(): string[]{
+            var that: Bends = this;
+            var result = [];
+            $.each(that.models, function (index: number, model: Bend) {
+                result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+            });
+            return result;
+        }
+        getValues(): number[] {
+            var that: Bends = this;
+            var result = [];
+            $.each(that.models, function (index: number, model: Bend) {
+                result.push(model.get("value"));
+            });
+            return result;
         }
     }
 }

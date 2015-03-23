@@ -424,12 +424,51 @@ module ForagingMap {
             };
             that.$el.html(template(data));
 
+            var origData: Bends = new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            //var origLables: string[] = origData.getLabels();
+            //var origValues: number[] = origData.getValues();
+            //var dataLength = origData.models.length;
+
+            // draw chart
+            that.drawChart();
+            /*
+            console.log(that.$el.width());
+            if (dataLength <= 15) {
+                $("#bendChart").width(460);
+            } else {
+                $("#bendChart").width(30 * dataLength);
+            }
+            var canvas: any = document.getElementById("bendChart");
+            var ctx = canvas.getContext("2d");
+
+
+
+            Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
+
+            var chartData : any = {
+                labels: origLables,
+                datasets: [
+                    {
+                        label: FMC.getSelectedItem().get("name"),
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(151,187,205,1)",
+                        data: origValues
+                    },
+                ]
+            };
+
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false } );
+            */
 
             // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn,
-                    collection: new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    collection: origData,
                     emptyText: FML.getViewUIDataNoDataMsg(),
                 });
                 gridData.render();
@@ -438,7 +477,7 @@ module ForagingMap {
             } else {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn2,
-                    collection: new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    collection: origData,
                     emptyText: FML.getViewUIDataNoDataMsg(),
                 });
                 gridData.render();
@@ -711,6 +750,61 @@ module ForagingMap {
             });
             that.$(".ui-body #layer-add-grid").append(gridAddData.render().el);
         }
+
+        ////////////////////////
+        drawChart(): void {
+            var that: UIView = this;
+
+            var origData: Bends = new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+
+
+            var origLables: string[] = origData.getLabels();
+            var origValues: number[] = origData.getValues();
+            var dataLength = origData.models.length;
+
+            // draw chart
+            if (dataLength <= 15) {
+                $("#bendChart").width(460);
+            } else {
+                $("#bendChart").width(30 * dataLength);
+            }
+            var canvas: any = document.getElementById("bendChart");
+            var ctx = canvas.getContext("2d");
+
+
+
+            Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
+
+            var chartData: any = {
+                labels: origLables,
+                datasets: [
+                    /*
+                    {
+                        label: "My First dataset",
+                        fillColor: "rgba(220,220,220,0.2)",
+                        strokeColor: "rgba(220,220,220,1)",
+                        pointColor: "rgba(220,220,220,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(220,220,220,1)",
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    },
+                    */
+                    {
+                        label: FMC.getSelectedItem().get("name"),
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(151,187,205,1)",
+                        data: origValues
+                    },
+                ]
+            };
+
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false });
+        }
     }
 }
 
@@ -725,3 +819,5 @@ declare var thresholdColumn2;
 declare var thresholdAddColumn;
 declare var layerColumn;
 declare var layerAddColumn;
+
+declare var Chart;

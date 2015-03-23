@@ -315,7 +315,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
+                if (FMC.getSelectedItem().get("type") == ItemType.None) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -340,7 +340,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", 0 /* None */);
+                            FMC.getSelectedItem().set("type", ItemType.None);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -370,10 +370,12 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            that.drawChart();
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn,
-                    collection: new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    collection: origData,
                     emptyText: FML.getViewUIDataNoDataMsg(),
                 });
                 gridData.render();
@@ -383,7 +385,7 @@ var ForagingMap;
             else {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn2,
-                    collection: new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id })),
+                    collection: origData,
                     emptyText: FML.getViewUIDataNoDataMsg(),
                 });
                 gridData.render();
@@ -391,7 +393,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 bend.setIsSavable(false);
                 var bends = new ForagingMap.Bends();
                 bends.add(bend);
@@ -432,7 +434,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: 1 /* Normal */, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 threshold.setIsSavable(false);
                 var thresholds = new ForagingMap.Thresholds();
                 thresholds.add(threshold);
@@ -617,6 +619,38 @@ var ForagingMap;
                 emptyText: FML.getViewUIDataNoDataMsg(),
             });
             that.$(".ui-body #layer-add-grid").append(gridAddData.render().el);
+        };
+        UIView.prototype.drawChart = function () {
+            var that = this;
+            var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            var origLables = origData.getLabels();
+            var origValues = origData.getValues();
+            var dataLength = origData.models.length;
+            if (dataLength <= 15) {
+                $("#bendChart").width(460);
+            }
+            else {
+                $("#bendChart").width(30 * dataLength);
+            }
+            var canvas = document.getElementById("bendChart");
+            var ctx = canvas.getContext("2d");
+            Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
+            var chartData = {
+                labels: origLables,
+                datasets: [
+                    {
+                        label: FMC.getSelectedItem().get("name"),
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(151,187,205,1)",
+                        data: origValues
+                    },
+                ]
+            };
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false });
         };
         return UIView;
     })(Backbone.View);

@@ -11,6 +11,8 @@
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
 
+    <file>/core/lib/chart/Chart.js</file>
+
     <file>/core/lib/qrcode/grid.js</file>
     <file>/core/lib/qrcode/version.js</file>
     <file>/core/lib/qrcode/detector.js</file>
@@ -47,6 +49,8 @@
     <file>/core/lib/backgrid/backgrid.js</file>
     <file>/core/lib/backgrid-moment-cell/backgrid-moment-cell.js</file>
     <file>/core/lib/galleria/galleria-1.4.2.js</file>
+
+    
 
 
     

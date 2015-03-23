@@ -35,6 +35,9 @@
         getDateTimeFormat(): string {
             return this.data.dateTimeFormat;
         }
+        getDateTimeFormatSimple(): string {
+            return this.data.dateTimeFormatSimple;
+        }
         getImageDir(): string {
             return this.data.imageDir;
         }

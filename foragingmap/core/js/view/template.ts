@@ -254,6 +254,7 @@ var FMViewUIDataLayerTemplate = '';
 
 FMViewUIDataLayerTemplate +=      '<div class="ui-header"><%= header %></div>'
 FMViewUIDataLayerTemplate += '<div class="ui-body">';
+FMViewUIDataLayerTemplate += '<div id="bendWrapper" style="overflow-x: scroll; overflow-y: hidden;"><canvas id="bendChart" width= "460" height= "250"></canvas></div>';
 FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>';   // if admin
 FMViewUIDataLayerTemplate +=          '<button type="button" data-toggle="collapse" data-target="#date-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Data</button>';
 FMViewUIDataLayerTemplate += '<div class="collapse" id="date-add-panel">';

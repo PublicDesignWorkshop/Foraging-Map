@@ -8,6 +8,7 @@
         "tileMapAddress": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "msgTimeout": 3000,
         "dateTimeFormat": "YYYY-MM-DD HH:mm",
+        "dateTimeFormatSimple" : "MM-DD HH:mm",
         "imageDir": "core/image/",
         "pictureDir": "content/picture/",
         "imageMarkerBlank": "marker-blank.png",

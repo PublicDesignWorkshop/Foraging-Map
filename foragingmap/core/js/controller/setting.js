@@ -33,6 +33,9 @@ var ForagingMap;
         Setting.prototype.getDateTimeFormat = function () {
             return this.data.dateTimeFormat;
         };
+        Setting.prototype.getDateTimeFormatSimple = function () {
+            return this.data.dateTimeFormatSimple;
+        };
         Setting.prototype.getImageDir = function () {
             return this.data.imageDir;
         };

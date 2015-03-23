@@ -36,6 +36,7 @@ var ForagingMap;
                     success: function (model, response) {
                         model.isSavable = true;
                         FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
+                        FMV.getUIView().drawChart();
                     },
                     error: function (error) {
                         FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -95,6 +96,22 @@ var ForagingMap;
                 });
                 return result;
             }
+        };
+        Bends.prototype.getLabels = function () {
+            var that = this;
+            var result = [];
+            $.each(that.models, function (index, model) {
+                result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+            });
+            return result;
+        };
+        Bends.prototype.getValues = function () {
+            var that = this;
+            var result = [];
+            $.each(that.models, function (index, model) {
+                result.push(model.get("value"));
+            });
+            return result;
         };
         return Bends;
     })(Backbone.Collection);
