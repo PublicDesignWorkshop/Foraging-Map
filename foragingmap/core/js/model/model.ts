@@ -7,6 +7,7 @@
         private bends: Bends;
         private thresholds: Thresholds;
         private pictures: Pictures;
+        private sensors: Sensors;
         
         constructor() {
             this.layers = new Layers();
@@ -18,8 +19,12 @@
             this.types.add(new Type({ name: "Fruit", type: 1 }));
             //this.types.add(new Type({ name: "Station", type: 2 }));
             this.icons = new Icons();
+            this.sensors = new Sensors();
         }
         
+        getSensors(): Sensors {
+            return this.sensors;
+        }
         getIcons(): Icons {
             return this.icons;
         }

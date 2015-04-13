@@ -8,11 +8,12 @@ module ForagingMap {
         private lMap: L.Map;
         private vMarkers: MarkersView;
         private vControl: MapControlView;
+        private vSensor: SensorSelect;
         constructor(options?: Backbone.ViewOptions<Backbone.Model>) {
             super(options);
             this.setElement(options.el);
         }
-        getMapZoom():number {
+        getMapZoom(): number {
             return this.lMap.getZoom();
         }
         getMapCenter(): L.LatLng {
@@ -41,12 +42,13 @@ module ForagingMap {
                     FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
                         + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
                     that.waitForFetchData();
-                    
+
                 });
                 that.lMap.whenReady(function () {
                     FMC.fetchItems(that.lMap.getBounds());
                     that.vMarkers = new ForagingMap.MarkersView();
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
+                    that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
                     if (FMV.getUIView().getMode() != UIMode.ADD) {
@@ -77,6 +79,9 @@ module ForagingMap {
         }
         getControlView(): MapControlView {
             return this.vControl;
+        }
+        getSensorView(): SensorSelect {
+            return this.vSensor;
         }
         show(): void {
             $("#leaflet-view-map").removeClass("hidden");

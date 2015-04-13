@@ -3,7 +3,7 @@
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");
     
-    require('database.php');	
+    require('database.php');
     function getConnection() {
         $db = new database;
         $dbhost = $db->host;
@@ -32,27 +32,9 @@
     }
     
     function read() {
-        //$sql = "SELECT * FROM `fm_item` WHERE (`lat` BETWEEN :south AND :north) AND (`lng` BETWEEN :west AND :east) AND (`type` = :type)";
-        $sql = "SELECT * FROM `fm_item` WHERE (`type` = :type)";
+        $sql = "SELECT * FROM `fm_sensor`";
         $data = json_decode(file_get_contents('php://input'));
         $params = null;
-        if ($data != null) {
-            $params = array(
-                //"north" => $data->{'north'},
-                //"south" => $data->{'south'},
-                //"west" => $data->{'west'},
-                //"east" => $data->{'east'},
-                "type" => $data->{'type'},
-            );
-        } else {
-            $params = array(
-                //"north" => $_GET['north'],
-                //"south" => $_GET['south'],
-                //"west" => $_GET['west'],
-                //"east" => $_GET['east'],
-                "type" => $_GET['type'],
-            );
-        }
         
         try {
             $pdo = getConnection();

@@ -43,6 +43,7 @@ var ForagingMap;
                     FMC.fetchItems(that.lMap.getBounds());
                     that.vMarkers = new ForagingMap.MarkersView();
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
+                    that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
                     if (FMV.getUIView().getMode() != 1 /* ADD */) {
@@ -74,6 +75,9 @@ var ForagingMap;
         };
         MapView.prototype.getControlView = function () {
             return this.vControl;
+        };
+        MapView.prototype.getSensorView = function () {
+            return this.vSensor;
         };
         MapView.prototype.show = function () {
             $("#leaflet-view-map").removeClass("hidden");

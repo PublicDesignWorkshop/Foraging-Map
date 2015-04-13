@@ -38,14 +38,16 @@
         if ($data != null) {
             $params = array(
                 "pids" => $data->{'pids'},
+                "type" => $data->{'type'},
             );
         } else {
             $params = array(
                 "pids" => $_GET['pids'],
+                "type" => $_GET['type'],
             );
         }
         
-        $sql = "SELECT * FROM `fm_threshold` WHERE `pid` IN (".$params["pids"].") ORDER BY `date` ASC";
+        $sql = "SELECT * FROM `fm_threshold` WHERE ((`pid` IN (".$params["pids"].")) AND (`type` = ".$params["type"].")) ORDER BY `date` ASC";
         try {
             $pdo = getConnection();
             $stmt = $pdo->prepare($sql);

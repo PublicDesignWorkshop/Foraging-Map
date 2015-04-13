@@ -593,3 +593,141 @@ var itemColumn = [
         cell: SetSerialCell,
     }
 ];
+
+var SensorDeleteCell = Backgrid.Cell.extend({
+    template: _.template(FMViewUIDataLayerDeleteTemplate),
+    events: {
+        "click": "deleteRow"
+    },
+    deleteRow: function (e) {
+        var r = confirm(FML.getViewUIDataDeleteConfirmMsg());
+        if (r == true) {
+            e.preventDefault();
+            this.model.collection.remove(this.model);
+            this.model.destroy(
+                {
+                    wait: true,
+                    success: function (model, response) {
+                        FMV.getUIView().render();
+                        FMV.getMapView().getSensorView().render();
+
+                        if (FMM.getSensors().getCurType() == model) {
+                            FMM.getSensors().intializeCurType();
+                        }
+
+                        if (model.get("value") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        } else if (model.get("name") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        } else if (model.get("min") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("min") + " - " + model.get("max") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        }
+
+                    },
+                    error: function () {
+                        FMV.getMsgView().renderError(FML.getViewUIDataDeleteErrorMsg());
+                    },
+                }
+            );
+        }
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        this.delegateEvents();
+        return this;
+    }
+});
+
+var sensorColumn = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "delete",
+	    sortable: false,
+	    editable: false,
+	    cell: SensorDeleteCell,
+	}
+];
+
+var sensorColumn2 = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: false,
+	    cell: "string",
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: false,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "option",
+	    sortable: false,
+	    editable: false,
+	    cell: "",
+	}
+];
+
+var SensorAddCell = Backgrid.Cell.extend({
+    template: _.template(FMViewUIDataLayerAddTemplate),
+    events: {
+        "click": "addRow"
+    },
+    addRow: function (e) {
+        e.preventDefault();
+        var model = this.model;
+        var collection = this.model.collection;
+        collection.remove(model);
+        FMM.getSensors().add(model);
+        model.save(
+            //update: moment(new Date()).format(FMS.getDateTimeFormat())
+            {},
+            {
+                wait: true,
+                success: function (model, response) {
+                    FMV.getMapView().getSensorView().render();
+                    FMV.getUIView().render();
+                    model.setIsSavable(true);
+                    FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                },
+                error: function () {
+                    FMV.getMsgView().renderError(FML.getViewUIDataSaveErrorMsg());
+                },
+            }
+        );
+
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        this.delegateEvents();
+        return this;
+    }
+});
+
+var sensorAddColumn = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "add",
+	    sortable: false,
+	    editable: false,
+	    cell: SensorAddCell,
+	}
+];
+

@@ -14,6 +14,7 @@ module ForagingMap {
             this.user = new User({ username: "Guest", name: "Guest", auth: 0 });
         }
         initialize(): void {
+
             FMC.getUser().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
@@ -26,10 +27,10 @@ module ForagingMap {
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     // intialize model
                     FMM = new ForagingMap.Model();
-                    // fetch layer info
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
+
+                    FMC.fetchSensors();
+
+                    
                 },
                 error: function (error) {
                     console.log("error");
@@ -38,9 +39,13 @@ module ForagingMap {
                     // intialize model
                     FMM = new ForagingMap.Model();
                     // fetch layer info
+
+                    FMC.fetchSensors();
+                    /*
                     FMC.fetchIcons();
                     FMC.fetchLayers();
                     FMC.addKeyEventListener();
+                    */
                 },
             });
         }
@@ -80,6 +85,7 @@ module ForagingMap {
                 processData: true,
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " layers");
+                    console.log(collection.models);
                     // render view
                     FMV.render();
                     // start routing
@@ -100,11 +106,12 @@ module ForagingMap {
                     north: bounds.getNorthEast().lat,
                     west: bounds.getSouthWest().lng,
                     east: bounds.getSouthEast().lng,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                console.log("success fetch with " + collection.models.length + " items");
-                FMV.getMapView().getMarkersView().render();
-                that.fetchBends(FMM.getItems().getIdsToString());
+                    console.log("success fetch with " + collection.models.length + " items");
+                    FMV.getMapView().getMarkersView().render();
+                    that.fetchBends(FMM.getItems().getIdsToString());
                 
                     /*
                     $.each(collection.models, function (index: number, model: Backbone.Model) {
@@ -125,6 +132,7 @@ module ForagingMap {
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " bends");
@@ -141,12 +149,14 @@ module ForagingMap {
             });
         }
         fetchThresholds(pids): void {
+            console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that: Controller = this;
             FMM.getThresholds().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " thresholds");
@@ -233,6 +243,41 @@ module ForagingMap {
                     popupAnchor: new L.Point(0, -40),
                 });
             });
+        }
+        fetchSensors(): void {
+            FMM.getSensors().fetch({
+                success(collection?: any, response?: any, options?: any): void {
+                    console.log("success fetch with " + collection.models.length + " sensors");
+                    /*
+                    $.each(collection.models, function (index: number, model: Backbone.Model) {
+                        console.log(model);
+                    });
+                    */
+                    FMM.getSensors().intializeCurType();
+
+                    // fetch layer info
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
+
+                }
+            });
+        }
+
+        resetData(): void {
+            
+            $.each(FMM.getItems().models, function (index: number, item: Item) {
+                FMV.getMapView().getMarkersView().removeMarker(item);
+            });
+
+            FMM.getItems().reset();
+            FMM.getBends().reset();
+            FMM.getThresholds().reset();
+            FMV.getUIView().hide();
+            FMV.getMapView().resize(false);
+            FMV.getMapView().getControlView().resetControls();
         }
     }
 }

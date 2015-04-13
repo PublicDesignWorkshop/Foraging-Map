@@ -53148,17 +53148,13 @@ var ForagingMap;
                     console.log(model);
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
+                    FMC.fetchSensors();
                 },
                 error: function (error) {
                     console.log("error");
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
+                    FMC.fetchSensors();
                 },
             });
         };
@@ -53183,7 +53179,7 @@ var ForagingMap;
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -53198,6 +53194,7 @@ var ForagingMap;
                 processData: true,
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " layers");
+                    console.log(collection.models);
                     FMV.render();
                     Backbone.history.start();
                 },
@@ -53215,6 +53212,7 @@ var ForagingMap;
                     north: bounds.getNorthEast().lat,
                     west: bounds.getSouthWest().lng,
                     east: bounds.getSouthEast().lng,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " items");
@@ -53232,6 +53230,7 @@ var ForagingMap;
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " bends");
@@ -53242,12 +53241,14 @@ var ForagingMap;
             });
         };
         Controller.prototype.fetchThresholds = function (pids) {
+            console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that = this;
             FMM.getThresholds().fetch({
                 remove: false,
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " thresholds");
@@ -53282,7 +53283,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: 0 /* None */,
+                type: ItemType.None,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -53298,7 +53299,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: serialnumber,
-                type: 0 /* None */,
+                type: ItemType.None,
                 sort: 0,
                 amount: 0,
                 lat: latitude,
@@ -53327,6 +53328,30 @@ var ForagingMap;
                     popupAnchor: new L.Point(0, -40),
                 });
             });
+        };
+        Controller.prototype.fetchSensors = function () {
+            FMM.getSensors().fetch({
+                success: function (collection, response, options) {
+                    console.log("success fetch with " + collection.models.length + " sensors");
+                    FMM.getSensors().intializeCurType();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error: function (collection, jqxhr, options) {
+                }
+            });
+        };
+        Controller.prototype.resetData = function () {
+            $.each(FMM.getItems().models, function (index, item) {
+                FMV.getMapView().getMarkersView().removeMarker(item);
+            });
+            FMM.getItems().reset();
+            FMM.getBends().reset();
+            FMM.getThresholds().reset();
+            FMV.getUIView().hide();
+            FMV.getMapView().resize(false);
+            FMV.getMapView().getControlView().resetControls();
         };
         return Controller;
     })();
@@ -54136,6 +54161,15 @@ FMMenuTemplate += '<% } %>';
 FMMenuTemplate += '</div>';
 var FMViewMenuSetSerialTemplate = '';
 FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';
+var FMUIAddSensorTemplate = '';
+FMUIAddSensorTemplate += '<div class="ui-header"><%= header %></div>';
+FMUIAddSensorTemplate += '<div class="ui-body">';
+FMUIAddSensorTemplate += '<% if (isAdmin) { %>';
+FMUIAddSensorTemplate += '<button type="button" data-toggle="collapse" data-target="#sensor-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Sensor</button>';
+FMUIAddSensorTemplate += '<div class="collapse" id="sensor-add-panel">';
+FMUIAddSensorTemplate += '<% } %>';
+FMUIAddSensorTemplate += '</div>';
+FMUIAddSensorTemplate += '</div>';
 
 ///#source 1 1 /core/js/view/view.js
 var __extends = this.__extends || function (d, b) {
@@ -54263,6 +54297,7 @@ var ForagingMap;
                     FMC.fetchItems(that.lMap.getBounds());
                     that.vMarkers = new ForagingMap.MarkersView();
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
+                    that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
                     if (FMV.getUIView().getMode() != 1 /* ADD */) {
@@ -54294,6 +54329,9 @@ var ForagingMap;
         };
         MapView.prototype.getControlView = function () {
             return this.vControl;
+        };
+        MapView.prototype.getSensorView = function () {
+            return this.vSensor;
         };
         MapView.prototype.show = function () {
             $("#leaflet-view-map").removeClass("hidden");
@@ -54560,6 +54598,7 @@ var UIMode;
     UIMode[UIMode["PICTURE"] = 4] = "PICTURE";
     UIMode[UIMode["LAYER"] = 5] = "LAYER";
     UIMode[UIMode["THRESHOLD"] = 6] = "THRESHOLD";
+    UIMode[UIMode["ADDSENSOR"] = 7] = "ADDSENSOR";
 })(UIMode || (UIMode = {}));
 var ForagingMap;
 (function (ForagingMap) {
@@ -54661,8 +54700,49 @@ var ForagingMap;
                 case 5 /* LAYER */:
                     this.renderUILayer();
                     break;
+                case 7 /* ADDSENSOR */:
+                    this.renderAddSensorLayer();
                 default:
                     break;
+            }
+        };
+        UIView.prototype.renderAddSensorLayer = function () {
+            var that = this;
+            var template = _.template(FMUIAddSensorTemplate);
+            var data = {
+                "header": "Sensor Management",
+                isAdmin: FMC.getUser().getIsAdmin(),
+            };
+            that.$el.html(template(data));
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: sensorColumn,
+                    collection: FMM.getSensors(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                that.$(".ui-body").append(gridData.el);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn2,
+                    collection: FMM.getSensors(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                that.$(".ui-body").append(gridData.el);
+            }
+            if (FMC.getUser().getIsAdmin()) {
+                var sensor = new ForagingMap.Sensor({ name: "", initial: "" });
+                sensor.setIsSavable(false);
+                var sensors = new ForagingMap.Sensors();
+                sensors.add(sensor);
+                var gridAddData = new Backgrid.Grid({
+                    columns: sensorAddColumn,
+                    collection: sensors,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                that.$("#sensor-add-panel").append(gridAddData.render().el);
             }
         };
         UIView.prototype.renderUIInfo = function () {
@@ -54862,7 +54942,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == ItemType.None) {
+                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -54873,6 +54953,7 @@ var ForagingMap;
                         desc: that.$("#item-info-desc").val(),
                         serial: that.$("#item-info-serial").val(),
                         amount: that.$("#item-info-amount").val(),
+                        type: parseInt(FMM.getSensors().getCurType().get("id")),
                     }, {
                         wait: true,
                         success: function (model, response) {
@@ -54887,7 +54968,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().set("type", 0 /* None */);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -54940,7 +55021,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 bend.setIsSavable(false);
                 var bends = new ForagingMap.Bends();
                 bends.add(bend);
@@ -54981,7 +55062,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 threshold.setIsSavable(false);
                 var thresholds = new ForagingMap.Thresholds();
                 thresholds.add(threshold);
@@ -55397,7 +55478,7 @@ var ForagingMap;
                                 weight: 1,
                             });
                         }
-                        else if (item.get("type") == 1 /* Fruit */) {
+                        else {
                             var layer = FMM.getLayers().findWhere({ id: item.get("sort") });
                             var icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
@@ -55410,21 +55491,6 @@ var ForagingMap;
                             item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
                                 color: FMS.getFruitCircleColor(),
                                 fillColor: FMS.getFruitCircleColor(),
-                                fillOpacity: FMS.getInactiveAlpha(),
-                                weight: 1,
-                            });
-                        }
-                        else if (item.get("type") == 2 /* Station */) {
-                            item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
-                                icon: that.iconDollar,
-                                draggable: false,
-                                riseOnHover: true,
-                            }).bindPopup(item.get("name"), {
-                                closeButton: false,
-                            });
-                            item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
-                                color: FMS.getStationCircleColor(),
-                                fillColor: FMS.getStationCircleColor(),
                                 fillOpacity: FMS.getInactiveAlpha(),
                                 weight: 1,
                             });
@@ -56402,6 +56468,145 @@ var itemColumn = [
         cell: SetSerialCell,
     }
 ];
+
+var SensorDeleteCell = Backgrid.Cell.extend({
+    template: _.template(FMViewUIDataLayerDeleteTemplate),
+    events: {
+        "click": "deleteRow"
+    },
+    deleteRow: function (e) {
+        var r = confirm(FML.getViewUIDataDeleteConfirmMsg());
+        if (r == true) {
+            e.preventDefault();
+            this.model.collection.remove(this.model);
+            this.model.destroy(
+                {
+                    wait: true,
+                    success: function (model, response) {
+                        FMV.getUIView().render();
+                        FMV.getMapView().getSensorView().render();
+
+                        if (FMM.getSensors().getCurType() == model) {
+                            FMM.getSensors().intializeCurType();
+                        }
+
+                        if (model.get("value") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        } else if (model.get("name") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        } else if (model.get("min") != undefined) {
+                            FMV.getMsgView().renderSuccess("'" + model.get("min") + " - " + model.get("max") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                        }
+
+                    },
+                    error: function () {
+                        FMV.getMsgView().renderError(FML.getViewUIDataDeleteErrorMsg());
+                    },
+                }
+            );
+        }
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        this.delegateEvents();
+        return this;
+    }
+});
+
+var sensorColumn = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "delete",
+	    sortable: false,
+	    editable: false,
+	    cell: SensorDeleteCell,
+	}
+];
+
+var sensorColumn2 = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: false,
+	    cell: "string",
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: false,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "option",
+	    sortable: false,
+	    editable: false,
+	    cell: "",
+	}
+];
+
+var SensorAddCell = Backgrid.Cell.extend({
+    template: _.template(FMViewUIDataLayerAddTemplate),
+    events: {
+        "click": "addRow"
+    },
+    addRow: function (e) {
+        e.preventDefault();
+        var model = this.model;
+        var collection = this.model.collection;
+        collection.remove(model);
+        FMM.getSensors().add(model);
+        model.save(
+            //update: moment(new Date()).format(FMS.getDateTimeFormat())
+            {},
+            {
+                wait: true,
+                success: function (model, response) {
+                    FMV.getMapView().getSensorView().render();
+                    FMV.getUIView().render();
+                    model.setIsSavable(true);
+                    FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIDataDeleteSuccessMsg());
+                },
+                error: function () {
+                    FMV.getMsgView().renderError(FML.getViewUIDataSaveErrorMsg());
+                },
+            }
+        );
+
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        this.delegateEvents();
+        return this;
+    }
+});
+
+var sensorAddColumn = [
+	{
+	    name: "name",
+	    label: "Name",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    name: "initial",
+	    label: "Initial",
+	    editable: true,
+	    cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
+	}, {
+	    label: "add",
+	    sortable: false,
+	    editable: false,
+	    cell: SensorAddCell,
+	}
+];
+
+
 ///#source 1 1 /core/js/view/menu.js
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -56589,6 +56794,82 @@ var ForagingMap;
 var qrcode;
 var itemColumn;
 
+///#source 1 1 /core/js/view/sensorselect.js
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ForagingMap;
+(function (ForagingMap) {
+    var SensorSelect = (function (_super) {
+        __extends(SensorSelect, _super);
+        function SensorSelect(options) {
+            _super.call(this, options);
+            this.setElement(options.el);
+            this.render();
+        }
+        SensorSelect.prototype.render = function () {
+            var that = this;
+            var template = _.template(FMViewSensorTemplate);
+            var data = {
+                isAdmin: FMC.getUser().getIsAdmin(),
+                sensors: FMM.getSensors().models,
+                isActive: $('#add-new-sensor').hasClass('sensor-active'),
+            };
+            that.$el.html(template(data));
+            that.$('.sensor').each(function () {
+                if (parseInt($(this).attr('data-id')) == parseInt(FMM.getSensors().getCurType().get("id"))) {
+                    $(this).addClass('sensor-active');
+                }
+            });
+            that.addEventListener();
+        };
+        SensorSelect.prototype.addEventListener = function () {
+            var that = this;
+            that.$('.sensor').on('click', function () {
+                var num = parseInt($(this).attr('data-id'));
+                FMM.getSensors().setCurType(num);
+                FMC.resetData();
+                FMC.fetchItems(FMV.getMapView().getMapBounds());
+                that.$('#add-new-sensor').removeClass('sensor-active');
+            });
+            that.$('#add-new-sensor').on("click", function (event) {
+                if (!$(this).hasClass("sensor-active")) {
+                    $(this).addClass("sensor-active");
+                    FMV.getUIView().show(7 /* ADDSENSOR */);
+                    FMV.getMapView().resize(true);
+                    setTimeout(function () {
+                        FMV.getMapView().getMarkersView().render();
+                    }, 500);
+                }
+                else {
+                    $(this).removeClass("sensor-active");
+                    FMC.setSelectedItem(null);
+                    FMV.getUIView().hide();
+                    FMV.getMapView().resize(false);
+                }
+            });
+        };
+        return SensorSelect;
+    })(Backbone.View);
+    ForagingMap.SensorSelect = SensorSelect;
+})(ForagingMap || (ForagingMap = {}));
+var FMViewSensorTemplate = '';
+FMViewSensorTemplate += '<div class="leaflet-control">';
+FMViewSensorTemplate += '<% _.each(sensors, function (sensor) { %>';
+FMViewSensorTemplate += '<div class="control-button sensor" data-id="<%= sensor.get("id") %>"><%= sensor.get("initial") %></div>';
+FMViewSensorTemplate += '<% }); %>';
+FMViewSensorTemplate += '<% if (isAdmin) { %>';
+FMViewSensorTemplate += '<% if (isActive) { %>';
+FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor sensor-plus sensor-active">+</div>';
+FMViewSensorTemplate += '<% } else { %>';
+FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor-plus">+</div>';
+FMViewSensorTemplate += '<% } %>';
+FMViewSensorTemplate += '<% } %>';
+FMViewSensorTemplate += '</div>';
+
 ///#source 1 1 /core/js/model/model.js
 var ForagingMap;
 (function (ForagingMap) {
@@ -56602,7 +56883,11 @@ var ForagingMap;
             this.types = new ForagingMap.Types();
             this.types.add(new ForagingMap.Type({ name: "Fruit", type: 1 }));
             this.icons = new ForagingMap.Icons();
+            this.sensors = new ForagingMap.Sensors();
         }
+        Model.prototype.getSensors = function () {
+            return this.sensors;
+        };
         Model.prototype.getIcons = function () {
             return this.icons;
         };
@@ -57301,5 +57586,103 @@ var ForagingMap;
         return User;
     })(Backbone.Model);
     ForagingMap.User = User;
+})(ForagingMap || (ForagingMap = {}));
+
+///#source 1 1 /core/js/model/sensor.js
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ForagingMap;
+(function (ForagingMap) {
+    var Sensor = (function (_super) {
+        __extends(Sensor, _super);
+        function Sensor(attributes, options) {
+            _super.call(this, attributes, options);
+            this.url = "core/php/sensor.php";
+            this.isSavable = true;
+            var that = this;
+            this.url = ForagingMap.Setting.BASE_URL + this.url;
+            this.defaults = {
+                "initial": "",
+                "name": "",
+            };
+            that.off("change");
+            that.on("change", function (model, options) {
+                if (that.isSavable == false)
+                    return;
+                that.isSavable = false;
+                model.save({}, {
+                    wait: true,
+                    success: function (model, response) {
+                        model.isSavable = true;
+                        FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
+                    },
+                    error: function (error) {
+                        FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
+                    },
+                });
+            });
+        }
+        Sensor.prototype.parse = function (response, options) {
+            if (response.id != null) {
+                response.id = parseInt(response.id);
+            }
+            return _super.prototype.parse.call(this, response, options);
+        };
+        Sensor.prototype.toJSON = function (options) {
+            var clone = this.clone().attributes;
+            if (this.id != null) {
+                clone["id"] = this.id;
+            }
+            return clone;
+        };
+        Sensor.prototype.setIsSavable = function (isSavable) {
+            this.isSavable = isSavable;
+        };
+        Sensor.prototype.getIsSavable = function () {
+            return this.isSavable;
+        };
+        return Sensor;
+    })(Backbone.Model);
+    ForagingMap.Sensor = Sensor;
+    var Sensors = (function (_super) {
+        __extends(Sensors, _super);
+        function Sensors(models, options) {
+            _super.call(this, models, options);
+            this.url = "core/php/sensors.php";
+            this.model = Sensor;
+            this.url = ForagingMap.Setting.BASE_URL + this.url;
+        }
+        Sensors.prototype.intializeCurType = function () {
+            var that = this;
+            $.each(that.models, function (index, model) {
+                if (that.curType == null) {
+                    that.curType = model;
+                    console.log("Set Sensor Type as " + that.curType.get("name"));
+                    if (FMV.getMapView() && FMV.getMapView().getSensorView()) {
+                        FMV.getMapView().getSensorView().render();
+                    }
+                }
+            });
+        };
+        Sensors.prototype.getCurType = function () {
+            return this.curType;
+        };
+        Sensors.prototype.setCurType = function (num) {
+            var that = this;
+            $.each(that.models, function (index, model) {
+                if (parseInt(model.get('id')) == num) {
+                    that.curType = model;
+                    console.log("Set Sensor Type as " + that.curType.get("name"));
+                    FMV.getMapView().getSensorView().render();
+                }
+            });
+        };
+        return Sensors;
+    })(Backbone.Collection);
+    ForagingMap.Sensors = Sensors;
 })(ForagingMap || (ForagingMap = {}));
 

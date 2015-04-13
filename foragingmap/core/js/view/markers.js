@@ -88,7 +88,7 @@ var ForagingMap;
                                 weight: 1,
                             });
                         }
-                        else if (item.get("type") == 1 /* Fruit */) {
+                        else {
                             var layer = FMM.getLayers().findWhere({ id: item.get("sort") });
                             var icon = FMM.getIcons().findWhere({ src: layer.get("icon") });
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
@@ -101,21 +101,6 @@ var ForagingMap;
                             item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
                                 color: FMS.getFruitCircleColor(),
                                 fillColor: FMS.getFruitCircleColor(),
-                                fillOpacity: FMS.getInactiveAlpha(),
-                                weight: 1,
-                            });
-                        }
-                        else if (item.get("type") == 2 /* Station */) {
-                            item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
-                                icon: that.iconDollar,
-                                draggable: false,
-                                riseOnHover: true,
-                            }).bindPopup(item.get("name"), {
-                                closeButton: false,
-                            });
-                            item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
-                                color: FMS.getStationCircleColor(),
-                                fillColor: FMS.getStationCircleColor(),
                                 fillOpacity: FMS.getInactiveAlpha(),
                                 weight: 1,
                             });

@@ -10,7 +10,11 @@ var ForagingMap;
             this.types = new ForagingMap.Types();
             this.types.add(new ForagingMap.Type({ name: "Fruit", type: 1 }));
             this.icons = new ForagingMap.Icons();
+            this.sensors = new ForagingMap.Sensors();
         }
+        Model.prototype.getSensors = function () {
+            return this.sensors;
+        };
         Model.prototype.getIcons = function () {
             return this.icons;
         };

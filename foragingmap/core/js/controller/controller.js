@@ -16,17 +16,13 @@ var ForagingMap;
                     console.log(model);
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
+                    FMC.fetchSensors();
                 },
                 error: function (error) {
                     console.log("error");
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
+                    FMC.fetchSensors();
                 },
             });
         };
@@ -51,7 +47,7 @@ var ForagingMap;
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -66,6 +62,7 @@ var ForagingMap;
                 processData: true,
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " layers");
+                    console.log(collection.models);
                     FMV.render();
                     Backbone.history.start();
                 },
@@ -83,6 +80,7 @@ var ForagingMap;
                     north: bounds.getNorthEast().lat,
                     west: bounds.getSouthWest().lng,
                     east: bounds.getSouthEast().lng,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " items");
@@ -100,6 +98,7 @@ var ForagingMap;
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " bends");
@@ -110,12 +109,14 @@ var ForagingMap;
             });
         };
         Controller.prototype.fetchThresholds = function (pids) {
+            console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that = this;
             FMM.getThresholds().fetch({
                 remove: false,
                 processData: true,
                 data: {
                     pids: pids,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " thresholds");
@@ -150,7 +151,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: 0 /* None */,
+                type: ItemType.None,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -166,7 +167,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: serialnumber,
-                type: 0 /* None */,
+                type: ItemType.None,
                 sort: 0,
                 amount: 0,
                 lat: latitude,
@@ -195,6 +196,30 @@ var ForagingMap;
                     popupAnchor: new L.Point(0, -40),
                 });
             });
+        };
+        Controller.prototype.fetchSensors = function () {
+            FMM.getSensors().fetch({
+                success: function (collection, response, options) {
+                    console.log("success fetch with " + collection.models.length + " sensors");
+                    FMM.getSensors().intializeCurType();
+                    FMC.fetchIcons();
+                    FMC.fetchLayers();
+                    FMC.addKeyEventListener();
+                },
+                error: function (collection, jqxhr, options) {
+                }
+            });
+        };
+        Controller.prototype.resetData = function () {
+            $.each(FMM.getItems().models, function (index, item) {
+                FMV.getMapView().getMarkersView().removeMarker(item);
+            });
+            FMM.getItems().reset();
+            FMM.getBends().reset();
+            FMM.getThresholds().reset();
+            FMV.getUIView().hide();
+            FMV.getMapView().resize(false);
+            FMV.getMapView().getControlView().resetControls();
         };
         return Controller;
     })();

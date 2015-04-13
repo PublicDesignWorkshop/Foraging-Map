@@ -215,6 +215,7 @@
     <TypeScriptCompile Include="core\js\model\model.ts" />
     <TypeScriptCompile Include="core\js\controller\router.ts" />
     <TypeScriptCompile Include="core\js\model\picture.ts" />
+    <TypeScriptCompile Include="core\js\model\sensor.ts" />
     <TypeScriptCompile Include="core\js\model\threshold.ts" />
     <TypeScriptCompile Include="core\js\model\user.ts" />
     <TypeScriptCompile Include="core\js\view\gallery.ts" />
@@ -223,6 +224,7 @@
     <TypeScriptCompile Include="core\js\view\markers.ts" />
     <TypeScriptCompile Include="core\js\view\menu.ts" />
     <TypeScriptCompile Include="core\js\view\msg.ts" />
+    <TypeScriptCompile Include="core\js\view\sensorselect.ts" />
     <TypeScriptCompile Include="core\js\view\slider.ts" />
     <TypeScriptCompile Include="core\js\view\template.ts" />
     <TypeScriptCompile Include="core\js\view\ui.ts" />
@@ -267,6 +269,8 @@
     <Content Include="psd\marker-icon.psd" />
     <Content Include="favicons\manifest.json" />
     <Content Include="core\php\user.php" />
+    <Content Include="core\php\sensors.php" />
+    <Content Include="core\php\sensor.php" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

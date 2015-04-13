@@ -13,6 +13,7 @@ var UIMode;
     UIMode[UIMode["PICTURE"] = 4] = "PICTURE";
     UIMode[UIMode["LAYER"] = 5] = "LAYER";
     UIMode[UIMode["THRESHOLD"] = 6] = "THRESHOLD";
+    UIMode[UIMode["ADDSENSOR"] = 7] = "ADDSENSOR";
 })(UIMode || (UIMode = {}));
 var ForagingMap;
 (function (ForagingMap) {
@@ -114,8 +115,49 @@ var ForagingMap;
                 case 5 /* LAYER */:
                     this.renderUILayer();
                     break;
+                case 7 /* ADDSENSOR */:
+                    this.renderAddSensorLayer();
                 default:
                     break;
+            }
+        };
+        UIView.prototype.renderAddSensorLayer = function () {
+            var that = this;
+            var template = _.template(FMUIAddSensorTemplate);
+            var data = {
+                "header": "Sensor Management",
+                isAdmin: FMC.getUser().getIsAdmin(),
+            };
+            that.$el.html(template(data));
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: sensorColumn,
+                    collection: FMM.getSensors(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                that.$(".ui-body").append(gridData.el);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: pictureColumn2,
+                    collection: FMM.getSensors(),
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                that.$(".ui-body").append(gridData.el);
+            }
+            if (FMC.getUser().getIsAdmin()) {
+                var sensor = new ForagingMap.Sensor({ name: "", initial: "" });
+                sensor.setIsSavable(false);
+                var sensors = new ForagingMap.Sensors();
+                sensors.add(sensor);
+                var gridAddData = new Backgrid.Grid({
+                    columns: sensorAddColumn,
+                    collection: sensors,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                that.$("#sensor-add-panel").append(gridAddData.render().el);
             }
         };
         UIView.prototype.renderUIInfo = function () {
@@ -315,7 +357,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == ItemType.None) {
+                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -326,6 +368,7 @@ var ForagingMap;
                         desc: that.$("#item-info-desc").val(),
                         serial: that.$("#item-info-serial").val(),
                         amount: that.$("#item-info-amount").val(),
+                        type: parseInt(FMM.getSensors().getCurType().get("id")),
                     }, {
                         wait: true,
                         success: function (model, response) {
@@ -340,7 +383,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().set("type", 0 /* None */);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -393,7 +436,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 bend.setIsSavable(false);
                 var bends = new ForagingMap.Bends();
                 bends.add(bend);
@@ -434,7 +477,7 @@ var ForagingMap;
                 that.$(".ui-body").append(gridData.el);
             }
             if (FMC.getUser().getIsAdmin()) {
-                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: ThresholdType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+                var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 threshold.setIsSavable(false);
                 var thresholds = new ForagingMap.Thresholds();
                 thresholds.add(threshold);

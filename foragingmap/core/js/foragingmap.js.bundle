@@ -76,6 +76,8 @@
     <file>/core/js/view/slider.js</file>
     <file>/core/js/view/gridformat.js</file>
     <file>/core/js/view/menu.js</file>
+    <file>/core/js/view/sensorselect.js</file>
+
     
     <file>/core/js/model/model.js</file>
     <file>/core/js/model/item.js</file>
@@ -84,6 +86,8 @@
     <file>/core/js/model/threshold.js</file>
     <file>/core/js/model/layer.js</file>
     <file>/core/js/model/user.js</file>
+    <file>/core/js/model/sensor.js</file>
+    
 
 
     

@@ -210,7 +210,44 @@ html, body {
     background-color: rgba(0,0,0,0.8) !important;
     background-image: url('../image/icon-picture-active.png') !important;
 }
+.leaflet-left .leaflet-control {
+    margin-left: 6px !important;
+    margin-top: 36px !important;
+}
+.leaflet-control .sensor {
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    margin-top: 2px;
+    margin-right: 6px;
+    padding: 5px 4px;
+    border-radius: 4px;
+    float: left;
+}
+.sensor-plus {
+    margin-top: 2px !important;
+    margin-right: 6px !important;
+    padding: 1px 4px !important;
+    font-size: 26px !important;
+}
+.sensor-active {
+    color: #27ae60 !important;
+}
 
+#add-new-sensor {
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    margin-top: 2px;
+    margin-right: 6px;
+    padding: 5px 4px;
+    border-radius: 4px;
+    float: left;
+}
 
 
 
