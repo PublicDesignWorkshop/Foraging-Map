@@ -34,7 +34,6 @@ module ForagingMap {
             this.vSlider = new ForagingMap.SliderView({ el: $("#fm-view-slider") });
             this.vMenu = new ForagingMap.MenuView({ el: $("#leaflet-view-menu") });
             
-
             this.addEventListener();
 
             this.resize();

@@ -294,6 +294,13 @@ FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="bt
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 FMMenuTemplate += '<% } %>';
+FMMenuTemplate += '<label class="control-label">Time Slider Interval</label>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '<button id="btn-menu-slider-1" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 sec</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-60" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 min</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-3600" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 hour</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-24" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 day</button>';
+FMMenuTemplate += '<hr>';
 FMMenuTemplate += '</div>';
 var FMViewMenuSetSerialTemplate = '';
 FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';

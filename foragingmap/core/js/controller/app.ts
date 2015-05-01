@@ -12,9 +12,12 @@ var FMM: ForagingMap.Model;
 
 $(document).ready(function () {
     var url: any = window.location;
+    // Define Controller
     FMC = new ForagingMap.Controller();
+    // Define Setting
     FMS = new ForagingMap.Setting(url.origin + window.location.pathname);
-
+    // Define Localization
     FML = new ForagingMap.Localization();
+    // Intialize Controller after fetching Setting
     FMS.fetch(FMC.initialize);
 });

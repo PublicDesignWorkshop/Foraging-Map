@@ -13,13 +13,12 @@ var ForagingMap;
                     logout: false,
                 },
                 success: function (model, response) {
-                    console.log(model);
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
                     FMC.fetchSensors();
                 },
                 error: function (error) {
-                    console.log("error");
+                    console.log("Log-In as a Guest");
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
                     FMC.fetchSensors();
@@ -62,11 +61,11 @@ var ForagingMap;
                 processData: true,
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " layers");
-                    console.log(collection.models);
                     FMV.render();
                     Backbone.history.start();
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("error while fetching layer data from the server");
                 },
             });
         };
@@ -88,6 +87,7 @@ var ForagingMap;
                     that.fetchBends(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("error while fetching item data from the server");
                 }
             });
         };

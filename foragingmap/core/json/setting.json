@@ -11,13 +11,10 @@
         "dateTimeFormatSimple" : "MM-DD HH:mm",
         "imageDir": "core/image/",
         "pictureDir": "content/picture/",
-        "imageMarkerBlank": "marker-blank.png",
-        "imageMarkerHeart": "marker-heart.png",
-        "imageMarkerDollar": "marker-dollar.png",
-        "imageMarkerNew": "marker-new.png",
         "imageMarkerShadow": "marker-shadow.png",
         "circleRadiusMultiplier": 15,
         "tempCircleColor": "#2c3e50",
+        "tempCircleFillColor": "#eeeeee",
         "fruitCircleColor": "#ffffff",
         "stationCircleColor": "#3498db",
         "zeroAlpha": 0,
@@ -27,6 +24,9 @@
         "fullAlpha": 1,
         "fetchDataDelay": 1500,
         "defaultInterval": 3600,
+        "highValueColor": 0,
+        "lowValueColor": 120,
+        "imageMarkerNew": "marker-new.png",
         "markerIcons": [
             { "name": "Blank (Red)", "src": "marker-blank.png" },
             { "name": "Apple", "src": "marker-apple-midnightblue.png" },
@@ -36,7 +36,6 @@
             { "name": "Peach", "src": "marker-peach-midnightblue.png" },
             { "name": "StrawBerry", "src": "marker-strawberry-midnightblue.png" },
             { "name": "Tomato", "src": "marker-tomato-midnightblue.png" }
-            
         ]
     }
 }

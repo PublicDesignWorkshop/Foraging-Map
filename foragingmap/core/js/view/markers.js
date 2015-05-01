@@ -34,30 +34,6 @@ var ForagingMap;
             $.each(that.circleGroups, function (index, iLayer) {
                 iLayer.addTo(FMV.getMapView().getMap());
             });
-            this.iconBlank = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerBlank(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconHeart = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerHeart(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconDollar = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerDollar(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
             this.iconNew = new L.Icon({
                 iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerNew(),
                 shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
@@ -73,7 +49,7 @@ var ForagingMap;
                 if (!item.getIsRemoved()) {
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
-                        if (item.get("type") == 0 /* None */) {
+                        if (item.get("type") == ItemType.None) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
                                 draggable: false,
@@ -182,10 +158,10 @@ var ForagingMap;
             if (item.circle != null && item.get("sort") != 0) {
                 var ratio = FMM.getBendRatio(item);
                 if (ratio == Number.MIN_VALUE) {
-                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleColor() });
+                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleFillColor(), opacity: 0.25 });
                 }
                 else {
-                    var hVal = (1 - ratio) * 50;
+                    var hVal = FMS.getLowValueColor() + ratio * (FMS.getHighValueColor() - FMS.getLowValueColor());
                     var lVal = 50;
                     if (ratio > 1) {
                         lVal = 50 - (ratio - 1) * 35;
@@ -241,7 +217,7 @@ var ForagingMap;
             var that = this;
             item.marker.on("click", function () {
                 if (that.isSelectable) {
-                    if (!FMV.getUIView().getIsLocked() || item.get("type") == 0 /* None */) {
+                    if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
                         this.openPopup();
                         FMV.getUIView().render();
                     }
@@ -262,7 +238,7 @@ var ForagingMap;
                 item.circle.setLatLng(item.marker.getLatLng());
             });
             item.marker.on("dragend", function (event) {
-                if (item.get("type") == 0 /* None */ || item.id == undefined) {
+                if (item.get("type") == ItemType.None || item.id == undefined) {
                     item.set({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng });
                 }
                 else {
@@ -275,7 +251,7 @@ var ForagingMap;
                         }
                     });
                 }
-                if (FMV.getUIView().getMode() == 2 /* INFO */ || FMV.getUIView().getMode() == 1 /* ADD */) {
+                if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }

@@ -76,6 +76,16 @@
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
 
+            var timeInterval = FMV.getSliderView().getTimeInterval();
+            if (timeInterval == 1) {
+                that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
+            } else if (timeInterval == 60) {
+                that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
+            } else  if (timeInterval == 60 * 60) {
+                that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
+            } else if (timeInterval == 60 * 60 * 24) {
+                that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
+            }
             
             /*
             that.$('#item-near-loc').on('hide.bs.collapse', function (event: Event) {
@@ -148,6 +158,51 @@
                         FMC.getRouter().refresh();
                     },
                 });
+            });
+
+            // Button click event listener for slider time interval 1 sec
+            that.$('#btn-menu-slider-1').off('click');
+            that.$('#btn-menu-slider-1').on('click', function () {
+                that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(1);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            // Button click event listener for slider time interval 1 min
+            that.$('#btn-menu-slider-60').off('click');
+            that.$('#btn-menu-slider-60').on('click', function () {
+                that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            // Button click event listener for slider time interval 1 hour
+            that.$('#btn-menu-slider-3600').off('click');
+            that.$('#btn-menu-slider-3600').on('click', function () {
+                that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60 * 60);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            // Button click event listener for slider time interval 1 day
+            that.$('#btn-menu-slider-24').off('click');
+            that.$('#btn-menu-slider-24').on('click', function () {
+                that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60 * 60 * 24);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
         }
 
@@ -229,5 +284,4 @@ interface FileEventTarget extends EventTarget {
 }
 
 var qrcode: any;
-
 var itemColumn: any;

@@ -40,30 +40,6 @@ module ForagingMap {
                 iLayer.addTo(FMV.getMapView().getMap());
             });
             // intialize icon
-            this.iconBlank = new L.Icon({
-                iconUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerBlank(),
-                shadowUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconHeart = new L.Icon({
-                iconUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerHeart(),
-                shadowUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconDollar = new L.Icon({
-                iconUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerDollar(),
-                shadowUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
             this.iconNew = new L.Icon({
                 iconUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerNew(),
                 shadowUrl: Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
@@ -73,12 +49,17 @@ module ForagingMap {
                 popupAnchor: new L.Point(0, -40),
             });
         }
+
+        // Rendering markers on the map
         render(): any {
             var that: ForagingMap.MarkersView = this;
+            // Iterate all items on the map
             $.each(FMM.getItems().models, function (index: number, item: ForagingMap.Item) {
                 if (!item.getIsRemoved()) {
-                    if (item.marker == null && item.circle == null) {                               // create new marker
+                    // Create a new marker if a marker of item doesn't exist on the map
+                    if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
+                        // Marker type: None (unregistered Item or new item)
                         if (item.get("type") == ItemType.None) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
@@ -192,9 +173,9 @@ module ForagingMap {
             if (item.circle != null && item.get("sort") != 0) {
                 var ratio = FMM.getBendRatio(item);
                 if (ratio == Number.MIN_VALUE) {
-                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleColor() });
+                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleFillColor(), opacity: 0.25 });
                 } else {
-                    var hVal = (1 - ratio) * 50;
+                    var hVal = FMS.getLowValueColor() + ratio * (FMS.getHighValueColor() - FMS.getLowValueColor()) ;
                     var lVal = 50;
                     if (ratio > 1) {
                         lVal = 50 - (ratio - 1) * 35;
@@ -252,7 +233,6 @@ module ForagingMap {
                     if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
                         this.openPopup();
                         FMV.getUIView().render();
-                        //FMV.getMenuView().hide();
                     }
                 }
             });
@@ -321,9 +301,6 @@ module ForagingMap {
                                 // double click for focus event
                                 item.marker.off("dblclick");
                                 item.marker.on("dblclick", function () {
-                                    if (FMC.getSelectedItem() == item) {
-                                        FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + parseFloat(item.get("lat")) + "/" + parseFloat(item.get("lng")), { trigger: true, replace: true });
-                                    }
                                 });
                                 */
                             });

@@ -42,12 +42,6 @@ var ForagingMap;
         Setting.prototype.getImageMarkerBlank = function () {
             return this.data.imageMarkerBlank;
         };
-        Setting.prototype.getImageMarkerHeart = function () {
-            return this.data.imageMarkerHeart;
-        };
-        Setting.prototype.getImageMarkerDollar = function () {
-            return this.data.imageMarkerDollar;
-        };
         Setting.prototype.getImageMarkerNew = function () {
             return this.data.imageMarkerNew;
         };
@@ -59,6 +53,9 @@ var ForagingMap;
         };
         Setting.prototype.getTempCircleColor = function () {
             return this.data.tempCircleColor;
+        };
+        Setting.prototype.getTempCircleFillColor = function () {
+            return this.data.tempCircleFillColor;
         };
         Setting.prototype.getFruitCircleColor = function () {
             return this.data.fruitCircleColor;
@@ -98,6 +95,12 @@ var ForagingMap;
         };
         Setting.prototype.getDefaultInterval = function () {
             return this.data.defaultInterval;
+        };
+        Setting.prototype.getHighValueColor = function () {
+            return this.data.highValueColor;
+        };
+        Setting.prototype.getLowValueColor = function () {
+            return this.data.lowValueColor;
         };
         return Setting;
     })();

@@ -20,6 +20,9 @@ var ForagingMap;
         SliderView.prototype.getTimeInterval = function () {
             return this.timeInterval;
         };
+        SliderView.prototype.setTimeInterval = function (interval) {
+            this.timeInterval = interval;
+        };
         SliderView.prototype.getStartDateValue = function () {
             return moment(this.startDate).valueOf();
         };

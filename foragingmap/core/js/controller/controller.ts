@@ -6,102 +6,105 @@
 module ForagingMap {
     export class Controller {
         private router: ForagingMap.Router;
+        // Save marker as a selected item when user clicks a marker
         private selectedItem: Item;
         private user: User;
         constructor() {
-            // intialize router
+            // Intialize router
             this.router = new ForagingMap.Router();
+            // Initialize the user as a Guest
             this.user = new User({ username: "Guest", name: "Guest", auth: 0 });
         }
         initialize(): void {
-
             FMC.getUser().fetch({
-                remove: false,	// if remove == false, it only adds new items, not removing old items.
+                remove: false,      // if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 data: {
                     logout: false,
                 },
+                // Execute when it finds the login information
                 success: function (model: Item, response: any) {
-                    console.log(model);
-                    // intialize view
+                    // Intialize view
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-                    // intialize model
+                    // Intialize model
                     FMM = new ForagingMap.Model();
-
+                    // Fetch Sensor values
                     FMC.fetchSensors();
-
-                    
                 },
+                // Execute when it can't find any login information
                 error: function (error) {
-                    console.log("error");
+                    console.log("Log-In as a Guest");
                     // intialize view
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     // intialize model
                     FMM = new ForagingMap.Model();
-                    // fetch layer info
-
+                    // Fetch Sensor values
                     FMC.fetchSensors();
-                    /*
-                    FMC.fetchIcons();
-                    FMC.fetchLayers();
-                    FMC.addKeyEventListener();
-                    */
                 },
             });
         }
+        // Return User instance
         getUser(): User {
             return this.user;
         }
+        // Return Router instance
         getRouter(): ForagingMap.Router {
             return this.router;
         }
+        // Set selected item
         setSelectedItem(item: Item): void {
             this.selectedItem = item;
         }
+        // Return selected item
         getSelectedItem(): Item {
             return this.selectedItem;
         }
+        // Check whether user select item or not. Other functions use this function to decide what UI will show on the screen.
         hasSelectedItem(): boolean {
             if (this.selectedItem != null) {
                 return true;
             }
             return false;
         }
+        // Add keyboard listener
         addKeyEventListener() {
             $(document).keyup(function (e) {
-                if (e.keyCode == 27) {   // esc
+                // Add esc key listener to deselect item
+                if (e.keyCode == 27) {   // 27: esc
                     if (FMV.getUIView().getMode() != UIMode.ADD) {
-                        FMV.getUIView().hide();
-                        FMV.getMapView().resize(false);
-                        FMV.getMapView().getMarkersView().inactiveMarkers();
-                        FMV.getMapView().getControlView().resetControls();
+                        FMV.getUIView().hide();                                 // Hide UI
+                        FMV.getMapView().resize(false);                         // Resize Map since UI the size of map changes since UI is hidden
+                        FMV.getMapView().getMarkersView().inactiveMarkers();    // Change marker to inactive style
+                        FMV.getMapView().getControlView().resetControls();      // Reset Right control pannel
                     }
                 }
             });
         }
+        // Fetch layer data from the server.
         fetchLayers(): void {
             FMM.getLayers().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " layers");
-                    console.log(collection.models);
-                    // render view
+                    // Render whole View
                     FMV.render();
-                    // start routing
+                    // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
                     Backbone.history.start();
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-                    
+                    console.log("error while fetching layer data from the server");
                 },
             });
         }
+        // Fetch item (tree) data from the server.
         fetchItems(bounds: L.LatLngBounds): void {
             var that: Controller = this;
             FMM.getItems().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 data: {
+                    // Passing boundary lat / lng to the server to update only item within the boundary, but it's not currently used for now.
                     south: bounds.getSouthEast().lat,
                     north: bounds.getNorthEast().lat,
                     west: bounds.getSouthWest().lng,
@@ -110,17 +113,13 @@ module ForagingMap {
                 },
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " items");
+                    // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
+                    // Update bend data after updating items
                     that.fetchBends(FMM.getItems().getIdsToString());
-                
-                    /*
-                    $.each(collection.models, function (index: number, model: Backbone.Model) {
-                        console.log(model);
-                    });
-                    */
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-
+                    console.log("error while fetching item data from the server");
                 }
             });
         }
@@ -137,11 +136,6 @@ module ForagingMap {
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " bends");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
-                    /*
-                    $.each(collection.models, function (index: number, model: Backbone.Model) {
-                        console.log(model);
-                    });
-                    */
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
 

@@ -53145,13 +53145,12 @@ var ForagingMap;
                     logout: false,
                 },
                 success: function (model, response) {
-                    console.log(model);
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
                     FMC.fetchSensors();
                 },
                 error: function (error) {
-                    console.log("error");
+                    console.log("Log-In as a Guest");
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     FMM = new ForagingMap.Model();
                     FMC.fetchSensors();
@@ -53194,11 +53193,11 @@ var ForagingMap;
                 processData: true,
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " layers");
-                    console.log(collection.models);
                     FMV.render();
                     Backbone.history.start();
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("error while fetching layer data from the server");
                 },
             });
         };
@@ -53220,6 +53219,7 @@ var ForagingMap;
                     that.fetchBends(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("error while fetching item data from the server");
                 }
             });
         };
@@ -53705,12 +53705,6 @@ var ForagingMap;
         Setting.prototype.getImageMarkerBlank = function () {
             return this.data.imageMarkerBlank;
         };
-        Setting.prototype.getImageMarkerHeart = function () {
-            return this.data.imageMarkerHeart;
-        };
-        Setting.prototype.getImageMarkerDollar = function () {
-            return this.data.imageMarkerDollar;
-        };
         Setting.prototype.getImageMarkerNew = function () {
             return this.data.imageMarkerNew;
         };
@@ -53722,6 +53716,9 @@ var ForagingMap;
         };
         Setting.prototype.getTempCircleColor = function () {
             return this.data.tempCircleColor;
+        };
+        Setting.prototype.getTempCircleFillColor = function () {
+            return this.data.tempCircleFillColor;
         };
         Setting.prototype.getFruitCircleColor = function () {
             return this.data.fruitCircleColor;
@@ -53761,6 +53758,12 @@ var ForagingMap;
         };
         Setting.prototype.getDefaultInterval = function () {
             return this.data.defaultInterval;
+        };
+        Setting.prototype.getHighValueColor = function () {
+            return this.data.highValueColor;
+        };
+        Setting.prototype.getLowValueColor = function () {
+            return this.data.lowValueColor;
         };
         return Setting;
     })();
@@ -54158,6 +54161,13 @@ FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="bt
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 FMMenuTemplate += '<% } %>';
+FMMenuTemplate += '<label class="control-label">Time Slider Interval</label>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '<button id="btn-menu-slider-1" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 sec</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-60" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 min</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-3600" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 hour</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-24" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 day</button>';
+FMMenuTemplate += '<hr>';
 FMMenuTemplate += '</div>';
 var FMViewMenuSetSerialTemplate = '';
 FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';
@@ -55424,30 +55434,6 @@ var ForagingMap;
             $.each(that.circleGroups, function (index, iLayer) {
                 iLayer.addTo(FMV.getMapView().getMap());
             });
-            this.iconBlank = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerBlank(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconHeart = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerHeart(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
-            this.iconDollar = new L.Icon({
-                iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerDollar(),
-                shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
-                iconSize: new L.Point(40, 40),
-                iconAnchor: new L.Point(20, 40),
-                shadowAnchor: new L.Point(9, 38),
-                popupAnchor: new L.Point(0, -40),
-            });
             this.iconNew = new L.Icon({
                 iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerNew(),
                 shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
@@ -55463,7 +55449,7 @@ var ForagingMap;
                 if (!item.getIsRemoved()) {
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
-                        if (item.get("type") == 0 /* None */) {
+                        if (item.get("type") == ItemType.None) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
                                 draggable: false,
@@ -55572,10 +55558,10 @@ var ForagingMap;
             if (item.circle != null && item.get("sort") != 0) {
                 var ratio = FMM.getBendRatio(item);
                 if (ratio == Number.MIN_VALUE) {
-                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleColor() });
+                    item.circle.setStyle({ color: FMS.getTempCircleColor(), fillColor: FMS.getTempCircleFillColor(), opacity: 0.25 });
                 }
                 else {
-                    var hVal = (1 - ratio) * 50;
+                    var hVal = FMS.getLowValueColor() + ratio * (FMS.getHighValueColor() - FMS.getLowValueColor());
                     var lVal = 50;
                     if (ratio > 1) {
                         lVal = 50 - (ratio - 1) * 35;
@@ -55631,7 +55617,7 @@ var ForagingMap;
             var that = this;
             item.marker.on("click", function () {
                 if (that.isSelectable) {
-                    if (!FMV.getUIView().getIsLocked() || item.get("type") == 0 /* None */) {
+                    if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
                         this.openPopup();
                         FMV.getUIView().render();
                     }
@@ -55652,7 +55638,7 @@ var ForagingMap;
                 item.circle.setLatLng(item.marker.getLatLng());
             });
             item.marker.on("dragend", function (event) {
-                if (item.get("type") == 0 /* None */ || item.id == undefined) {
+                if (item.get("type") == ItemType.None || item.id == undefined) {
                     item.set({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng });
                 }
                 else {
@@ -55665,7 +55651,7 @@ var ForagingMap;
                         }
                     });
                 }
-                if (FMV.getUIView().getMode() == 2 /* INFO */ || FMV.getUIView().getMode() == 1 /* ADD */) {
+                if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }
@@ -55764,6 +55750,9 @@ var ForagingMap;
         }
         SliderView.prototype.getTimeInterval = function () {
             return this.timeInterval;
+        };
+        SliderView.prototype.setTimeInterval = function (interval) {
+            this.timeInterval = interval;
         };
         SliderView.prototype.getStartDateValue = function () {
             return moment(this.startDate).valueOf();
@@ -56678,6 +56667,19 @@ var ForagingMap;
             that.$el.html(template(data));
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
+            var timeInterval = FMV.getSliderView().getTimeInterval();
+            if (timeInterval == 1) {
+                that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
+            }
+            else if (timeInterval == 60) {
+                that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
+            }
+            else if (timeInterval == 60 * 60) {
+                that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
+            }
+            else if (timeInterval == 60 * 60 * 24) {
+                that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
+            }
             that.$('#btn-near-loc').off('click');
             that.$('#btn-near-loc').on('click', function () {
                 if (navigator.geolocation) {
@@ -56695,7 +56697,7 @@ var ForagingMap;
                     FMV.getMapView().getControlView().resetControls();
                     FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
                     FMC.setSelectedItem(FMC.createItemWithInfo(that.lat, that.lng, that.serial));
-                    FMV.getUIView().show(1 /* ADD */);
+                    FMV.getUIView().show(UIMode.ADD);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -56741,13 +56743,49 @@ var ForagingMap;
                     },
                 });
             });
+            that.$('#btn-menu-slider-1').off('click');
+            that.$('#btn-menu-slider-1').on('click', function () {
+                that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(1);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            that.$('#btn-menu-slider-60').off('click');
+            that.$('#btn-menu-slider-60').on('click', function () {
+                that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            that.$('#btn-menu-slider-3600').off('click');
+            that.$('#btn-menu-slider-3600').on('click', function () {
+                that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60 * 60);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
+            that.$('#btn-menu-slider-24').off('click');
+            that.$('#btn-menu-slider-24').on('click', function () {
+                that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
+                that.$('#btn-menu-slider-1').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
+                that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
+                FMV.getSliderView().setTimeInterval(60 * 60 * 24);
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            });
         };
         MenuView.prototype.createNewItem = function (position) {
             FMV.getMenuView().setLocation(position.coords.latitude, position.coords.longitude);
             FMV.getMapView().getControlView().resetControls();
             FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
             FMC.setSelectedItem(FMC.createItemWithInfo(FMV.getMenuView().lat, FMV.getMenuView().lng, FMV.getMenuView().serial));
-            FMV.getUIView().show(1 /* ADD */);
+            FMV.getUIView().show(UIMode.ADD);
             FMV.getMapView().resize(true);
             setTimeout(function () {
                 FMV.getMapView().getMarkersView().render();

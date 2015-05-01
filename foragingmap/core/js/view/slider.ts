@@ -24,6 +24,9 @@ module ForagingMap {
         getTimeInterval(): number {
             return this.timeInterval;
         }
+        setTimeInterval(interval: number): void {
+            this.timeInterval = interval;
+        }
         getStartDateValue(): number {
             return moment(this.startDate).valueOf();
         }

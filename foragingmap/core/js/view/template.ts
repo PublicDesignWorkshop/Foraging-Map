@@ -381,7 +381,7 @@ FMMenuTemplate += '<button id="btn-menu-logout" type="button" class="btn btn-def
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 
-FMMenuTemplate += '<% } %>';   // if admin
+FMMenuTemplate += '<% } %>';
 
 FMMenuTemplate += '<hr>';
 FMMenuTemplate += '<% if (isAdmin) { %>';   // if admin
@@ -402,6 +402,15 @@ FMMenuTemplate += '<button id="btn-menu-register-sensor" type="button" class="bt
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 FMMenuTemplate += '<% } %>';
+
+
+FMMenuTemplate += '<label class="control-label">Time Slider Interval</label>';
+FMMenuTemplate += '<div class="clear-float"></div>';
+FMMenuTemplate += '<button id="btn-menu-slider-1" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 sec</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-60" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 min</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-3600" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 hour</button>';
+FMMenuTemplate += '<button id="btn-menu-slider-24" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 day</button>';
+FMMenuTemplate += '<hr>';
 
 FMMenuTemplate += '</div>';
 
