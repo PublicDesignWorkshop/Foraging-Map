@@ -1,3 +1,7 @@
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
+/// <reference path="..\model\item.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12,6 +16,7 @@ var ForagingMap;
             _super.call(this, options);
             var that = this;
             this.isSelectable = false;
+            // initialize marker layer groups
             that.markerGroups = new Array();
             that.circleGroups = new Array();
             var circleGroup = new L.FeatureGroup();
@@ -34,6 +39,7 @@ var ForagingMap;
             $.each(that.circleGroups, function (index, iLayer) {
                 iLayer.addTo(FMV.getMapView().getMap());
             });
+            // intialize icon
             this.iconNew = new L.Icon({
                 iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerNew(),
                 shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
@@ -43,12 +49,16 @@ var ForagingMap;
                 popupAnchor: new L.Point(0, -40),
             });
         }
+        // Rendering markers on the map
         MarkersView.prototype.render = function () {
             var that = this;
+            // Iterate all items on the map
             $.each(FMM.getItems().models, function (index, item) {
                 if (!item.getIsRemoved()) {
+                    // Create a new marker if a marker of item doesn't exist on the map
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
+                        // Marker type: None (unregistered Item or new item)
                         if (item.get("type") == ItemType.None) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
@@ -85,11 +95,14 @@ var ForagingMap;
                         var i = that.getIndexOfMarkerGroups1(item);
                         that.markerGroups[i].addLayer(item.marker);
                         that.circleGroups[i].addLayer(item.circle);
+                        // event listeners
                         that.removeEventListener(item);
                         that.addEventListener(item);
+                        // update marker
                         that.updateMarker(item);
                     }
                     else {
+                        // update marker
                         that.updateMarker(item);
                     }
                 }
@@ -251,10 +264,12 @@ var ForagingMap;
                         }
                     });
                 }
+                // update ui if UIMode is Info or Add
                 if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }
+                // open popup
                 if (item.marker != null) {
                     item.marker.openPopup();
                 }
@@ -276,6 +291,12 @@ var ForagingMap;
                             if (FMC.getUser().getIsAdmin()) {
                                 item.marker.dragging.enable();
                             }
+                            /*
+                            // double click for focus event
+                            item.marker.off("dblclick");
+                            item.marker.on("dblclick", function () {
+                            });
+                            */
                         });
                     }
                     else {

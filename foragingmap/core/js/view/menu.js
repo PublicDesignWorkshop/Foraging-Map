@@ -21,14 +21,24 @@ var ForagingMap;
         MenuView.prototype.setSerial = function (serial) {
             var that = this;
             that.serial = serial;
+            //console.log(that.serial);
         };
         MenuView.prototype.getSerial = function () {
             var that = this;
+            //console.log(that.serial);
             return that.serial;
         };
         MenuView.prototype.show = function () {
             this.setIsOpen(true);
             this.$el.removeClass("hidden");
+            /*
+            if (FMV.getUIView().getMode() != UIMode.ADD) {
+                FMV.getUIView().hide();
+                FMV.getMapView().resize(false);
+                FMV.getMapView().getMarkersView().inactiveMarkers();
+                FMV.getMapView().getControlView().resetControls();
+            }
+            */
             this.render();
         };
         MenuView.prototype.hide = function () {
@@ -81,6 +91,11 @@ var ForagingMap;
             else if (timeInterval == 60 * 60 * 24) {
                 that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
             }
+            /*
+            that.$('#item-near-loc').on('hide.bs.collapse', function (event: Event) {
+                event.preventDefault();
+            });
+            */
             that.$('#btn-near-loc').off('click');
             that.$('#btn-near-loc').on('click', function () {
                 if (navigator.geolocation) {
@@ -122,9 +137,11 @@ var ForagingMap;
                         else {
                             FMC.getRouter().refresh();
                         }
+                        //FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
                     },
                     error: function (error) {
                         FMV.getMsgView().renderError("Failed to log in.");
+                        //FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                     },
                 });
             });
@@ -144,6 +161,7 @@ var ForagingMap;
                     },
                 });
             });
+            // Button click event listener for slider time interval 1 sec
             that.$('#btn-menu-slider-1').off('click');
             that.$('#btn-menu-slider-1').on('click', function () {
                 that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
@@ -151,8 +169,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(1);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 min
             that.$('#btn-menu-slider-60').off('click');
             that.$('#btn-menu-slider-60').on('click', function () {
                 that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
@@ -160,8 +180,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 hour
             that.$('#btn-menu-slider-3600').off('click');
             that.$('#btn-menu-slider-3600').on('click', function () {
                 that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
@@ -169,8 +191,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 day
             that.$('#btn-menu-slider-24').off('click');
             that.$('#btn-menu-slider-24').on('click', function () {
                 that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
@@ -178,7 +202,8 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60 * 24);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
         };
         MenuView.prototype.createNewItem = function (position) {
@@ -213,6 +238,8 @@ var ForagingMap;
         };
         MenuView.prototype.getPosition = function (position) {
             FMV.getMenuView().setLocation(position.coords.latitude, position.coords.longitude);
+            //alert(position.coords.latitude + " | " + position.coords.longitude);
+            // Grid instance for data
             itemColumn[1].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getLayers().toArray(),
             });
@@ -224,7 +251,15 @@ var ForagingMap;
             gridData.render();
             gridData.sort("name", "ascending");
             FMV.getMenuView().$("#item-near-loc").html(gridData.el);
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
+                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            /*
+            //FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
+                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+
+            FMV.getMsgView().renderSuccess(FML.getViewUILocateSuccessMsg());
+            */
         };
         return MenuView;
     })(Backbone.View);

@@ -1,3 +1,6 @@
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -40,7 +43,9 @@ var ForagingMap;
     })(Backbone.View);
     ForagingMap.MsgView = MsgView;
 })(ForagingMap || (ForagingMap = {}));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMMsgViewErrorTemplate = '';
 FMMsgViewErrorTemplate += '<span class="label label-warning"><%= msg %></span>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMMsgViewSuccessTemplate = '';
 FMMsgViewSuccessTemplate += '<span class="label label-success"><%= msg %></span>';

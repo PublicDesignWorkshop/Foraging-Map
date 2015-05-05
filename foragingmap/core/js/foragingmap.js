@@ -53116,25 +53116,38 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 }( jQuery, this ) );
 ///#source 1 1 /core/js/controller/app.js
+// MVC pattern global variables.
 var FMC;
 var FMS;
 var FML;
 var FMV;
 var FMM;
+/**
+ * Starting point of the program.
+ */
 $(document).ready(function () {
     var url = window.location;
+    // Defines Controller.
     FMC = new ForagingMap.Controller();
+    // Defines Setting.
     FMS = new ForagingMap.Setting(url.origin + window.location.pathname);
+    // Defines Localization.
     FML = new ForagingMap.Localization();
+    // Intializes Controller after fetching Setting.
     FMS.fetch(FMC.initialize);
 });
 
 ///#source 1 1 /core/js/controller/controller.js
 var ForagingMap;
 (function (ForagingMap) {
+    /**
+     * Controller - intializes MVC variables and handles fetching data from the server.
+     */
     var Controller = (function () {
         function Controller() {
+            // Intialize router.
             this.router = new ForagingMap.Router();
+            // Initialize the user as a Guest.
             this.user = new ForagingMap.User({ username: "Guest", name: "Guest", auth: 0 });
         }
         Controller.prototype.initialize = function () {
@@ -53144,69 +53157,89 @@ var ForagingMap;
                 data: {
                     logout: false,
                 },
+                // Execute when it finds the login information.
                 success: function (model, response) {
+                    // Intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    // Intialize model.
                     FMM = new ForagingMap.Model();
+                    // Fetch Sensor values.
                     FMC.fetchSensors();
                 },
+                // Execute when it can't find any login information.
                 error: function (error) {
-                    console.log("Log-In as a Guest");
+                    console.log("Guest Permission.");
+                    // intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
+                    // intialize model.
                     FMM = new ForagingMap.Model();
+                    // Fetch Sensor values.
                     FMC.fetchSensors();
                 },
             });
         };
+        // Return User instance.
         Controller.prototype.getUser = function () {
             return this.user;
         };
+        // Return Router instance.
         Controller.prototype.getRouter = function () {
             return this.router;
         };
+        // Set selected item.
         Controller.prototype.setSelectedItem = function (item) {
             this.selectedItem = item;
         };
+        // Return selected item.
         Controller.prototype.getSelectedItem = function () {
             return this.selectedItem;
         };
+        // Check whether user select item or not. Other functions use this function to decide what UI will show on the screen.
         Controller.prototype.hasSelectedItem = function () {
             if (this.selectedItem != null) {
                 return true;
             }
             return false;
         };
+        // Add keyboard listener.
         Controller.prototype.addKeyEventListener = function () {
             $(document).keyup(function (e) {
+                // Add esc key listener to deselect item.
                 if (e.keyCode == 27) {
                     if (FMV.getUIView().getMode() != UIMode.ADD) {
-                        FMV.getUIView().hide();
-                        FMV.getMapView().resize(false);
-                        FMV.getMapView().getMarkersView().inactiveMarkers();
-                        FMV.getMapView().getControlView().resetControls();
+                        FMV.getUIView().hide(); // Hide UI.
+                        FMV.getMapView().resize(false); // Resize Map since UI the size of map changes since UI is hidden.
+                        FMV.getMapView().getMarkersView().inactiveMarkers(); // Change marker to inactive style.
+                        FMV.getMapView().getControlView().resetControls(); // Reset Right control pannel.
                     }
                 }
             });
         };
+        // Fetch layer data from the server.
         Controller.prototype.fetchLayers = function () {
             FMM.getLayers().fetch({
                 remove: false,
                 processData: true,
                 success: function (collection, response, options) {
-                    console.log("success fetch with " + collection.models.length + " layers");
+                    console.log("Successfully imported " + collection.models.length + " layers.");
+                    // Render whole View
                     FMV.render();
+                    // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
                     Backbone.history.start();
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("error while fetching layer data from the server");
+                    console.log("Error while fetching layer data from the server.");
                 },
             });
         };
+        // Fetch item (tree) data from the server.
         Controller.prototype.fetchItems = function (bounds) {
             var that = this;
             FMM.getItems().fetch({
                 remove: false,
                 processData: true,
                 data: {
+                    // Passing boundary lat / lng to the server to update only item within the boundary, but it's not currently used for now.
                     south: bounds.getSouthEast().lat,
                     north: bounds.getNorthEast().lat,
                     west: bounds.getSouthWest().lng,
@@ -53214,15 +53247,18 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("success fetch with " + collection.models.length + " items");
+                    console.log("Successfully imported " + collection.models.length + " items.");
+                    // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
+                    // Update bend data after updating items.
                     that.fetchBends(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("error while fetching item data from the server");
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         };
+        // Fetch sensor values from the server with item ids (pids).
         Controller.prototype.fetchBends = function (pids) {
             var that = this;
             FMM.getBends().fetch({
@@ -53233,13 +53269,15 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("success fetch with " + collection.models.length + " bends");
+                    console.log("Successfully imported " + collection.models.length + " sensor values.");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         };
+        // Fetch threshold values from the server with item ids (pids).
         Controller.prototype.fetchThresholds = function (pids) {
             console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that = this;
@@ -53251,7 +53289,7 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("success fetch with " + collection.models.length + " thresholds");
+                    console.log("Successfully imported " + collection.models.length + " thresholds.");
                     FMV.getMapView().getMarkersView().render();
                     if (!FMV.getSliderView().getIsDraggable()) {
                         FMV.getSliderView().setIsDraggable(true);
@@ -53261,9 +53299,11 @@ var ForagingMap;
                     }
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         };
+        // Fetch pictures of item using item id (pid).
         Controller.prototype.fetchPictures = function (pid) {
             FMM.getPictures().fetch({
                 remove: true,
@@ -53272,12 +53312,14 @@ var ForagingMap;
                     pid: pid,
                 },
                 success: function (collection, response, options) {
-                    console.log("success fetch with " + collection.models.length + " pictures");
+                    console.log("Successfully imported " + collection.models.length + " pictures.");
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         };
+        // Create new tree item (it will be executed when user click the 'Add New Tree' button in mapcontrols).
         Controller.prototype.createItem = function () {
             var item = new ForagingMap.Item({
                 name: FML.getViewUIAddTempName(),
@@ -53294,6 +53336,7 @@ var ForagingMap;
             FMM.getItems().add(item);
             return item;
         };
+        // Create new tree item with location & sensor serial number (it will be executed when user adds item through menu & qr code).
         Controller.prototype.createItemWithInfo = function (latitude, longitude, serialnumber) {
             var item = new ForagingMap.Item({
                 name: FML.getViewUIAddTempName(),
@@ -53310,10 +53353,12 @@ var ForagingMap;
             FMM.getItems().add(item);
             return item;
         };
+        // Remove item from Items collection
         Controller.prototype.removeItem = function (item) {
             FMM.getItems().remove(item);
             return item;
         };
+        // Create tree icon collection.
         Controller.prototype.fetchIcons = function () {
             $.each(FMS.getMarkerIcons(), function (index, item) {
                 FMM.getIcons().add(new ForagingMap.Icon({ name: item.name, src: item.src }));
@@ -53329,19 +53374,23 @@ var ForagingMap;
                 });
             });
         };
+        // Fetch sensor type from the server.
         Controller.prototype.fetchSensors = function () {
             FMM.getSensors().fetch({
                 success: function (collection, response, options) {
                     console.log("success fetch with " + collection.models.length + " sensors");
                     FMM.getSensors().intializeCurType();
+                    // fetch layer info.
                     FMC.fetchIcons();
                     FMC.fetchLayers();
                     FMC.addKeyEventListener();
                 },
                 error: function (collection, jqxhr, options) {
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         };
+        // Reset data when user changes the sensor type.
         Controller.prototype.resetData = function () {
             $.each(FMM.getItems().models, function (index, item) {
                 FMV.getMapView().getMarkersView().removeMarker(item);
@@ -53367,28 +53416,32 @@ var __extends = this.__extends || function (d, b) {
 };
 var ForagingMap;
 (function (ForagingMap) {
+    /**
+     * Router class for parsing hash address into map & slider info
+     */
     var Router = (function (_super) {
         __extends(Router, _super);
         function Router(options) {
             this.routes = {
                 "": "home",
                 "map/:zoom/:lat/:lng/:interval/:start/:end/:cur": "map",
+                '*path': 'home',
             };
             _super.call(this, options);
         }
-        Router.prototype.initialize = function () {
-        };
         Router.prototype.home = function () {
-            console.log("we have loaded the home page");
-            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng() + "/" + FMS.getDefaultInterval() + "/" + moment(new Date()).subtract(6, 'month').valueOf() + "/" + moment(new Date()).valueOf() + "/" + moment(new Date()).valueOf(), { trigger: true, replace: true });
+            console.log("we have loaded the home page.");
+            this.navigate("map/" + FMS.getDefaultZoom() + "/" + FMS.getDefaultLat() + "/" + FMS.getDefaultLng() + "/" + FMS.getDefaultInterval()
+                + "/" + moment(new Date()).subtract(6, 'month').valueOf() + "/" + moment(new Date()).valueOf() + "/" + moment(new Date()).valueOf(), { trigger: true, replace: true });
         };
         Router.prototype.map = function (zoom, lat, lng, interval, start, end, cur) {
             console.log("we have loaded the map page with zoom: " + zoom + " | lat: " + lat + " | lng: " + lng);
             FMV.getMapView().renderMap(lat, lng, zoom);
-            FMV.getSliderView().renderSlider(interval, start, end, cur);
+            //FMV.getSliderView().renderSlider(interval, start, end, cur); // Parse the end date of slider from hash (currently not using this)
+            FMV.getSliderView().renderSlider(interval, start, moment(new Date()).valueOf(), cur); // Make the end date as always page loading date (current date / time)
         };
         Router.prototype.refresh = function () {
-            console.log("refresh");
+            console.log("Refresh page.");
             window.location.reload();
         };
         return Router;
@@ -53399,11 +53452,15 @@ var ForagingMap;
 ///#source 1 1 /core/js/controller/localization.js
 var ForagingMap;
 (function (ForagingMap) {
+    /**
+     * Import localizaiton.json file and store into this class to parse the string values.
+     */
     var Localization = (function () {
         function Localization() {
-            this.url = "core/json/localization.json" + "?" + moment();
-            this.error = "N/A";
+            this.url = "core/json/localization.json" + "?" + moment(); // Put timeline so that it cannot be cached.
+            this.error = "N/A"; // Default string value if the value cannot be found in localizaiton.json file.
         }
+        // Import json file and save into this class.
         Localization.prototype.fetch = function (callback) {
             var that = this;
             $.getJSON(ForagingMap.Setting.BASE_URL + this.url, {
@@ -53413,6 +53470,7 @@ var ForagingMap;
                 callback();
             });
         };
+        // View Panel Message
         Localization.prototype.getViewTitle = function () {
             if (this.data.view.title) {
                 return this.data.view.title;
@@ -53670,98 +53728,130 @@ var ForagingMap;
         }
         Setting.prototype.fetch = function (callback) {
             var that = this;
-            $.getJSON(Setting.BASE_URL + this.url, {}).done(function (data) {
+            $.getJSON(Setting.BASE_URL + this.url, {})
+                .done(function (data) {
                 that.data = data.setting;
+                // Intialize Controller after fetching Localization
                 FML.fetch(callback);
             });
         };
+        // Max zoom of leaflet
         Setting.prototype.getMaxZoom = function () {
             return parseInt(this.data.maxZoom);
         };
+        // Default zoom of leaflet
         Setting.prototype.getDefaultZoom = function () {
             return parseInt(this.data.defaultZoom);
         };
+        // Default latitude of leaflet when it's not specified
         Setting.prototype.getDefaultLat = function () {
             return parseFloat(this.data.defaultLat);
         };
+        // Default longitude of leaflet when it's not specified
         Setting.prototype.getDefaultLng = function () {
             return parseFloat(this.data.defaultLng);
         };
+        // Tile map address of leaflet
         Setting.prototype.getTileMapAddress = function () {
             return this.data.tileMapAddress;
         };
+        // Duration of message on the left upper corner
         Setting.prototype.getMsgTimeout = function () {
             return parseInt(this.data.msgTimeout);
         };
+        // Format of date
         Setting.prototype.getDateTimeFormat = function () {
             return this.data.dateTimeFormat;
         };
+        // Simple format of date
         Setting.prototype.getDateTimeFormatSimple = function () {
             return this.data.dateTimeFormatSimple;
         };
+        // Relative image directory (ui, icon)
         Setting.prototype.getImageDir = function () {
             return this.data.imageDir;
         };
+        // Blank leaflet marker
         Setting.prototype.getImageMarkerBlank = function () {
             return this.data.imageMarkerBlank;
         };
+        // New leaflet marker
         Setting.prototype.getImageMarkerNew = function () {
             return this.data.imageMarkerNew;
         };
+        // Marker shadow
         Setting.prototype.getImageMarkerShadow = function () {
             return this.data.imageMarkerShadow;
         };
+        // Multiplier of circle around the marker
         Setting.prototype.getCircleRadiusMultiplier = function () {
             return this.data.circleRadiusMultiplier;
         };
+        // Temporary color of circle when data and threshold is not specified
         Setting.prototype.getTempCircleColor = function () {
             return this.data.tempCircleColor;
         };
+        // Temporary fill color of circle when data and threshold is not specified
         Setting.prototype.getTempCircleFillColor = function () {
             return this.data.tempCircleFillColor;
         };
+        // Default fruit color
         Setting.prototype.getFruitCircleColor = function () {
             return this.data.fruitCircleColor;
         };
+        // Default station color
         Setting.prototype.getStationCircleColor = function () {
             return this.data.stationCircleColor;
         };
+        // Zero alpha value: 0
         Setting.prototype.getZeroAlpha = function () {
             return this.data.zeroAlpha;
         };
+        // Alpha value when the marker is not selected
         Setting.prototype.getInactiveAlpha = function () {
             return this.data.inactiveAlpha;
         };
+        // Half alpha value: 0.5
         Setting.prototype.getHalfAlpha = function () {
             return this.data.halfAplha;
         };
+        // Alpha value when the marker is selected
         Setting.prototype.getActiveAlpha = function () {
             return this.data.activeAlpha;
         };
+        // Full alpha value: 1
         Setting.prototype.getFullAlpha = function () {
             return this.data.fullAlpha;
         };
+        // Leaflet zoom when it finds user location
         Setting.prototype.getLocateZoom = function () {
             return parseInt(this.data.locateZoom);
         };
+        // Picture directory
         Setting.prototype.getPictureDir = function () {
             return this.data.pictureDir;
         };
+        // Home url addresss
         Setting.prototype.getBaseUrl = function () {
             return Setting.BASE_URL;
         };
+        // Time delay of refresh of the marker when the map changes.
         Setting.prototype.getFetchDataDelay = function () {
             return this.data.fetchDataDelay;
         };
+        // Array of icons of markers
         Setting.prototype.getMarkerIcons = function () {
             return this.data.markerIcons;
         };
+        // Initial delay of reading data from the server
         Setting.prototype.getDefaultInterval = function () {
             return this.data.defaultInterval;
         };
+        // Return high value color of circle
         Setting.prototype.getHighValueColor = function () {
             return this.data.highValueColor;
         };
+        // Return low value color of circle
         Setting.prototype.getLowValueColor = function () {
             return this.data.lowValueColor;
         };
@@ -53865,18 +53955,25 @@ function submitForm(event, data, model) {
     });
 }
 ///#source 1 1 /core/js/view/template.js
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewTemplate = '';
 FMViewTemplate += '<div id="fm-view-body" class="panel panel-primary">';
+// Panel Heading Start
 FMViewTemplate += '<div class="panel-heading">';
 FMViewTemplate += '<div id="fm-logo" class="panel-title nav-title"><%= title %></div>';
 FMViewTemplate += '<div class="btn-group nav-primary" role="group" aria-label="nav-primary">';
 FMViewTemplate += '<div id="fm-view-slider"></div>';
+//FMViewTemplate +=               '<button type="button" class="btn btn-default"><%= list %></button>';
+//FMViewTemplate +=               '<button type="button" class="btn btn-default"><%= map %></button>';
 FMViewTemplate += '</div>';
 FMViewTemplate += '<div class="btn-group nav-secondary" role="group" aria-label="nav-secondary">';
 FMViewTemplate += '<button type="button" id="btn-toggle-menu" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> <%= menu %></button>';
 FMViewTemplate += '</div>';
 FMViewTemplate += '<div class="clear" />';
 FMViewTemplate += '</div>';
+// Panel Body Start
 FMViewTemplate += '<div id="fm-view-map">';
 FMViewTemplate += '<div id="leaflet-view-ui"></div>';
 FMViewTemplate += '<div id="leaflet-view-map"></div>';
@@ -53886,54 +53983,73 @@ FMViewTemplate += '<div id="leaflet-view-galleria">';
 FMViewTemplate += '</div>';
 FMViewTemplate += '</div>';
 FMViewTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMUIInfoLayerTemplate = '';
 FMUIInfoLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMUIInfoLayerTemplate += '<div class="ui-body">';
 FMUIInfoLayerTemplate += '<form class="form-horizontal">';
+// item-info-id
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-id" class="col-xs-3 control-label">#id</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-id" value="<%= id %>" readonly>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-name
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-name" class="col-xs-3 control-label">Name</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-desc
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>"<% if (!isAdmin) { %>readonly<% } %>>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-serial
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>"<% if (!isAdmin) { %>readonly<% } %>>';
+//FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>" disabled>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
-FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';
+// item-info-serial-select TODO
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>'; // if admin
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
-FMUIInfoLayerTemplate += '<% } %>';
+FMUIInfoLayerTemplate += '<% } %>'; // if non-admin
+// item-info-type
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<select id="item-info-type" class="selectpicker" <% if (!isAdmin) { %>disabled<% } %>>';
+//FMUIInfoLayerTemplate += '<optgroup label="None">';
+//FMUIInfoLayerTemplate += '<option data-type="0" data-sort="0">None</option>';
+//FMUIInfoLayerTemplate += '</optgroup>';
 FMUIInfoLayerTemplate += '<optgroup label="Fruit">';
 FMUIInfoLayerTemplate += '<% _.each(sort1, function (sort) { %>';
 FMUIInfoLayerTemplate += '<option data-type="1" data-sort="<%= sort.get("id") %>"><%= sort.get("name") %></option>';
 FMUIInfoLayerTemplate += '<% }); %>';
 FMUIInfoLayerTemplate += '                              </optgroup>';
+//FMUIInfoLayerTemplate += '<optgroup label="Station">';
+//FMUIInfoLayerTemplate += '<% _.each(sort2, function (sort) { %>';
+//FMUIInfoLayerTemplate += '<option data-type="2" data-sort="<%= sort.get("id") %>"><%= sort.get("name") %></option>';
+//FMUIInfoLayerTemplate += '<% }); %>';
+//FMUIInfoLayerTemplate += '</optgroup>';
 FMUIInfoLayerTemplate += '</select>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-amount
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-amount" class="col-xs-3 control-label">Amount</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
@@ -53943,6 +54059,7 @@ FMUIInfoLayerTemplate += '<span class="input-group-addon">s</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-lat
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-lat" class="col-xs-3 control-label">Latitude</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
@@ -53952,6 +54069,7 @@ FMUIInfoLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-lng    
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-lng" class="col-xs-3 control-label">Longitude</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
@@ -53961,53 +54079,68 @@ FMUIInfoLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-date
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-date" class="col-xs-3 control-label">Updated</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
+//FMUIInfoLayerTemplate +=                            '<div class="input-group date" id="item-info-date-picker">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" id="item-info-date" value="<%= update %>" readonly>';
+//FMUIInfoLayerTemplate +=                                '<span class="input-group-addon input-group-addon-click" id="item-info-date-select"></span>';
+//FMUIInfoLayerTemplate +=                            '</div>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
+// item-info-reg
 FMUIInfoLayerTemplate += '<div class="form-group">';
 FMUIInfoLayerTemplate += '<label for="item-info-reg" class="col-xs-3 control-label">Registered</label>';
 FMUIInfoLayerTemplate += '<div class="col-xs-9">';
 FMUIInfoLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-reg" value="<%= regdate %>" readonly>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '</div>';
-FMUIInfoLayerTemplate += '<% if (isAdmin) { %>';
+FMUIInfoLayerTemplate += '<% if (isAdmin) { %>'; // if admin
+// item-info-btn-edit
 FMUIInfoLayerTemplate += '<button id="item-info-btn-edit" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-ok"></span> Save</button>';
+// item-info-btn-delete
 FMUIInfoLayerTemplate += '<button id="item-info-btn-delete" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-remove"></span> Delete</button>';
 FMUIInfoLayerTemplate += '<div style="clear:both;"/>';
 FMUIInfoLayerTemplate += '</form>';
 FMUIInfoLayerTemplate += '</div>';
 FMUIInfoLayerTemplate += '<% } %>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMUIAddLayerTemplate = '';
 FMUIAddLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMUIAddLayerTemplate += '<div class="ui-body">';
 FMUIAddLayerTemplate += '<form class="form-horizontal">';
+// item-info-name
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-name" class="col-xs-3 control-label">Name</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-name" value="<%= name %>">';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-desc
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-desc" class="col-xs-3 control-label">Description</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-desc" value="<%= desc %>">';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-serial
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-serial" class="col-xs-3 control-label">Sensor Serial</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input type="text" class="form-control" placeholder="" id="item-info-serial" value="<%= serial %>">';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-serial-select TODO
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-qrcode" class="col-xs-3 control-label">QRCode</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
 FMUIAddLayerTemplate += '<input class="fileupload" id="item-info-qrcode" placeholder="" type="file" accept="image/*" capture="camera" />';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-type
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-type" class="col-xs-3 control-label">Type</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
@@ -54023,6 +54156,7 @@ FMUIAddLayerTemplate += '</optgroup>';
 FMUIAddLayerTemplate += '</select>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-amount
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-amount" class="col-xs-3 control-label">Amount</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
@@ -54032,6 +54166,7 @@ FMUIAddLayerTemplate += '<span class="input-group-addon">s</span>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-lat
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-lat" class="col-xs-3 control-label">Latitude</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
@@ -54041,6 +54176,7 @@ FMUIAddLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-lng    
 FMUIAddLayerTemplate += '<div class="form-group">';
 FMUIAddLayerTemplate += '<label for="item-info-lng" class="col-xs-3 control-label">Longitude</label>';
 FMUIAddLayerTemplate += '<div class="col-xs-9">';
@@ -54050,49 +54186,78 @@ FMUIAddLayerTemplate += '<span class="input-group-addon">°</span>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
 FMUIAddLayerTemplate += '</div>';
+// item-info-btn-edit
 FMUIAddLayerTemplate += '<button id="item-info-btn-edit" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-ok"></span> Save</button>';
+// item-info-btn-delete
 FMUIAddLayerTemplate += '<button id="item-info-btn-delete" type="button" class="btn btn-default col-xs-6"><span class="glyphicon glyphicon-remove"></span> Cancel</button>';
 FMUIAddLayerTemplate += '<div style="clear:both;"/>';
 FMUIAddLayerTemplate += '</form>';
 FMUIAddLayerTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIDataLayerTemplate = '';
 FMViewUIDataLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUIDataLayerTemplate += '<div class="ui-body">';
 FMViewUIDataLayerTemplate += '<div id="bendWrapper" style="overflow-x: scroll; overflow-y: hidden;"><canvas id="bendChart" width= "460" height= "250"></canvas></div>';
-FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>';
+FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>'; // if admin
 FMViewUIDataLayerTemplate += '<button type="button" data-toggle="collapse" data-target="#date-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Data</button>';
 FMViewUIDataLayerTemplate += '<div class="collapse" id="date-add-panel">';
 FMViewUIDataLayerTemplate += '<% } %>';
 FMViewUIDataLayerTemplate += '</div>';
 FMViewUIDataLayerTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIThresholdLayerTemplate = '';
 FMViewUIThresholdLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUIThresholdLayerTemplate += '<div class="ui-body">';
-FMViewUIThresholdLayerTemplate += '<% if (isAdmin) { %>';
+FMViewUIThresholdLayerTemplate += '<% if (isAdmin) { %>'; // if admin
 FMViewUIThresholdLayerTemplate += '<button type="button" data-toggle="collapse" data-target="#threshold-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Threshold</button>';
 FMViewUIThresholdLayerTemplate += '<div class="collapse" id="threshold-add-panel">';
 FMViewUIThresholdLayerTemplate += '<% } %>';
 FMViewUIThresholdLayerTemplate += '</div>';
 FMViewUIThresholdLayerTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIDataLayerDeleteTemplate = '';
 FMViewUIDataLayerDeleteTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-remove"></span></button>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIDataLayerAddTemplate = '';
 FMViewUIDataLayerAddTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-plus"></span></button>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUILayerPictureTemplate = '';
 FMViewUILayerPictureTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewUILayerPictureTemplate += '<div class="ui-body ui-picture">';
-FMViewUILayerPictureTemplate += '<% if (isAdmin) { %>';
+FMViewUILayerPictureTemplate += '<% if (isAdmin) { %>'; // if admin
 FMViewUILayerPictureTemplate += '<button type="button" data-toggle="collapse" data-target="#picture-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Picture</button>';
 FMViewUILayerPictureTemplate += '<div class="collapse" id="picture-add-panel">';
 FMViewUILayerPictureTemplate += '<% } %>';
 FMViewUILayerPictureTemplate += '</div>';
 FMViewUILayerPictureTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewUIPictureTemplate = '';
 FMViewUIPictureTemplate += '<img class="picture-thumbnail" src="<%= url %>" />';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMUIPictureSelectTemplate = '';
 FMUIPictureSelectTemplate += '<input class="fileupload" type="file" accept="image/*" capture="camera" />';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMUIPictureAddTemplate = '';
 FMUIPictureAddTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-plus"></span></button>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewGalleryTemplate = '';
 FMViewGalleryTemplate += '<button id="btn-galleria-close" type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-remove-circle"></span> Close</button>';
 FMViewGalleryTemplate += '<div class="galleria">';
@@ -54100,6 +54265,9 @@ FMViewGalleryTemplate += '<% _.each(pictures, function(picture) { %>';
 FMViewGalleryTemplate += '<img data-id="<%= picture.get("id") %>" src="<%= dir %><%= picture.get ("url") %>" data-title="<%= picture.get ("name") %>" data-description="<%= moment(picture.get("date")).format(FMS.getDateTimeFormat()) %>" />';
 FMViewGalleryTemplate += '<% }); %>';
 FMViewGalleryTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewLayerTemplate = '';
 FMViewLayerTemplate += '<div class="ui-header"><%= header %></div>';
 FMViewLayerTemplate += '<div class="ui-body">';
@@ -54119,11 +54287,14 @@ FMViewLayerTemplate += '<label><input type="checkbox" value= "" data-type="1" da
 FMViewLayerTemplate += '</div>';
 FMViewLayerTemplate += '<% }); %>';
 FMViewLayerTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMMenuTemplate = '';
 FMMenuTemplate += '';
 FMMenuTemplate += '<div class="ui-body">';
 FMMenuTemplate += '<form class="form-horizontal">';
-FMMenuTemplate += '<% if (!isAdmin) { %>';
+FMMenuTemplate += '<% if (!isAdmin) { %>'; // if non-admin
 FMMenuTemplate += '<div class="form-group">';
 FMMenuTemplate += '<label for="input-menu-login-username" class="col-xs-3 control-label">Username</label>';
 FMMenuTemplate += '<div class="col-xs-9">';
@@ -54139,13 +54310,13 @@ FMMenuTemplate += '</div>';
 FMMenuTemplate += '<button id="btn-menu-login" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-in"></span> Sign In</button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
-FMMenuTemplate += '<% } else { %>';
+FMMenuTemplate += '<% } else { %>'; // if admin
 FMMenuTemplate += '<button id="btn-menu-logout" type="button" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-log-out"></span> Log Out from <strong><%= username %></strong></button>';
 FMMenuTemplate += '<div class="clear-float"></div>';
 FMMenuTemplate += '</form>';
 FMMenuTemplate += '<% } %>';
 FMMenuTemplate += '<hr>';
-FMMenuTemplate += '<% if (isAdmin) { %>';
+FMMenuTemplate += '<% if (isAdmin) { %>'; // if admin
 FMMenuTemplate += '<form class="form-horizontal">';
 FMMenuTemplate += '<div class="form-group">';
 FMMenuTemplate += '<label for="input-menu-qrcode" class="col-xs-3 control-label">QRCode</label>';
@@ -54169,12 +54340,18 @@ FMMenuTemplate += '<button id="btn-menu-slider-3600" type="button" class="btn bt
 FMMenuTemplate += '<button id="btn-menu-slider-24" type="button" class="btn btn-default col-xs-3"><span class="glyphicon glyphicon-time"></span> 1 day</button>';
 FMMenuTemplate += '<hr>';
 FMMenuTemplate += '</div>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewMenuSetSerialTemplate = '';
 FMViewMenuSetSerialTemplate = '<button type="button" class="btn btn-default btn-table"><span class="glyphicon glyphicon-hand-left"></span></button>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMUIAddSensorTemplate = '';
 FMUIAddSensorTemplate += '<div class="ui-header"><%= header %></div>';
 FMUIAddSensorTemplate += '<div class="ui-body">';
-FMUIAddSensorTemplate += '<% if (isAdmin) { %>';
+FMUIAddSensorTemplate += '<% if (isAdmin) { %>'; // if admin
 FMUIAddSensorTemplate += '<button type="button" data-toggle="collapse" data-target="#sensor-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Sensor</button>';
 FMUIAddSensorTemplate += '<div class="collapse" id="sensor-add-panel">';
 FMUIAddSensorTemplate += '<% } %>';
@@ -54182,6 +54359,8 @@ FMUIAddSensorTemplate += '</div>';
 FMUIAddSensorTemplate += '</div>';
 
 ///#source 1 1 /core/js/view/view.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54262,6 +54441,9 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/map.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54287,6 +54469,7 @@ var ForagingMap;
         };
         MapView.prototype.renderMap = function (lat, lng, zoom) {
             var that = this;
+            // intialize map if map is not created.
             if (that.lMap == null) {
                 that.lMap = L.map(that.$el[0].id, {
                     closePopupOnClick: false,
@@ -54298,9 +54481,11 @@ var ForagingMap;
                     maxZoom: FMS.getMaxZoom(),
                 }).addTo(that.lMap);
                 that.lMap.invalidateSize(false);
+                //that.lMap.touchZoom.disable();
                 that.lMap.doubleClickZoom.disable();
                 that.lMap.on("moveend", function (e) {
-                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                        + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
                     that.waitForFetchData();
                 });
                 that.lMap.whenReady(function () {
@@ -54310,7 +54495,7 @@ var ForagingMap;
                     that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
+                    if (FMV.getUIView().getMode() != UIMode.ADD) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -54359,7 +54544,7 @@ var ForagingMap;
                 that.$el.removeAttr("style");
                 that.$el.removeClass("view-map-half");
             }
-            that.lMap.invalidateSize(false);
+            that.lMap.invalidateSize(false); // set map size fit with parent div size
             if (FMC.hasSelectedItem() && centerize) {
                 that.lMap.setView(new L.LatLng(parseFloat(FMC.getSelectedItem().get("lat")), parseFloat(FMC.getSelectedItem().get("lng"))));
             }
@@ -54368,11 +54553,13 @@ var ForagingMap;
             if (isAvailable) {
                 FMV.getMapView().getMap().dragging.enable();
                 FMV.getMapView().getMap().touchZoom.enable();
+                //FMV.getMapView().getMap().doubleClickZoom.enable();
                 FMV.getMapView().getMap().scrollWheelZoom.enable();
             }
             else {
                 FMV.getMapView().getMap().dragging.disable();
                 FMV.getMapView().getMap().touchZoom.disable();
+                //FMV.getMapView().getMap().doubleClickZoom.disable();
                 FMV.getMapView().getMap().scrollWheelZoom.disable();
             }
         };
@@ -54382,6 +54569,9 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/mapcontrol.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54422,12 +54612,14 @@ var ForagingMap;
         };
         MapControlView.prototype.addEventListener = function () {
             var that = this;
+            // hold map control while mouse is over the control button
             that.$(".control-button").on("mouseenter", function () {
                 FMV.getMapView().SetIsMapPanZoomAvailable(false);
             });
             that.$(".control-button").on("mouseleave", function () {
                 FMV.getMapView().SetIsMapPanZoomAvailable(true);
             });
+            // zoom in and zoom out control
             that.$(".control-button.zoomin").on("click", function (event) {
                 console.log("zoomIn()");
                 FMV.getMapView().getMap().zoomIn();
@@ -54435,6 +54627,7 @@ var ForagingMap;
             that.$(".control-button.zoomout").on("click", function (event) {
                 FMV.getMapView().getMap().zoomOut();
             });
+            // geo locate
             that.$(".control-button.locate").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (navigator.geolocation) {
@@ -54442,12 +54635,13 @@ var ForagingMap;
                     }
                 }
             });
+            // ui-layer control
             that.$(".control-button.layer").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (!$(this).hasClass("layer-active")) {
                         that.resetControls();
                         $(this).addClass("layer-active");
-                        FMV.getUIView().show(5 /* LAYER */);
+                        FMV.getUIView().show(UIMode.LAYER);
                     }
                     else {
                         $(this).removeClass("layer-active");
@@ -54456,13 +54650,14 @@ var ForagingMap;
                     FMV.getMapView().resize(false);
                 }
             });
+            // ui-info control
             that.$(".control-button.info").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (!$(this).hasClass("info-active")) {
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("info-active");
-                            FMV.getUIView().show(2 /* INFO */);
+                            FMV.getUIView().show(UIMode.INFO);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -54476,12 +54671,13 @@ var ForagingMap;
                     }
                 }
             });
+            // ui-add control
             that.$(".control-button.add").on("click", function (event) {
                 if (!$(this).hasClass("add-active")) {
                     that.resetControls();
                     $(this).addClass("add-active");
                     FMC.setSelectedItem(FMC.createItem());
-                    FMV.getUIView().show(1 /* ADD */);
+                    FMV.getUIView().show(UIMode.ADD);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -54498,13 +54694,14 @@ var ForagingMap;
                     }
                 }
             });
+            // ui-data control
             that.$(".control-button.data").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (!$(this).hasClass("data-active")) {
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("data-active");
-                            FMV.getUIView().show(3 /* DATA */);
+                            FMV.getUIView().show(UIMode.DATA);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -54518,13 +54715,14 @@ var ForagingMap;
                     }
                 }
             });
+            // ui-picture control
             that.$(".control-button.picture").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (!$(this).hasClass("picture-active")) {
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("picture-active");
-                            FMV.getUIView().show(4 /* PICTURE */);
+                            FMV.getUIView().show(UIMode.PICTURE);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -54538,13 +54736,14 @@ var ForagingMap;
                     }
                 }
             });
+            // ui-threshold control
             that.$(".control-button.threshold").on("click", function (event) {
                 if (!FMV.getUIView().getIsLocked()) {
                     if (!$(this).hasClass("threshold-active")) {
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("threshold-active");
-                            FMV.getUIView().show(6 /* THRESHOLD */);
+                            FMV.getUIView().show(UIMode.THRESHOLD);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -54570,7 +54769,9 @@ var ForagingMap;
         };
         MapControlView.prototype.updatePosition = function (position) {
             var that = this;
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            //FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
+                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             FMV.getMsgView().renderSuccess(FML.getViewUILocateSuccessMsg());
         };
         return MapControlView;
@@ -54587,7 +54788,7 @@ FMMapControlViewTemplate += '<div class="control-button info"></div>';
 FMMapControlViewTemplate += '<div class="control-button data"></div>';
 FMMapControlViewTemplate += '<div class="control-button threshold"></div>';
 FMMapControlViewTemplate += '<div class="control-button picture"></div>';
-FMMapControlViewTemplate += '<% if (isAdmin) { %>';
+FMMapControlViewTemplate += '<% if (isAdmin) { %>'; // if admin
 FMMapControlViewTemplate += '<div class="control-button add"></div>';
 FMMapControlViewTemplate += '<% } %>';
 FMMapControlViewTemplate += '</div>';
@@ -54629,7 +54830,8 @@ var ForagingMap;
         }
         UIView.prototype.createLayerCheckList = function () {
             this.layerHeaderList = new Array();
-            this.layerHeaderList[1] = true;
+            this.layerHeaderList[1] = true; // Fruit
+            //this.layerHeaderList[2] = true;    // Station
             this.layerBodyList = new Array();
             this.layerBodyList[0] = true;
         };
@@ -54719,6 +54921,9 @@ var ForagingMap;
                     break;
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderAddSensorLayer = function () {
             var that = this;
             var template = _.template(FMUIAddSensorTemplate);
@@ -54727,6 +54932,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: sensorColumn,
@@ -54745,6 +54951,7 @@ var ForagingMap;
                 gridData.render();
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Picture
             if (FMC.getUser().getIsAdmin()) {
                 var sensor = new ForagingMap.Sensor({ name: "", initial: "" });
                 sensor.setIsSavable(false);
@@ -54758,6 +54965,9 @@ var ForagingMap;
                 that.$("#sensor-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIInfo = function () {
             var that = this;
             var template = _.template(FMUIInfoLayerTemplate);
@@ -54778,18 +54988,21 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // render type selection
             that.$('#item-info-type').selectpicker();
             that.$('#item-info-type option').each(function () {
                 if ((FMC.getSelectedItem().get("type") == $(this).attr("data-type")) && (FMC.getSelectedItem().get("sort") == $(this).attr("data-sort"))) {
                     that.$('#item-info-type').selectpicker("val", $(this).val());
                 }
             });
+            // remove event listeners
             that.$("#item-info-amount").off("change");
             that.$("#item-info-lat").off("change");
             that.$("#item-info-lng").off("change");
             that.$("#item-info-btn-edit").off("click");
             that.$("#item-info-btn-delete").off("click");
             that.$("#item-info-date-picker").off("dp.change");
+            // add event listeners
             that.$("#item-info-amount").on("change", function () {
                 FMC.getSelectedItem().save({
                     amount: parseFloat($(this).val()),
@@ -54832,8 +55045,27 @@ var ForagingMap;
                     },
                 });
             });
+            //item-info-qrcode
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
+            /*
+            that.$('#item-info-type').on("change", function () {
+                var optionSelected = $("option:selected", this);
+                FMV.getMapView().getMarkersView().removeMarker(FMC.getSelectedItem());
+                FMC.getSelectedItem().set({ type: parseInt(optionSelected.attr("data-type")) });
+                FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
+                FMV.getMapView().getMarkersView().render();
+            });
+            */
+            /*
+            that.$("#item-info-date-picker").datetimepicker({
+                format: FMS.getDateTimeFormat(),
+            });
+            that.$("#item-info-date-picker").on("dp.change", function () {
+                FMC.getSelectedItem().set({ update: $(this).data('date') });
+            });
+            */
+            // save & delete
             that.$("#item-info-btn-edit").on("click", function () {
                 var tempSerial = that.$("#item-info-serial").val();
                 var optionSelected = $("option:selected", that.$('#item-info-type'));
@@ -54856,6 +55088,7 @@ var ForagingMap;
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                         },
                         error: function (model, error) {
+                            //console.log("error");
                             if (error.responseText.indexOf("Duplicate:") > -1) {
                                 var name = error.responseText.replace("Duplicate:", "");
                                 that.render();
@@ -54899,6 +55132,7 @@ var ForagingMap;
         UIView.prototype.executeDecode = function (event) {
             var that = this;
             that.files = event.target.files;
+            //console.log(that.files);
             var reader = new FileReader();
             reader.onload = function (event) {
                 qrcode.decode(event.target.result);
@@ -54915,6 +55149,9 @@ var ForagingMap;
             };
             reader.readAsDataURL(that.files[0]);
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIAdd = function () {
             var that = this;
             var template = _.template(FMUIAddLayerTemplate);
@@ -54931,12 +55168,15 @@ var ForagingMap;
                 "sort1": FMM.getLayers().where({ type: 1 }),
             };
             that.$el.html(template(data));
+            // render type selection
             that.$('#item-info-type').selectpicker();
+            // remove event listeners
             that.$("#item-info-amount").off("change");
             that.$("#item-info-lat").off("change");
             that.$("#item-info-lng").off("change");
             that.$("#item-info-btn-edit").off("click");
             that.$("#item-info-btn-delete").off("click");
+            // add event listeners
             that.$("#item-info-amount").on("change", function () {
                 FMC.getSelectedItem().set({ amount: parseFloat($(this).val()) });
                 FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
@@ -54989,6 +55229,7 @@ var ForagingMap;
                     });
                 }
             });
+            //item-info-qrcode
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
             that.$("#item-info-btn-delete").on("click", function () {
@@ -55003,6 +55244,9 @@ var ForagingMap;
                 }
             });
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIData = function () {
             var that = this;
             var template = _.template(FMViewUIDataLayerTemplate);
@@ -55012,7 +55256,44 @@ var ForagingMap;
             };
             that.$el.html(template(data));
             var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            //var origLables: string[] = origData.getLabels();
+            //var origValues: number[] = origData.getValues();
+            //var dataLength = origData.models.length;
+            // draw chart
             that.drawChart();
+            /*
+            console.log(that.$el.width());
+            if (dataLength <= 15) {
+                $("#bendChart").width(460);
+            } else {
+                $("#bendChart").width(30 * dataLength);
+            }
+            var canvas: any = document.getElementById("bendChart");
+            var ctx = canvas.getContext("2d");
+
+
+
+            Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
+
+            var chartData : any = {
+                labels: origLables,
+                datasets: [
+                    {
+                        label: FMC.getSelectedItem().get("name"),
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(151,187,205,1)",
+                        data: origValues
+                    },
+                ]
+            };
+
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false } );
+            */
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn,
@@ -55033,6 +55314,7 @@ var ForagingMap;
                 gridData.sort("date", "descending");
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
                 var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 bend.setIsSavable(false);
@@ -55046,6 +55328,9 @@ var ForagingMap;
                 that.$("#date-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIThreshold = function () {
             var that = this;
             var template = _.template(FMViewUIThresholdLayerTemplate);
@@ -55054,6 +55339,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: thresholdColumn,
@@ -55074,6 +55360,7 @@ var ForagingMap;
                 gridData.sort("date", "descending");
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
                 var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 threshold.setIsSavable(false);
@@ -55086,7 +55373,25 @@ var ForagingMap;
                 });
                 that.$("#threshold-add-panel").append(gridAddData.render().el);
             }
+            /*
+            
+            // Grid instance for add Data
+            var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            bend.setIsSavable(false);
+            var bends: Bends = new Bends();
+            bends.add(bend);
+            var gridAddData = new Backgrid.Grid({
+                columns: dataAddColumn,
+                collection: bends,
+                emptyText: FML.getViewUIDataNoDataMsg(),
+            });
+
+            that.$("#date-add-panel").append(gridAddData.render().el);
+            */
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIPicture = function () {
             FMC.fetchPictures(parseInt(FMC.getSelectedItem().get('id')));
             var that = this;
@@ -55096,6 +55401,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: pictureColumn,
@@ -55122,6 +55428,7 @@ var ForagingMap;
                     gridData.sort("date", "descending");
                 }, 3000);
             }
+            // Grid instance for add Picture
             if (FMC.getUser().getIsAdmin()) {
                 var picture = new ForagingMap.Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 picture.setIsSavable(false);
@@ -55135,6 +55442,9 @@ var ForagingMap;
                 that.$("#picture-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUILayer = function () {
             var that = this;
             var isIn = "";
@@ -55233,9 +55543,11 @@ var ForagingMap;
                 that.layerBodyList[parseInt($(this).attr("data-sort"))] = $(this).prop("checked");
                 that.updateLayer();
             });
+            // collapsed in
             that.$('button[data-target="#layer-add-panel"]').click(function () {
                 that.isLayerCollapsedIn = !that.isLayerCollapsedIn;
             });
+            // Grid instance for data
             layerColumn[0].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getIcons().toArray(),
             });
@@ -55247,6 +55559,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("name", "ascending");
             that.$(".ui-body #layer-list-grid").append(gridData.el);
+            // Grid instance for adding
             layerAddColumn[0].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getIcons().toArray(),
             });
@@ -55261,6 +55574,7 @@ var ForagingMap;
             });
             that.$(".ui-body #layer-add-grid").append(gridAddData.render().el);
         };
+        ////////////////////////
         UIView.prototype.drawChart = function () {
             var that = this;
             var maxLength = 1000;
@@ -55269,6 +55583,7 @@ var ForagingMap;
             var origValues = origData.getValues(maxLength);
             var dataLength = origData.getDataLength(maxLength);
             console.log("Drawing graph for " + dataLength + " data");
+            // draw chart
             if (dataLength <= 15) {
                 $("#bendChart").width(460);
             }
@@ -55281,6 +55596,18 @@ var ForagingMap;
             var chartData = {
                 labels: origLables,
                 datasets: [
+                    /*
+                    {
+                        label: "My First dataset",
+                        fillColor: "rgba(220,220,220,0.2)",
+                        strokeColor: "rgba(220,220,220,1)",
+                        pointColor: "rgba(220,220,220,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(220,220,220,1)",
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    },
+                    */
                     {
                         label: FMC.getSelectedItem().get("name"),
                         fillColor: "rgba(151,187,205,0.2)",
@@ -55293,7 +55620,7 @@ var ForagingMap;
                     },
                 ]
             };
-            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 2 });
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 1 });
         };
         return UIView;
     })(Backbone.View);
@@ -55301,6 +55628,9 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/msg.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55343,12 +55673,17 @@ var ForagingMap;
     })(Backbone.View);
     ForagingMap.MsgView = MsgView;
 })(ForagingMap || (ForagingMap = {}));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMMsgViewErrorTemplate = '';
 FMMsgViewErrorTemplate += '<span class="label label-warning"><%= msg %></span>';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMMsgViewSuccessTemplate = '';
 FMMsgViewSuccessTemplate += '<span class="label label-success"><%= msg %></span>';
 
 ///#source 1 1 /core/js/view/gallery.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55403,6 +55738,10 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/markers.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
+/// <reference path="..\model\item.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55417,6 +55756,7 @@ var ForagingMap;
             _super.call(this, options);
             var that = this;
             this.isSelectable = false;
+            // initialize marker layer groups
             that.markerGroups = new Array();
             that.circleGroups = new Array();
             var circleGroup = new L.FeatureGroup();
@@ -55439,6 +55779,7 @@ var ForagingMap;
             $.each(that.circleGroups, function (index, iLayer) {
                 iLayer.addTo(FMV.getMapView().getMap());
             });
+            // intialize icon
             this.iconNew = new L.Icon({
                 iconUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerNew(),
                 shadowUrl: ForagingMap.Setting.BASE_URL + FMS.getImageDir() + FMS.getImageMarkerShadow(),
@@ -55448,12 +55789,16 @@ var ForagingMap;
                 popupAnchor: new L.Point(0, -40),
             });
         }
+        // Rendering markers on the map
         MarkersView.prototype.render = function () {
             var that = this;
+            // Iterate all items on the map
             $.each(FMM.getItems().models, function (index, item) {
                 if (!item.getIsRemoved()) {
+                    // Create a new marker if a marker of item doesn't exist on the map
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
+                        // Marker type: None (unregistered Item or new item)
                         if (item.get("type") == ItemType.None) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
@@ -55490,11 +55835,14 @@ var ForagingMap;
                         var i = that.getIndexOfMarkerGroups1(item);
                         that.markerGroups[i].addLayer(item.marker);
                         that.circleGroups[i].addLayer(item.circle);
+                        // event listeners
                         that.removeEventListener(item);
                         that.addEventListener(item);
+                        // update marker
                         that.updateMarker(item);
                     }
                     else {
+                        // update marker
                         that.updateMarker(item);
                     }
                 }
@@ -55656,10 +56004,12 @@ var ForagingMap;
                         }
                     });
                 }
+                // update ui if UIMode is Info or Add
                 if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }
+                // open popup
                 if (item.marker != null) {
                     item.marker.openPopup();
                 }
@@ -55681,6 +56031,12 @@ var ForagingMap;
                             if (FMC.getUser().getIsAdmin()) {
                                 item.marker.dragging.enable();
                             }
+                            /*
+                            // double click for focus event
+                            item.marker.off("dblclick");
+                            item.marker.on("dblclick", function () {
+                            });
+                            */
                         });
                     }
                     else {
@@ -55734,6 +56090,10 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/slider.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55751,7 +56111,8 @@ var ForagingMap;
             this.startDate = moment(new Date()).subtract(6, 'month').format(FMS.getDateTimeFormat());
             this.endDate = moment(new Date()).format(FMS.getDateTimeFormat());
             this.curDate = moment(new Date()).format(FMS.getDateTimeFormat());
-            this.timeInterval = 60 * 60;
+            this.timeInterval = 60 * 60; // 1 hour
+            //this.render();
         }
         SliderView.prototype.getTimeInterval = function () {
             return this.timeInterval;
@@ -55783,7 +56144,9 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "min", moment(that.startDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                //$("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             $("#date-end", that.$el).datetimepicker({
                 defaultDate: that.endDate,
@@ -55795,7 +56158,9 @@ var ForagingMap;
                 }
                 that.slider.slider("option", "max", moment(that.endDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                //$("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
@@ -55803,11 +56168,15 @@ var ForagingMap;
                 value: moment(that.curDate).valueOf(),
                 step: that.timeInterval * 1000,
             });
+            // TODO: PUT RIGHT VALUE SO THAT EACH PIPS DOESN'T OVERLAP
+            //$("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
+            //$('#date-slider', that.$el).slider('float');
             $("#date-slider", that.$el).bind('slide', function (event, ui) {
                 that.curDate = moment(ui.value).format(FMS.getDateTimeFormat());
                 FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
                 FMV.getMapView().getMarkersView().render();
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             if (that.isDraggable) {
                 that.slider.slider("enable");
@@ -55824,7 +56193,7 @@ var ForagingMap;
             this.startDate = moment(parseInt(start)).format(FMS.getDateTimeFormat());
             this.endDate = moment(parseInt(end)).format(FMS.getDateTimeFormat());
             this.curDate = moment(parseInt(cur)).format(FMS.getDateTimeFormat());
-            this.timeInterval = interval;
+            this.timeInterval = interval; // 1 hour
             this.render();
             this.resize();
         };
@@ -56625,14 +56994,24 @@ var ForagingMap;
         MenuView.prototype.setSerial = function (serial) {
             var that = this;
             that.serial = serial;
+            //console.log(that.serial);
         };
         MenuView.prototype.getSerial = function () {
             var that = this;
+            //console.log(that.serial);
             return that.serial;
         };
         MenuView.prototype.show = function () {
             this.setIsOpen(true);
             this.$el.removeClass("hidden");
+            /*
+            if (FMV.getUIView().getMode() != UIMode.ADD) {
+                FMV.getUIView().hide();
+                FMV.getMapView().resize(false);
+                FMV.getMapView().getMarkersView().inactiveMarkers();
+                FMV.getMapView().getControlView().resetControls();
+            }
+            */
             this.render();
         };
         MenuView.prototype.hide = function () {
@@ -56685,6 +57064,11 @@ var ForagingMap;
             else if (timeInterval == 60 * 60 * 24) {
                 that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
             }
+            /*
+            that.$('#item-near-loc').on('hide.bs.collapse', function (event: Event) {
+                event.preventDefault();
+            });
+            */
             that.$('#btn-near-loc').off('click');
             that.$('#btn-near-loc').on('click', function () {
                 if (navigator.geolocation) {
@@ -56726,9 +57110,11 @@ var ForagingMap;
                         else {
                             FMC.getRouter().refresh();
                         }
+                        //FMV.getMsgView().renderSuccess("'" + model.get("value") + "' " + FML.getViewUIDataSaveSuccessMsg());
                     },
                     error: function (error) {
                         FMV.getMsgView().renderError("Failed to log in.");
+                        //FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
                     },
                 });
             });
@@ -56748,6 +57134,7 @@ var ForagingMap;
                     },
                 });
             });
+            // Button click event listener for slider time interval 1 sec
             that.$('#btn-menu-slider-1').off('click');
             that.$('#btn-menu-slider-1').on('click', function () {
                 that.$('#btn-menu-slider-1').removeClass('btn-default').addClass('btn-primary');
@@ -56755,8 +57142,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(1);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 min
             that.$('#btn-menu-slider-60').off('click');
             that.$('#btn-menu-slider-60').on('click', function () {
                 that.$('#btn-menu-slider-60').removeClass('btn-default').addClass('btn-primary');
@@ -56764,8 +57153,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 hour
             that.$('#btn-menu-slider-3600').off('click');
             that.$('#btn-menu-slider-3600').on('click', function () {
                 that.$('#btn-menu-slider-3600').removeClass('btn-default').addClass('btn-primary');
@@ -56773,8 +57164,10 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
+            // Button click event listener for slider time interval 1 day
             that.$('#btn-menu-slider-24').off('click');
             that.$('#btn-menu-slider-24').on('click', function () {
                 that.$('#btn-menu-slider-24').removeClass('btn-default').addClass('btn-primary');
@@ -56782,7 +57175,8 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60 * 24);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
+                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
         };
         MenuView.prototype.createNewItem = function (position) {
@@ -56817,6 +57211,8 @@ var ForagingMap;
         };
         MenuView.prototype.getPosition = function (position) {
             FMV.getMenuView().setLocation(position.coords.latitude, position.coords.longitude);
+            //alert(position.coords.latitude + " | " + position.coords.longitude);
+            // Grid instance for data
             itemColumn[1].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getLayers().toArray(),
             });
@@ -56828,7 +57224,15 @@ var ForagingMap;
             gridData.render();
             gridData.sort("name", "ascending");
             FMV.getMenuView().$("#item-near-loc").html(gridData.el);
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
+                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            /*
+            //FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
+                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+
+            FMV.getMsgView().renderSuccess(FML.getViewUILocateSuccessMsg());
+            */
         };
         return MenuView;
     })(Backbone.View);
@@ -56838,6 +57242,9 @@ var qrcode;
 var itemColumn;
 
 ///#source 1 1 /core/js/view/sensorselect.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -56881,7 +57288,7 @@ var ForagingMap;
             that.$('#add-new-sensor').on("click", function (event) {
                 if (!$(this).hasClass("sensor-active")) {
                     $(this).addClass("sensor-active");
-                    FMV.getUIView().show(7 /* ADDSENSOR */);
+                    FMV.getUIView().show(UIMode.ADDSENSOR);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -56899,13 +57306,14 @@ var ForagingMap;
     })(Backbone.View);
     ForagingMap.SensorSelect = SensorSelect;
 })(ForagingMap || (ForagingMap = {}));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewSensorTemplate = '';
 FMViewSensorTemplate += '<div class="leaflet-control">';
 FMViewSensorTemplate += '<% _.each(sensors, function (sensor) { %>';
 FMViewSensorTemplate += '<div class="control-button sensor" data-id="<%= sensor.get("id") %>"><%= sensor.get("initial") %></div>';
 FMViewSensorTemplate += '<% }); %>';
-FMViewSensorTemplate += '<% if (isAdmin) { %>';
-FMViewSensorTemplate += '<% if (isActive) { %>';
+FMViewSensorTemplate += '<% if (isAdmin) { %>'; // if admin
+FMViewSensorTemplate += '<% if (isActive) { %>'; // if active
 FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor sensor-plus sensor-active">+</div>';
 FMViewSensorTemplate += '<% } else { %>';
 FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor-plus">+</div>';
@@ -56925,6 +57333,7 @@ var ForagingMap;
             this.pictures = new ForagingMap.Pictures();
             this.types = new ForagingMap.Types();
             this.types.add(new ForagingMap.Type({ name: "Fruit", type: 1 }));
+            //this.types.add(new Type({ name: "Station", type: 2 }));
             this.icons = new ForagingMap.Icons();
             this.sensors = new ForagingMap.Sensors();
         }
@@ -56962,6 +57371,7 @@ var ForagingMap;
                 var min = parseFloat(curThreshold.get("min"));
                 var max = parseFloat(curThreshold.get("max"));
                 var bend = parseFloat(curBend.get("value"));
+                //console.log(min + "|" + max + "|" + bend);
                 if (bend < min) {
                     return bend - min;
                 }
@@ -57002,7 +57412,7 @@ var ForagingMap;
                 "name": "",
                 "desc": "",
                 "serial": "",
-                "type": 0 /* None */,
+                "type": ItemType.None,
                 "sort": 0,
                 "amount": 0,
                 "lat": 0,
@@ -57062,9 +57472,7 @@ var ForagingMap;
             $.each(that.models, function (index, model) {
                 result.push(parseInt(model.id));
             });
-            return result.sort(function (a, b) {
-                return a - b;
-            }).join(",");
+            return result.sort(function (a, b) { return a - b; }).join(",");
         };
         Items.prototype.toArray = function () {
             var that = this;
@@ -57251,6 +57659,10 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/picture.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57336,6 +57748,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var ThresholdType;
 (function (ThresholdType) {
     ThresholdType[ThresholdType["None"] = 0] = "None";
@@ -57353,7 +57769,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": 0 /* None */,
+                "type": ThresholdType.None,
                 "min": 0,
                 "max": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),
@@ -57621,6 +58037,10 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/user.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57635,6 +58055,7 @@ var ForagingMap;
             _super.call(this, attributes, options);
             this.isRemoved = false;
             this.url = "core/php/user.php";
+            //this.url = Setting.BASE_URL + this.url;
             this.defaults = {
                 "username": "",
                 "name": "",
@@ -57667,6 +58088,10 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/sensor.js
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

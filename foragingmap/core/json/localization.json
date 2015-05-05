@@ -31,7 +31,7 @@
                 "add": {
                     "header": "Add New Item",
                     "tempName": "New Item",
-                    "typeSelectError":  "Please select the type of Item."
+                    "typeSelectError": "Please select the type of Item."
                 },
                 "data": {
                     "header": "Data Control",
@@ -46,11 +46,11 @@
                     "header": "Picture Control",
                     "tempName": "New Picture"
                 },
-                "threshold": { 
-                    "header":  "Threshold Control"
+                "threshold": {
+                    "header": "Threshold Control"
                 },
-                "layer": { 
-                    "header":  "Layer Control"
+                "layer": {
+                    "header": "Layer Control"
                 }
             }
         }

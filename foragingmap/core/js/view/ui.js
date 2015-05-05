@@ -34,7 +34,8 @@ var ForagingMap;
         }
         UIView.prototype.createLayerCheckList = function () {
             this.layerHeaderList = new Array();
-            this.layerHeaderList[1] = true;
+            this.layerHeaderList[1] = true; // Fruit
+            //this.layerHeaderList[2] = true;    // Station
             this.layerBodyList = new Array();
             this.layerBodyList[0] = true;
         };
@@ -124,6 +125,9 @@ var ForagingMap;
                     break;
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderAddSensorLayer = function () {
             var that = this;
             var template = _.template(FMUIAddSensorTemplate);
@@ -132,6 +136,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: sensorColumn,
@@ -150,6 +155,7 @@ var ForagingMap;
                 gridData.render();
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Picture
             if (FMC.getUser().getIsAdmin()) {
                 var sensor = new ForagingMap.Sensor({ name: "", initial: "" });
                 sensor.setIsSavable(false);
@@ -163,6 +169,9 @@ var ForagingMap;
                 that.$("#sensor-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIInfo = function () {
             var that = this;
             var template = _.template(FMUIInfoLayerTemplate);
@@ -183,18 +192,21 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // render type selection
             that.$('#item-info-type').selectpicker();
             that.$('#item-info-type option').each(function () {
                 if ((FMC.getSelectedItem().get("type") == $(this).attr("data-type")) && (FMC.getSelectedItem().get("sort") == $(this).attr("data-sort"))) {
                     that.$('#item-info-type').selectpicker("val", $(this).val());
                 }
             });
+            // remove event listeners
             that.$("#item-info-amount").off("change");
             that.$("#item-info-lat").off("change");
             that.$("#item-info-lng").off("change");
             that.$("#item-info-btn-edit").off("click");
             that.$("#item-info-btn-delete").off("click");
             that.$("#item-info-date-picker").off("dp.change");
+            // add event listeners
             that.$("#item-info-amount").on("change", function () {
                 FMC.getSelectedItem().save({
                     amount: parseFloat($(this).val()),
@@ -237,8 +249,27 @@ var ForagingMap;
                     },
                 });
             });
+            //item-info-qrcode
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
+            /*
+            that.$('#item-info-type').on("change", function () {
+                var optionSelected = $("option:selected", this);
+                FMV.getMapView().getMarkersView().removeMarker(FMC.getSelectedItem());
+                FMC.getSelectedItem().set({ type: parseInt(optionSelected.attr("data-type")) });
+                FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
+                FMV.getMapView().getMarkersView().render();
+            });
+            */
+            /*
+            that.$("#item-info-date-picker").datetimepicker({
+                format: FMS.getDateTimeFormat(),
+            });
+            that.$("#item-info-date-picker").on("dp.change", function () {
+                FMC.getSelectedItem().set({ update: $(this).data('date') });
+            });
+            */
+            // save & delete
             that.$("#item-info-btn-edit").on("click", function () {
                 var tempSerial = that.$("#item-info-serial").val();
                 var optionSelected = $("option:selected", that.$('#item-info-type'));
@@ -261,6 +292,7 @@ var ForagingMap;
                             FMV.getMsgView().renderSuccess("'" + model.get("name") + "' " + FML.getViewUIInfoSaveSuccessMsg());
                         },
                         error: function (model, error) {
+                            //console.log("error");
                             if (error.responseText.indexOf("Duplicate:") > -1) {
                                 var name = error.responseText.replace("Duplicate:", "");
                                 that.render();
@@ -304,6 +336,7 @@ var ForagingMap;
         UIView.prototype.executeDecode = function (event) {
             var that = this;
             that.files = event.target.files;
+            //console.log(that.files);
             var reader = new FileReader();
             reader.onload = function (event) {
                 qrcode.decode(event.target.result);
@@ -320,6 +353,9 @@ var ForagingMap;
             };
             reader.readAsDataURL(that.files[0]);
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIAdd = function () {
             var that = this;
             var template = _.template(FMUIAddLayerTemplate);
@@ -336,12 +372,15 @@ var ForagingMap;
                 "sort1": FMM.getLayers().where({ type: 1 }),
             };
             that.$el.html(template(data));
+            // render type selection
             that.$('#item-info-type').selectpicker();
+            // remove event listeners
             that.$("#item-info-amount").off("change");
             that.$("#item-info-lat").off("change");
             that.$("#item-info-lng").off("change");
             that.$("#item-info-btn-edit").off("click");
             that.$("#item-info-btn-delete").off("click");
+            // add event listeners
             that.$("#item-info-amount").on("change", function () {
                 FMC.getSelectedItem().set({ amount: parseFloat($(this).val()) });
                 FMV.getMapView().getMarkersView().updateMarker(FMC.getSelectedItem());
@@ -394,6 +433,7 @@ var ForagingMap;
                     });
                 }
             });
+            //item-info-qrcode
             that.$('input[type=file]').off('change');
             that.$('input[type=file]').on('change', that.executeDecode);
             that.$("#item-info-btn-delete").on("click", function () {
@@ -408,6 +448,9 @@ var ForagingMap;
                 }
             });
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIData = function () {
             var that = this;
             var template = _.template(FMViewUIDataLayerTemplate);
@@ -417,7 +460,44 @@ var ForagingMap;
             };
             that.$el.html(template(data));
             var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            //var origLables: string[] = origData.getLabels();
+            //var origValues: number[] = origData.getValues();
+            //var dataLength = origData.models.length;
+            // draw chart
             that.drawChart();
+            /*
+            console.log(that.$el.width());
+            if (dataLength <= 15) {
+                $("#bendChart").width(460);
+            } else {
+                $("#bendChart").width(30 * dataLength);
+            }
+            var canvas: any = document.getElementById("bendChart");
+            var ctx = canvas.getContext("2d");
+
+
+
+            Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
+
+            var chartData : any = {
+                labels: origLables,
+                datasets: [
+                    {
+                        label: FMC.getSelectedItem().get("name"),
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(151,187,205,1)",
+                        data: origValues
+                    },
+                ]
+            };
+
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false } );
+            */
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn,
@@ -438,6 +518,7 @@ var ForagingMap;
                 gridData.sort("date", "descending");
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
                 var bend = new ForagingMap.Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 bend.setIsSavable(false);
@@ -451,6 +532,9 @@ var ForagingMap;
                 that.$("#date-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIThreshold = function () {
             var that = this;
             var template = _.template(FMViewUIThresholdLayerTemplate);
@@ -459,6 +543,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: thresholdColumn,
@@ -479,6 +564,7 @@ var ForagingMap;
                 gridData.sort("date", "descending");
                 that.$(".ui-body").append(gridData.el);
             }
+            // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
                 var threshold = new ForagingMap.Threshold({ pid: parseInt(FMC.getSelectedItem().get("id")), type: parseInt(FMM.getSensors().getCurType().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 threshold.setIsSavable(false);
@@ -491,7 +577,25 @@ var ForagingMap;
                 });
                 that.$("#threshold-add-panel").append(gridAddData.render().el);
             }
+            /*
+            
+            // Grid instance for add Data
+            var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
+            bend.setIsSavable(false);
+            var bends: Bends = new Bends();
+            bends.add(bend);
+            var gridAddData = new Backgrid.Grid({
+                columns: dataAddColumn,
+                collection: bends,
+                emptyText: FML.getViewUIDataNoDataMsg(),
+            });
+
+            that.$("#date-add-panel").append(gridAddData.render().el);
+            */
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUIPicture = function () {
             FMC.fetchPictures(parseInt(FMC.getSelectedItem().get('id')));
             var that = this;
@@ -501,6 +605,7 @@ var ForagingMap;
                 isAdmin: FMC.getUser().getIsAdmin(),
             };
             that.$el.html(template(data));
+            // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
                     columns: pictureColumn,
@@ -527,6 +632,7 @@ var ForagingMap;
                     gridData.sort("date", "descending");
                 }, 3000);
             }
+            // Grid instance for add Picture
             if (FMC.getUser().getIsAdmin()) {
                 var picture = new ForagingMap.Picture({ pid: parseInt(FMC.getSelectedItem().get("id")), date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
                 picture.setIsSavable(false);
@@ -540,6 +646,9 @@ var ForagingMap;
                 that.$("#picture-add-panel").append(gridAddData.render().el);
             }
         };
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.renderUILayer = function () {
             var that = this;
             var isIn = "";
@@ -638,9 +747,11 @@ var ForagingMap;
                 that.layerBodyList[parseInt($(this).attr("data-sort"))] = $(this).prop("checked");
                 that.updateLayer();
             });
+            // collapsed in
             that.$('button[data-target="#layer-add-panel"]').click(function () {
                 that.isLayerCollapsedIn = !that.isLayerCollapsedIn;
             });
+            // Grid instance for data
             layerColumn[0].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getIcons().toArray(),
             });
@@ -652,6 +763,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("name", "ascending");
             that.$(".ui-body #layer-list-grid").append(gridData.el);
+            // Grid instance for adding
             layerAddColumn[0].cell = Backgrid.SelectCell.extend({
                 optionValues: FMM.getIcons().toArray(),
             });
@@ -666,6 +778,7 @@ var ForagingMap;
             });
             that.$(".ui-body #layer-add-grid").append(gridAddData.render().el);
         };
+        ////////////////////////
         UIView.prototype.drawChart = function () {
             var that = this;
             var maxLength = 1000;
@@ -674,6 +787,7 @@ var ForagingMap;
             var origValues = origData.getValues(maxLength);
             var dataLength = origData.getDataLength(maxLength);
             console.log("Drawing graph for " + dataLength + " data");
+            // draw chart
             if (dataLength <= 15) {
                 $("#bendChart").width(460);
             }
@@ -686,6 +800,18 @@ var ForagingMap;
             var chartData = {
                 labels: origLables,
                 datasets: [
+                    /*
+                    {
+                        label: "My First dataset",
+                        fillColor: "rgba(220,220,220,0.2)",
+                        strokeColor: "rgba(220,220,220,1)",
+                        pointColor: "rgba(220,220,220,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(220,220,220,1)",
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    },
+                    */
                     {
                         label: FMC.getSelectedItem().get("name"),
                         fillColor: "rgba(151,187,205,0.2)",

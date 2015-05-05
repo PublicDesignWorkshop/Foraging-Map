@@ -1,10 +1,14 @@
 var ForagingMap;
 (function (ForagingMap) {
+    /**
+     * Import localizaiton.json file and store into this class to parse the string values.
+     */
     var Localization = (function () {
         function Localization() {
-            this.url = "core/json/localization.json" + "?" + moment();
-            this.error = "N/A";
+            this.url = "core/json/localization.json" + "?" + moment(); // Put timeline so that it cannot be cached.
+            this.error = "N/A"; // Default string value if the value cannot be found in localizaiton.json file.
         }
+        // Import json file and save into this class.
         Localization.prototype.fetch = function (callback) {
             var that = this;
             $.getJSON(ForagingMap.Setting.BASE_URL + this.url, {
@@ -14,6 +18,7 @@ var ForagingMap;
                 callback();
             });
         };
+        // View Panel Message
         Localization.prototype.getViewTitle = function () {
             if (this.data.view.title) {
                 return this.data.view.title;

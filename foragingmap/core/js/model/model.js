@@ -9,6 +9,7 @@ var ForagingMap;
             this.pictures = new ForagingMap.Pictures();
             this.types = new ForagingMap.Types();
             this.types.add(new ForagingMap.Type({ name: "Fruit", type: 1 }));
+            //this.types.add(new Type({ name: "Station", type: 2 }));
             this.icons = new ForagingMap.Icons();
             this.sensors = new ForagingMap.Sensors();
         }
@@ -46,6 +47,7 @@ var ForagingMap;
                 var min = parseFloat(curThreshold.get("min"));
                 var max = parseFloat(curThreshold.get("max"));
                 var bend = parseFloat(curBend.get("value"));
+                //console.log(min + "|" + max + "|" + bend);
                 if (bend < min) {
                     return bend - min;
                 }

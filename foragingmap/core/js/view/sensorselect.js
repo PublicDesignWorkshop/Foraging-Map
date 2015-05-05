@@ -1,3 +1,6 @@
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -41,7 +44,7 @@ var ForagingMap;
             that.$('#add-new-sensor').on("click", function (event) {
                 if (!$(this).hasClass("sensor-active")) {
                     $(this).addClass("sensor-active");
-                    FMV.getUIView().show(7 /* ADDSENSOR */);
+                    FMV.getUIView().show(UIMode.ADDSENSOR);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -59,13 +62,14 @@ var ForagingMap;
     })(Backbone.View);
     ForagingMap.SensorSelect = SensorSelect;
 })(ForagingMap || (ForagingMap = {}));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var FMViewSensorTemplate = '';
 FMViewSensorTemplate += '<div class="leaflet-control">';
 FMViewSensorTemplate += '<% _.each(sensors, function (sensor) { %>';
 FMViewSensorTemplate += '<div class="control-button sensor" data-id="<%= sensor.get("id") %>"><%= sensor.get("initial") %></div>';
 FMViewSensorTemplate += '<% }); %>';
-FMViewSensorTemplate += '<% if (isAdmin) { %>';
-FMViewSensorTemplate += '<% if (isActive) { %>';
+FMViewSensorTemplate += '<% if (isAdmin) { %>'; // if admin
+FMViewSensorTemplate += '<% if (isActive) { %>'; // if active
 FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor sensor-plus sensor-active">+</div>';
 FMViewSensorTemplate += '<% } else { %>';
 FMViewSensorTemplate += '<div id="add-new-sensor" class="control-button sensor-plus">+</div>';

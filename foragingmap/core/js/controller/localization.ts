@@ -1,11 +1,15 @@
 ﻿module ForagingMap {
+    /**
+     * Import localizaiton.json file and store into this class to parse the string values.
+     */
     export class Localization {
-        url: string = "core/json/localization.json" + "?" + moment();
+        url: string = "core/json/localization.json" + "?" + moment();   // Put timeline so that it cannot be cached.
         data: any;
-        error: string = "N/A";
+        error: string = "N/A";  // Default string value if the value cannot be found in localizaiton.json file.
         constructor() {
 
         }
+        // Import json file and save into this class.
         fetch(callback: Function): void {
             var that: Localization = this;
             $.getJSON(Setting.BASE_URL + this.url, {
@@ -15,6 +19,9 @@
                 callback();
             });
         }
+
+
+        // View Panel Message
         getViewTitle(): string {
             if (this.data.view.title) {
                 return this.data.view.title;

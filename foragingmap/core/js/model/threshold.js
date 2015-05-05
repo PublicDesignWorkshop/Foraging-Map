@@ -4,6 +4,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var ThresholdType;
 (function (ThresholdType) {
     ThresholdType[ThresholdType["None"] = 0] = "None";
@@ -21,7 +25,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": 0 /* None */,
+                "type": ThresholdType.None,
                 "min": 0,
                 "max": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),

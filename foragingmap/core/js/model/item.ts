@@ -1,9 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-
-enum ItemType {
+﻿enum ItemType {
     None = 0, Fruit = 1, Station = 2
 }
 
@@ -106,7 +101,6 @@ module ForagingMap {
                     }
                 }
             });
-
             return result;
         }
     }

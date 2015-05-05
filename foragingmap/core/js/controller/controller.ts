@@ -1,18 +1,16 @@
-﻿/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="router.ts" />
-/// <reference path="..\view\view.ts" />
-
-module ForagingMap {
+﻿module ForagingMap {
+    /**
+     * Controller - intializes MVC variables and handles fetching data from the server.
+     */
     export class Controller {
         private router: ForagingMap.Router;
-        // Save marker as a selected item when user clicks a marker
+        // Save marker as a selected item when user clicks a marker.
         private selectedItem: Item;
         private user: User;
         constructor() {
-            // Intialize router
+            // Intialize router.
             this.router = new ForagingMap.Router();
-            // Initialize the user as a Guest
+            // Initialize the user as a Guest.
             this.user = new User({ username: "Guest", name: "Guest", auth: 0 });
         }
         initialize(): void {
@@ -22,40 +20,40 @@ module ForagingMap {
                 data: {
                     logout: false,
                 },
-                // Execute when it finds the login information
+                // Execute when it finds the login information.
                 success: function (model: Item, response: any) {
-                    // Intialize view
+                    // Intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-                    // Intialize model
+                    // Intialize model.
                     FMM = new ForagingMap.Model();
-                    // Fetch Sensor values
+                    // Fetch Sensor values.
                     FMC.fetchSensors();
                 },
-                // Execute when it can't find any login information
+                // Execute when it can't find any login information.
                 error: function (error) {
-                    console.log("Log-In as a Guest");
-                    // intialize view
+                    console.log("Guest Permission.");
+                    // intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
-                    // intialize model
+                    // intialize model.
                     FMM = new ForagingMap.Model();
-                    // Fetch Sensor values
+                    // Fetch Sensor values.
                     FMC.fetchSensors();
                 },
             });
         }
-        // Return User instance
+        // Return User instance.
         getUser(): User {
             return this.user;
         }
-        // Return Router instance
+        // Return Router instance.
         getRouter(): ForagingMap.Router {
             return this.router;
         }
-        // Set selected item
+        // Set selected item.
         setSelectedItem(item: Item): void {
             this.selectedItem = item;
         }
-        // Return selected item
+        // Return selected item.
         getSelectedItem(): Item {
             return this.selectedItem;
         }
@@ -66,16 +64,16 @@ module ForagingMap {
             }
             return false;
         }
-        // Add keyboard listener
+        // Add keyboard listener.
         addKeyEventListener() {
             $(document).keyup(function (e) {
-                // Add esc key listener to deselect item
-                if (e.keyCode == 27) {   // 27: esc
+                // Add esc key listener to deselect item.
+                if (e.keyCode == 27) {   // 27: esc.
                     if (FMV.getUIView().getMode() != UIMode.ADD) {
-                        FMV.getUIView().hide();                                 // Hide UI
-                        FMV.getMapView().resize(false);                         // Resize Map since UI the size of map changes since UI is hidden
-                        FMV.getMapView().getMarkersView().inactiveMarkers();    // Change marker to inactive style
-                        FMV.getMapView().getControlView().resetControls();      // Reset Right control pannel
+                        FMV.getUIView().hide();                                 // Hide UI.
+                        FMV.getMapView().resize(false);                         // Resize Map since UI the size of map changes since UI is hidden.
+                        FMV.getMapView().getMarkersView().inactiveMarkers();    // Change marker to inactive style.
+                        FMV.getMapView().getControlView().resetControls();      // Reset Right control pannel.
                     }
                 }
             });
@@ -86,14 +84,14 @@ module ForagingMap {
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("success fetch with " + collection.models.length + " layers");
+                    console.log("Successfully imported " + collection.models.length + " layers.");
                     // Render whole View
                     FMV.render();
                     // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
                     Backbone.history.start();
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-                    console.log("error while fetching layer data from the server");
+                    console.log("Error while fetching layer data from the server.");
                 },
             });
         }
@@ -112,19 +110,19 @@ module ForagingMap {
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("success fetch with " + collection.models.length + " items");
+                    console.log("Successfully imported " + collection.models.length + " items.");
                     // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
-                    // Update bend data after updating items
+                    // Update bend data after updating items.
                     that.fetchBends(FMM.getItems().getIdsToString());
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-                    console.log("error while fetching item data from the server");
+                    console.log("Error while fetching item data from the server.");
                 }
             });
         }
-
-        fetchBends(pids): void {
+        // Fetch sensor values from the server with item ids (pids).
+        fetchBends(pids): void {    // TODO: change the function names as fetchSensorValues(pids).
             var that: Controller = this;
             FMM.getBends().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
@@ -134,14 +132,15 @@ module ForagingMap {
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("success fetch with " + collection.models.length + " bends");
+                    console.log("Successfully imported " + collection.models.length + " sensor values.");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-
+                    console.log("Error while fetching sensor data from the server.");
                 }
             });
         }
+        // Fetch threshold values from the server with item ids (pids).
         fetchThresholds(pids): void {
             console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that: Controller = this;
@@ -153,7 +152,7 @@ module ForagingMap {
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("success fetch with " + collection.models.length + " thresholds");
+                    console.log("Successfully imported " + collection.models.length + " thresholds.");
                     FMV.getMapView().getMarkersView().render();
                     if (!FMV.getSliderView().getIsDraggable()) {
                         FMV.getSliderView().setIsDraggable(true);
@@ -161,17 +160,13 @@ module ForagingMap {
                     if (!FMV.getMapView().getMarkersView().getIsSelectable()) {
                         FMV.getMapView().getMarkersView().setIsSelectable(true);
                     }
-                    /*
-                    $.each(collection.models, function (index: number, model: Backbone.Model) {
-                        console.log(model);
-                    });
-                    */
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-
+                    console.log("Error while fetching threshold data from the server.");
                 }
             });
         }
+        // Fetch pictures of item using item id (pid).
         fetchPictures(pid): void {
             FMM.getPictures().fetch({
                 remove: true,	// if remove == false, it only adds new items, not removing old items.
@@ -180,13 +175,14 @@ module ForagingMap {
                     pid: pid,
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("success fetch with " + collection.models.length + " pictures");
+                    console.log("Successfully imported " + collection.models.length + " pictures.");
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-
+                    console.log("Error while fetching picture data from the server.");
                 }
             });
         }
+        // Create new tree item (it will be executed when user click the 'Add New Tree' button in mapcontrols).
         createItem(): Item {
             var item: Item = new Item({
                 name: FML.getViewUIAddTempName(),
@@ -203,6 +199,7 @@ module ForagingMap {
             FMM.getItems().add(item);
             return item;
         }
+        // Create new tree item with location & sensor serial number (it will be executed when user adds item through menu & qr code).
         createItemWithInfo(latitude: any, longitude: any, serialnumber: any): Item {
             var item: Item = new Item({
                 name: FML.getViewUIAddTempName(),
@@ -219,10 +216,12 @@ module ForagingMap {
             FMM.getItems().add(item);
             return item;
         }
+        // Remove item from Items collection
         removeItem(item: Item): Item {
             FMM.getItems().remove(item);
             return item;
         }
+        // Create tree icon collection.
         fetchIcons(): void {
             $.each(FMS.getMarkerIcons(), function (index: number, item: any) {
                 FMM.getIcons().add(new Icon({ name: item.name, src: item.src }));
@@ -238,30 +237,25 @@ module ForagingMap {
                 });
             });
         }
+        // Fetch sensor type from the server.
         fetchSensors(): void {
             FMM.getSensors().fetch({
                 success(collection?: any, response?: any, options?: any): void {
                     console.log("success fetch with " + collection.models.length + " sensors");
-                    /*
-                    $.each(collection.models, function (index: number, model: Backbone.Model) {
-                        console.log(model);
-                    });
-                    */
                     FMM.getSensors().intializeCurType();
 
-                    // fetch layer info
+                    // fetch layer info.
                     FMC.fetchIcons();
                     FMC.fetchLayers();
                     FMC.addKeyEventListener();
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
-
+                    console.log("Error while fetching sensor type data from the server.");
                 }
             });
         }
-
+        // Reset data when user changes the sensor type.
         resetData(): void {
-            
             $.each(FMM.getItems().models, function (index: number, item: Item) {
                 FMV.getMapView().getMarkersView().removeMarker(item);
             });
