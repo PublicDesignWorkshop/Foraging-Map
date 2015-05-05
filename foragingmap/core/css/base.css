@@ -535,3 +535,7 @@ fieldset[disabled] .btn-negative.active {
     border-radius: 4px;
     background-color: #fff;
 }
+
+canvas{
+    max-height: 400px !important;
+}

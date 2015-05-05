@@ -90,21 +90,46 @@ module ForagingMap {
                 return result;
             }
         }
-        getLabels(): string[]{
+        getLabels(maxLength: number): string[]{
             var that: Bends = this;
             var result = [];
-            $.each(that.models, function (index: number, model: Bend) {
-                result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
-            });
+            if (that.models.length > maxLength) {
+                $.each(that.models, function (index: number, model: Bend) {
+                    if (that.models.length - index < maxLength) {
+                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                    }
+                });
+            } else {
+                $.each(that.models, function (index: number, model: Bend) {
+                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                });
+            }
+            
             return result;
         }
-        getValues(): number[] {
+        getValues(maxLength: number): number[] {
             var that: Bends = this;
             var result = [];
-            $.each(that.models, function (index: number, model: Bend) {
-                result.push(model.get("value"));
-            });
+            if (that.models.length > maxLength) {
+                $.each(that.models, function (index: number, model: Bend) {
+                    if (that.models.length - index < maxLength) {
+                        result.push(model.get("value"));
+                    }
+                });
+            } else {
+                $.each(that.models, function (index: number, model: Bend) {
+                    result.push(model.get("value"));
+                });
+            }
             return result;
+        }
+        getDataLength(maxLength: number): number {
+            var that: Bends = this;
+            if (that.models.length > maxLength) {
+                return maxLength;
+            } else {
+                return that.models.length;
+            }
         }
     }
 }

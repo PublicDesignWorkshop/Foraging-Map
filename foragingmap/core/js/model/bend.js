@@ -4,6 +4,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
+/// <reference path="..\controller\setting.ts" />
 var BendType;
 (function (BendType) {
     BendType[BendType["None"] = 0] = "None";
@@ -21,7 +25,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": 0 /* None */,
+                "type": BendType.None,
                 "value": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),
                 "update": moment(new Date()).format(FMS.getDateTimeFormat()),
@@ -97,21 +101,48 @@ var ForagingMap;
                 return result;
             }
         };
-        Bends.prototype.getLabels = function () {
+        Bends.prototype.getLabels = function (maxLength) {
             var that = this;
             var result = [];
-            $.each(that.models, function (index, model) {
-                result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
-            });
+            if (that.models.length > maxLength) {
+                $.each(that.models, function (index, model) {
+                    if (that.models.length - index < maxLength) {
+                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                    }
+                });
+            }
+            else {
+                $.each(that.models, function (index, model) {
+                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                });
+            }
             return result;
         };
-        Bends.prototype.getValues = function () {
+        Bends.prototype.getValues = function (maxLength) {
             var that = this;
             var result = [];
-            $.each(that.models, function (index, model) {
-                result.push(model.get("value"));
-            });
+            if (that.models.length > maxLength) {
+                $.each(that.models, function (index, model) {
+                    if (that.models.length - index < maxLength) {
+                        result.push(model.get("value"));
+                    }
+                });
+            }
+            else {
+                $.each(that.models, function (index, model) {
+                    result.push(model.get("value"));
+                });
+            }
             return result;
+        };
+        Bends.prototype.getDataLength = function (maxLength) {
+            var that = this;
+            if (that.models.length > maxLength) {
+                return maxLength;
+            }
+            else {
+                return that.models.length;
+            }
         };
         return Bends;
     })(Backbone.Collection);

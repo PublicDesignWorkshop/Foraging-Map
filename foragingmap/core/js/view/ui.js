@@ -4,6 +4,9 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
+/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
+/// <reference path="menu.ts" />
 var UIMode;
 (function (UIMode) {
     UIMode[UIMode["NONE"] = 0] = "NONE";
@@ -23,7 +26,7 @@ var ForagingMap;
             _super.call(this, options);
             this.setElement(options.el);
             this.setIsLocked(false);
-            this.setMode(0 /* NONE */);
+            this.setMode(UIMode.NONE);
             this.resize();
             this.hide();
             this.createLayerCheckList();
@@ -48,7 +51,7 @@ var ForagingMap;
         };
         UIView.prototype.setMode = function (mode) {
             this.mode = mode;
-            if (this.mode == 1 /* ADD */) {
+            if (this.mode == UIMode.ADD) {
                 this.setIsLocked(true);
             }
             else {
@@ -70,7 +73,7 @@ var ForagingMap;
             this.render();
         };
         UIView.prototype.hide = function () {
-            this.setMode(0 /* NONE */);
+            this.setMode(UIMode.NONE);
             this.setIsOpen(false);
             this.$el.addClass("hidden");
             this.setIsLocked(false);
@@ -95,27 +98,27 @@ var ForagingMap;
         };
         UIView.prototype.render = function () {
             switch (this.mode) {
-                case 0 /* NONE */:
+                case UIMode.NONE:
                     break;
-                case 2 /* INFO */:
+                case UIMode.INFO:
                     this.renderUIInfo();
                     break;
-                case 3 /* DATA */:
+                case UIMode.DATA:
                     this.renderUIData();
                     break;
-                case 1 /* ADD */:
+                case UIMode.ADD:
                     this.renderUIAdd();
                     break;
-                case 6 /* THRESHOLD */:
+                case UIMode.THRESHOLD:
                     this.renderUIThreshold();
                     break;
-                case 4 /* PICTURE */:
+                case UIMode.PICTURE:
                     this.renderUIPicture();
                     break;
-                case 5 /* LAYER */:
+                case UIMode.LAYER:
                     this.renderUILayer();
                     break;
-                case 7 /* ADDSENSOR */:
+                case UIMode.ADDSENSOR:
                     this.renderAddSensorLayer();
                 default:
                     break;
@@ -357,7 +360,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
+                if (FMC.getSelectedItem().get("type") == ItemType.None) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -383,7 +386,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", 0 /* None */);
+                            FMC.getSelectedItem().set("type", ItemType.None);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -665,15 +668,17 @@ var ForagingMap;
         };
         UIView.prototype.drawChart = function () {
             var that = this;
+            var maxLength = 1000;
             var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
-            var origLables = origData.getLabels();
-            var origValues = origData.getValues();
-            var dataLength = origData.models.length;
+            var origLables = origData.getLabels(maxLength);
+            var origValues = origData.getValues(maxLength);
+            var dataLength = origData.getDataLength(maxLength);
+            console.log("Drawing graph for " + dataLength + " data");
             if (dataLength <= 15) {
                 $("#bendChart").width(460);
             }
             else {
-                $("#bendChart").width(30 * dataLength);
+                $("#bendChart").width(10 * dataLength);
             }
             var canvas = document.getElementById("bendChart");
             var ctx = canvas.getContext("2d");
@@ -693,7 +698,7 @@ var ForagingMap;
                     },
                 ]
             };
-            var myLineChart = new Chart(ctx).Line(chartData, { animation: false });
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 1 });
         };
         return UIView;
     })(Backbone.View);

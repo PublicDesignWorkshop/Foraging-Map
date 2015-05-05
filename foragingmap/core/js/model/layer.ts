@@ -64,7 +64,7 @@ module ForagingMap {
 
     export class Layers extends Backbone.Collection<Layer> {
         url: string = "core/php/layers.php";
-        constructor(models?: Item[], options?: any) {
+        constructor(models?: Layer[], options?: any) {
             super(models, options);
             this.model = Layer;
             this.url = Setting.BASE_URL + this.url;
@@ -151,7 +151,7 @@ module ForagingMap {
         }
     }
     export class Icons extends Backbone.Collection<Icon> {
-        constructor(models?: Type[], options?: any) {
+        constructor(models?: Icon[], options?: any) {
             super(models, options);
             this.model = Icon;
         }

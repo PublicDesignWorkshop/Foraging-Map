@@ -806,19 +806,21 @@ module ForagingMap {
         ////////////////////////
         drawChart(): void {
             var that: UIView = this;
+            var maxLength: number = 1000;
 
             var origData: Bends = new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
 
+            var origLables: string[] = origData.getLabels(maxLength);
+            var origValues: number[] = origData.getValues(maxLength);
+            var dataLength = origData.getDataLength(maxLength);
 
-            var origLables: string[] = origData.getLabels();
-            var origValues: number[] = origData.getValues();
-            var dataLength = origData.models.length;
+            console.log("Drawing graph for " + dataLength + " data");
 
             // draw chart
             if (dataLength <= 15) {
                 $("#bendChart").width(460);
             } else {
-                $("#bendChart").width(30 * dataLength);
+                $("#bendChart").width(10 * dataLength);
             }
             var canvas: any = document.getElementById("bendChart");
             var ctx = canvas.getContext("2d");
@@ -855,7 +857,7 @@ module ForagingMap {
                 ]
             };
 
-            var myLineChart = new Chart(ctx).Line(chartData, { animation: false });
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 1 });
         }
     }
 }
