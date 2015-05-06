@@ -272,6 +272,7 @@
     <Content Include="core\php\user.php" />
     <Content Include="core\php\sensors.php" />
     <Content Include="core\php\sensor.php" />
+    <Content Include="core\php\createdatabase.php" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
