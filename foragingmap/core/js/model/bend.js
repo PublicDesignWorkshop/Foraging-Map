@@ -4,15 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-var BendType;
-(function (BendType) {
-    BendType[BendType["None"] = 0] = "None";
-    BendType[BendType["Normal"] = 1] = "Normal";
-})(BendType || (BendType = {}));
 var ForagingMap;
 (function (ForagingMap) {
     var Bend = (function (_super) {
@@ -25,7 +16,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": BendType.None,
+                "type": 0,
                 "value": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),
                 "update": moment(new Date()).format(FMS.getDateTimeFormat()),

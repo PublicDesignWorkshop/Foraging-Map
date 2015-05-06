@@ -28,7 +28,7 @@ var ForagingMap;
                 },
                 // Execute when it can't find any login information.
                 error: function (error) {
-                    console.log("Guest Permission.");
+                    console.log("Login as a guest permission.");
                     // intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     // intialize model.
@@ -81,7 +81,7 @@ var ForagingMap;
                 remove: false,
                 processData: true,
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " layers.");
+                    console.log("Fetched " + collection.models.length + " layers.");
                     // Render whole View
                     FMV.render();
                     // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
@@ -107,7 +107,7 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " items.");
+                    console.log("Fetched " + collection.models.length + " items.");
                     // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
                     // Update bend data after updating items.
@@ -129,11 +129,11 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " sensor values.");
+                    console.log("Fetched " + collection.models.length + " sensor values.");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching sensor data from the server.");
                 }
             });
         };
@@ -149,7 +149,7 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " thresholds.");
+                    console.log("Fetched " + collection.models.length + " thresholds.");
                     FMV.getMapView().getMarkersView().render();
                     if (!FMV.getSliderView().getIsDraggable()) {
                         FMV.getSliderView().setIsDraggable(true);
@@ -159,7 +159,7 @@ var ForagingMap;
                     }
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching threshold data from the server.");
                 }
             });
         };
@@ -172,10 +172,10 @@ var ForagingMap;
                     pid: pid,
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " pictures.");
+                    console.log("Fetched " + collection.models.length + " pictures.");
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching picture data from the server.");
                 }
             });
         };
@@ -246,7 +246,7 @@ var ForagingMap;
                     FMC.addKeyEventListener();
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching sensor type data from the server.");
                 }
             });
         };

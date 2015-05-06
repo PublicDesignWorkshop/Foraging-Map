@@ -53168,7 +53168,7 @@ var ForagingMap;
                 },
                 // Execute when it can't find any login information.
                 error: function (error) {
-                    console.log("Guest Permission.");
+                    console.log("Login as a guest permission.");
                     // intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     // intialize model.
@@ -53221,7 +53221,7 @@ var ForagingMap;
                 remove: false,
                 processData: true,
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " layers.");
+                    console.log("Fetched " + collection.models.length + " layers.");
                     // Render whole View
                     FMV.render();
                     // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
@@ -53247,7 +53247,7 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " items.");
+                    console.log("Fetched " + collection.models.length + " items.");
                     // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
                     // Update bend data after updating items.
@@ -53269,11 +53269,11 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " sensor values.");
+                    console.log("Fetched " + collection.models.length + " sensor values.");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching sensor data from the server.");
                 }
             });
         };
@@ -53289,7 +53289,7 @@ var ForagingMap;
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " thresholds.");
+                    console.log("Fetched " + collection.models.length + " thresholds.");
                     FMV.getMapView().getMarkersView().render();
                     if (!FMV.getSliderView().getIsDraggable()) {
                         FMV.getSliderView().setIsDraggable(true);
@@ -53299,7 +53299,7 @@ var ForagingMap;
                     }
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching threshold data from the server.");
                 }
             });
         };
@@ -53312,10 +53312,10 @@ var ForagingMap;
                     pid: pid,
                 },
                 success: function (collection, response, options) {
-                    console.log("Successfully imported " + collection.models.length + " pictures.");
+                    console.log("Fetched " + collection.models.length + " pictures.");
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching picture data from the server.");
                 }
             });
         };
@@ -53386,7 +53386,7 @@ var ForagingMap;
                     FMC.addKeyEventListener();
                 },
                 error: function (collection, jqxhr, options) {
-                    console.log("Error while fetching item data from the server.");
+                    console.log("Error while fetching sensor type data from the server.");
                 }
             });
         };
@@ -54359,8 +54359,6 @@ FMUIAddSensorTemplate += '</div>';
 FMUIAddSensorTemplate += '</div>';
 
 ///#source 1 1 /core/js/view/view.js
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54441,9 +54439,6 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/view/map.js
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="template.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55373,21 +55368,6 @@ var ForagingMap;
                 });
                 that.$("#threshold-add-panel").append(gridAddData.render().el);
             }
-            /*
-            
-            // Grid instance for add Data
-            var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            bend.setIsSavable(false);
-            var bends: Bends = new Bends();
-            bends.add(bend);
-            var gridAddData = new Backgrid.Grid({
-                columns: dataAddColumn,
-                collection: bends,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-
-            that.$("#date-add-panel").append(gridAddData.render().el);
-            */
         };
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57513,15 +57493,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-var BendType;
-(function (BendType) {
-    BendType[BendType["None"] = 0] = "None";
-    BendType[BendType["Normal"] = 1] = "Normal";
-})(BendType || (BendType = {}));
 var ForagingMap;
 (function (ForagingMap) {
     var Bend = (function (_super) {
@@ -57534,7 +57505,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": BendType.None,
+                "type": 0,
                 "value": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),
                 "update": moment(new Date()).format(FMS.getDateTimeFormat()),
@@ -57852,10 +57823,6 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/layer.js
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58037,10 +58004,6 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/user.js
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58088,10 +58051,6 @@ var ForagingMap;
 })(ForagingMap || (ForagingMap = {}));
 
 ///#source 1 1 /core/js/model/sensor.js
-/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

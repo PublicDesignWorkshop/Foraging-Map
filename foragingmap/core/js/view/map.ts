@@ -1,8 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="template.ts" />
-
-module ForagingMap {
+﻿module ForagingMap {
     export class MapView extends Backbone.View<Backbone.Model> {
         private timeout: any;
         private lMap: L.Map;

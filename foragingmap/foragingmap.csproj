@@ -189,6 +189,7 @@
     <Content Include="favicons\mstile-310x150.png" />
     <Content Include="favicons\mstile-310x310.png" />
     <Content Include="favicons\mstile-70x70.png" />
+    <Content Include="Foragingmap Class Diagram.jpg" />
     <Content Include="index.html" />
     <Content Include="packages.config" />
     <Content Include="psd\ColorPallet_ForagingMap.png" />

@@ -1,7 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="template.ts" />
-
-module ForagingMap {
+﻿module ForagingMap {
     export class View extends Backbone.View<Backbone.Model> {
         private vMap: MapView;
         private vUI: UIView;

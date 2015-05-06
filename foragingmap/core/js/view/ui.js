@@ -577,21 +577,6 @@ var ForagingMap;
                 });
                 that.$("#threshold-add-panel").append(gridAddData.render().el);
             }
-            /*
-            
-            // Grid instance for add Data
-            var bend: Bend = new Bend({ pid: parseInt(FMC.getSelectedItem().get("id")), type: BendType.Normal, date: moment(new Date()).format(FMS.getDateTimeFormat()), update: moment(new Date()).format(FMS.getDateTimeFormat()) });
-            bend.setIsSavable(false);
-            var bends: Bends = new Bends();
-            bends.add(bend);
-            var gridAddData = new Backgrid.Grid({
-                columns: dataAddColumn,
-                collection: bends,
-                emptyText: FML.getViewUIDataNoDataMsg(),
-            });
-
-            that.$("#date-add-panel").append(gridAddData.render().el);
-            */
         };
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

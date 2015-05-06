@@ -1,9 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-
-module ForagingMap {
+﻿module ForagingMap {
     export class User extends Backbone.Model {
         isRemoved: boolean = false;
         url: string = "core/php/user.php";

@@ -31,7 +31,7 @@
                 },
                 // Execute when it can't find any login information.
                 error: function (error) {
-                    console.log("Guest Permission.");
+                    console.log("Login as a guest permission.");
                     // intialize view.
                     FMV = new ForagingMap.View({ el: $("#fm-view-main") });
                     // intialize model.
@@ -84,7 +84,7 @@
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
                 processData: true,
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("Successfully imported " + collection.models.length + " layers.");
+                    console.log("Fetched " + collection.models.length + " layers.");
                     // Render whole View
                     FMV.render();
                     // start tracking history - This is Backbone thing to keep track of url history & parse the url into map center location, start and end date of progress bar, etc.
@@ -110,7 +110,7 @@
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("Successfully imported " + collection.models.length + " items.");
+                    console.log("Fetched " + collection.models.length + " items.");
                     // Update markers after fetching items from the server.
                     FMV.getMapView().getMarkersView().render();
                     // Update bend data after updating items.
@@ -132,7 +132,7 @@
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("Successfully imported " + collection.models.length + " sensor values.");
+                    console.log("Fetched " + collection.models.length + " sensor values.");
                     that.fetchThresholds(FMM.getItems().getIdsToString());
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
@@ -152,7 +152,7 @@
                     type: parseInt(FMM.getSensors().getCurType().get("id")),
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("Successfully imported " + collection.models.length + " thresholds.");
+                    console.log("Fetched " + collection.models.length + " thresholds.");
                     FMV.getMapView().getMarkersView().render();
                     if (!FMV.getSliderView().getIsDraggable()) {
                         FMV.getSliderView().setIsDraggable(true);
@@ -175,7 +175,7 @@
                     pid: pid,
                 },
                 success(collection?: any, response?: any, options?: any): void {
-                    console.log("Successfully imported " + collection.models.length + " pictures.");
+                    console.log("Fetched " + collection.models.length + " pictures.");
                 },
                 error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
                     console.log("Error while fetching picture data from the server.");

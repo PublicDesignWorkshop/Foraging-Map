@@ -1,11 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-enum BendType {
-    None = 0, Normal = 1
-}
-module ForagingMap {
+﻿module ForagingMap {
     export class Bend extends Backbone.Model {
         url: string = "core/php/bend.php";
         isSavable: boolean = true;
@@ -15,7 +8,7 @@ module ForagingMap {
             this.url = Setting.BASE_URL + this.url;
             this.defaults = <any>{
                 "pid": 0,
-                "type": BendType.None,
+                "type": 0,
                 "value": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),
                 "update": moment(new Date()).format(FMS.getDateTimeFormat()),

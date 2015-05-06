@@ -1,9 +1,4 @@
-﻿/// <reference path="..\..\..\Scripts\typings\backbone\backbone.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\leaflet\leaflet.d.ts" />
-/// <reference path="..\..\..\Scripts\typings\moment\moment.d.ts" />
-/// <reference path="..\controller\setting.ts" />
-
-module ForagingMap {
+﻿module ForagingMap {
     export class Layer extends Backbone.Model {
         url: string = "core/php/layer.php";
         private isSavable = true;
