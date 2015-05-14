@@ -18,9 +18,9 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="content\picture\TestPicture1.JPG" />
-    <Content Include="content\picture\TestPicture2.JPG" />
-    <Content Include="content\picture\TestPicture3.JPG" />
+    <Content Include="content\picture\Foraging-Map Apple Tree 0 Degree.jpg" />
+    <Content Include="content\picture\Foraging-Map Apple Tree 150 Degree.jpg" />
+    <Content Include="content\picture\Foraging-Map Apple Tree 50 Degree.jpg" />
     <Content Include="core\css\base.css" />
     <Content Include="core\css\foragingmap.css">
       <DependentUpon>foragingmap.css.bundle</DependentUpon>
