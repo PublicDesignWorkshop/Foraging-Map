@@ -47,7 +47,7 @@
             );
         }
         
-        $sql = "SELECT * FROM `fm_bend` WHERE ((`pid` IN (".$params["pids"].")) AND (`type` = ".$params["type"].")) ORDER BY `date` ASC";
+        $sql = "SELECT * FROM `fm_bend` WHERE ((`pid` IN (".$params["pids"].")) AND (`type` = ".$params["type"].")) ORDER BY `date` ASC LIMIT 0, 1000";
         try {
             $pdo = getConnection();
             $stmt = $pdo->prepare($sql);
