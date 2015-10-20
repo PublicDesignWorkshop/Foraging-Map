@@ -21,6 +21,12 @@ module ForagingMap {
             this.timeInterval = 60 * 60; // 1 hour
             //this.render();
         }
+        setDateToCurDate(): void {
+            var that: SliderView = this;
+            that.curDate = moment(new Date()).format(FMS.getDateTimeFormat());
+            $("#date-slider").val(that.curDate.valueOf());
+            FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
+        }
         getTimeInterval(): number {
             return this.timeInterval;
         }

@@ -113,7 +113,7 @@ var ForagingMap;
                     FMV.getMapView().getControlView().resetControls();
                     FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
                     FMC.setSelectedItem(FMC.createItemWithInfo(that.lat, that.lng, that.serial));
-                    FMV.getUIView().show(UIMode.ADD);
+                    FMV.getUIView().show(1 /* ADD */);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -169,8 +169,7 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(1);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
             // Button click event listener for slider time interval 1 min
             that.$('#btn-menu-slider-60').off('click');
@@ -180,8 +179,7 @@ var ForagingMap;
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
             // Button click event listener for slider time interval 1 hour
             that.$('#btn-menu-slider-3600').off('click');
@@ -191,8 +189,7 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-24').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
             // Button click event listener for slider time interval 1 day
             that.$('#btn-menu-slider-24').off('click');
@@ -202,8 +199,7 @@ var ForagingMap;
                 that.$('#btn-menu-slider-60').removeClass('btn-primary').addClass('btn-default');
                 that.$('#btn-menu-slider-3600').removeClass('btn-primary').addClass('btn-default');
                 FMV.getSliderView().setTimeInterval(60 * 60 * 24);
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             });
         };
         MenuView.prototype.createNewItem = function (position) {
@@ -211,7 +207,7 @@ var ForagingMap;
             FMV.getMapView().getControlView().resetControls();
             FMV.getMapView().getControlView().$(".control-button.add").addClass("add-active");
             FMC.setSelectedItem(FMC.createItemWithInfo(FMV.getMenuView().lat, FMV.getMenuView().lng, FMV.getMenuView().serial));
-            FMV.getUIView().show(UIMode.ADD);
+            FMV.getUIView().show(1 /* ADD */);
             FMV.getMapView().resize(true);
             setTimeout(function () {
                 FMV.getMapView().getMarkersView().render();
@@ -251,8 +247,7 @@ var ForagingMap;
             gridData.render();
             gridData.sort("name", "ascending");
             FMV.getMenuView().$("#item-near-loc").html(gridData.el);
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
-                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             /*
             //FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
             FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()

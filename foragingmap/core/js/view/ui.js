@@ -26,7 +26,7 @@ var ForagingMap;
             _super.call(this, options);
             this.setElement(options.el);
             this.setIsLocked(false);
-            this.setMode(UIMode.NONE);
+            this.setMode(0 /* NONE */);
             this.resize();
             this.hide();
             this.createLayerCheckList();
@@ -52,7 +52,7 @@ var ForagingMap;
         };
         UIView.prototype.setMode = function (mode) {
             this.mode = mode;
-            if (this.mode == UIMode.ADD) {
+            if (this.mode == 1 /* ADD */) {
                 this.setIsLocked(true);
             }
             else {
@@ -74,7 +74,7 @@ var ForagingMap;
             this.render();
         };
         UIView.prototype.hide = function () {
-            this.setMode(UIMode.NONE);
+            this.setMode(0 /* NONE */);
             this.setIsOpen(false);
             this.$el.addClass("hidden");
             this.setIsLocked(false);
@@ -99,27 +99,27 @@ var ForagingMap;
         };
         UIView.prototype.render = function () {
             switch (this.mode) {
-                case UIMode.NONE:
+                case 0 /* NONE */:
                     break;
-                case UIMode.INFO:
+                case 2 /* INFO */:
                     this.renderUIInfo();
                     break;
-                case UIMode.DATA:
+                case 3 /* DATA */:
                     this.renderUIData();
                     break;
-                case UIMode.ADD:
+                case 1 /* ADD */:
                     this.renderUIAdd();
                     break;
-                case UIMode.THRESHOLD:
+                case 6 /* THRESHOLD */:
                     this.renderUIThreshold();
                     break;
-                case UIMode.PICTURE:
+                case 4 /* PICTURE */:
                     this.renderUIPicture();
                     break;
-                case UIMode.LAYER:
+                case 5 /* LAYER */:
                     this.renderUILayer();
                     break;
-                case UIMode.ADDSENSOR:
+                case 7 /* ADDSENSOR */:
                     this.renderAddSensorLayer();
                 default:
                     break;
@@ -399,7 +399,7 @@ var ForagingMap;
                 FMC.getSelectedItem().set({ sort: parseInt(optionSelected.attr("data-sort")) });
             });
             that.$("#item-info-btn-edit").on("click", function () {
-                if (FMC.getSelectedItem().get("type") == ItemType.None) {
+                if (FMC.getSelectedItem().get("type") == 0 /* None */) {
                     FMV.getMsgView().renderError(FML.getViewUIAddTypeSelectError());
                 }
                 else {
@@ -425,7 +425,7 @@ var ForagingMap;
                         },
                         error: function (error) {
                             that.render();
-                            FMC.getSelectedItem().set("type", ItemType.None);
+                            FMC.getSelectedItem().set("type", 0 /* None */);
                             FMC.getSelectedItem().setIsRemoved(false);
                             FMV.getMapView().getMarkersView().render();
                             FMV.getMsgView().renderError(FML.getViewUIInfoSaveErrorMsg());
@@ -451,6 +451,31 @@ var ForagingMap;
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        UIView.prototype.refreshDataGrid = function () {
+            var that = this;
+            var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            // Grid instance for data
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn,
+                    collection: origData,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body .grid-data").html(gridData.el);
+            }
+            else {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn2,
+                    collection: origData,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body .grid-data").html(gridData.el);
+            }
+        };
         UIView.prototype.renderUIData = function () {
             var that = this;
             var template = _.template(FMViewUIDataLayerTemplate);
@@ -506,7 +531,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body").append(gridData.el);
+                that.$(".ui-body .grid-data").html(gridData.el);
             }
             else {
                 var gridData = new Backgrid.Grid({
@@ -516,7 +541,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body").append(gridData.el);
+                that.$(".ui-body .grid-data").html(gridData.el);
             }
             // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
@@ -774,29 +799,18 @@ var ForagingMap;
             console.log("Drawing graph for " + dataLength + " data");
             // draw chart
             if (dataLength <= 15) {
-                $("#bendChart").width(460);
+                $("#bendChart").width(450);
             }
             else {
-                $("#bendChart").width(10 * dataLength);
+                $("#bendChart").width(30 * dataLength);
             }
+            $("#bendChart").height(500);
             var canvas = document.getElementById("bendChart");
             var ctx = canvas.getContext("2d");
             Chart.defaults.global.tooltipTemplate = "<%if (label){%><%=label%><%}%>";
             var chartData = {
                 labels: origLables,
                 datasets: [
-                    /*
-                    {
-                        label: "My First dataset",
-                        fillColor: "rgba(220,220,220,0.2)",
-                        strokeColor: "rgba(220,220,220,1)",
-                        pointColor: "rgba(220,220,220,1)",
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: "rgba(220,220,220,1)",
-                        data: [65, 59, 80, 81, 56, 55, 40]
-                    },
-                    */
                     {
                         label: FMC.getSelectedItem().get("name"),
                         fillColor: "rgba(151,187,205,0.2)",
@@ -809,7 +823,8 @@ var ForagingMap;
                     },
                 ]
             };
-            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 1 });
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 4, showTooltips: false, customTooltips: false, });
+            $("#bendWrapper").animate({ scrollLeft: 1000000 }, 0);
         };
         return UIView;
     })(Backbone.View);

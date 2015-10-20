@@ -25,7 +25,7 @@ var ForagingMap;
             this.url = ForagingMap.Setting.BASE_URL + this.url;
             this.defaults = {
                 "pid": 0,
-                "type": ThresholdType.None,
+                "type": 0 /* None */,
                 "min": 0,
                 "max": 0,
                 "date": moment(new Date()).format(FMS.getDateTimeFormat()),

@@ -70,7 +70,7 @@ var ForagingMap;
                     if (!$(this).hasClass("layer-active")) {
                         that.resetControls();
                         $(this).addClass("layer-active");
-                        FMV.getUIView().show(UIMode.LAYER);
+                        FMV.getUIView().show(5 /* LAYER */);
                     }
                     else {
                         $(this).removeClass("layer-active");
@@ -86,7 +86,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("info-active");
-                            FMV.getUIView().show(UIMode.INFO);
+                            FMV.getUIView().show(2 /* INFO */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -106,7 +106,7 @@ var ForagingMap;
                     that.resetControls();
                     $(this).addClass("add-active");
                     FMC.setSelectedItem(FMC.createItem());
-                    FMV.getUIView().show(UIMode.ADD);
+                    FMV.getUIView().show(1 /* ADD */);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();
@@ -130,7 +130,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("data-active");
-                            FMV.getUIView().show(UIMode.DATA);
+                            FMV.getUIView().show(3 /* DATA */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -151,7 +151,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("picture-active");
-                            FMV.getUIView().show(UIMode.PICTURE);
+                            FMV.getUIView().show(4 /* PICTURE */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -172,7 +172,7 @@ var ForagingMap;
                         if (FMC.hasSelectedItem()) {
                             that.resetControls();
                             $(this).addClass("threshold-active");
-                            FMV.getUIView().show(UIMode.THRESHOLD);
+                            FMV.getUIView().show(6 /* THRESHOLD */);
                             FMV.getMapView().resize(true);
                         }
                         else {
@@ -199,8 +199,7 @@ var ForagingMap;
         MapControlView.prototype.updatePosition = function (position) {
             var that = this;
             //FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude, { trigger: true, replace: true });
-            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval()
-                + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
+            FMC.getRouter().navigate('map/' + FMS.getLocateZoom() + "/" + position.coords.latitude + "/" + position.coords.longitude + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: true, replace: true });
             FMV.getMsgView().renderSuccess(FML.getViewUILocateSuccessMsg());
         };
         return MapControlView;

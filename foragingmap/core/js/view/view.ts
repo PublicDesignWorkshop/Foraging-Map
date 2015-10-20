@@ -6,6 +6,7 @@
         private vGallery: GalleryView;
         private vSlider: SliderView;
         private vMenu: MenuView;
+        private vAnimation: AnimationView;
         
         private origWidth: number;
         private origHeight: number;
@@ -30,6 +31,7 @@
             this.vGallery = new ForagingMap.GalleryView({ el: $("#leaflet-view-galleria") });
             this.vSlider = new ForagingMap.SliderView({ el: $("#fm-view-slider") });
             this.vMenu = new ForagingMap.MenuView({ el: $("#leaflet-view-menu") });
+            this.vAnimation = new AnimationView({ el: $("#leaflet-view-animation") });
             
             this.addEventListener();
 
@@ -77,6 +79,13 @@
         }
         getMenuView(): MenuView {
             return this.vMenu;
+        }
+        getAnimationView(): AnimationView {
+            return this.vAnimation;
+        }
+
+        getWidth(): number {
+            return this.$el.innerWidth();
         }
     }
 }

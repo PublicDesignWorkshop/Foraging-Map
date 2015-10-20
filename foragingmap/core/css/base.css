@@ -109,6 +109,10 @@ html, body {
 .leaflet-right .leaflet-control {
     margin-right: 0;
 }
+.leaflet-bottom .leaflet-control {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
 .leaflet-top {
     z-index: 8888;
 }
@@ -224,6 +228,22 @@ html, body {
     padding: 5px 4px;
     border-radius: 4px;
     float: left;
+}
+.leaflet-control .animation {
+    width: 120px;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    margin-top: 2px;
+    margin-right: 6px;
+    padding: 5px 4px;
+    border-radius: 4px;
+    float: left;
+}
+.animation-active {
+    color: #27ae60 !important;
 }
 .sensor-plus {
     margin-top: 2px !important;
@@ -538,4 +558,9 @@ fieldset[disabled] .btn-negative.active {
 
 canvas{
     max-height: 400px !important;
+}
+
+#leaflet-view-animation {
+    position: absolute;
+    z-index: 9999;
 }

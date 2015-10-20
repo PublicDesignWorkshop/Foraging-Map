@@ -38,8 +38,7 @@ var ForagingMap;
                 //that.lMap.touchZoom.disable();
                 that.lMap.doubleClickZoom.disable();
                 that.lMap.on("moveend", function (e) {
-                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                        + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                    FMC.getRouter().navigate('map/' + that.getMapZoom() + "/" + that.getMapCenter().lat + "/" + that.getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
                     that.waitForFetchData();
                 });
                 that.lMap.whenReady(function () {
@@ -47,9 +46,10 @@ var ForagingMap;
                     that.vMarkers = new ForagingMap.MarkersView();
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                     that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
+                    that.vAnimation = new ForagingMap.AnimationToggle({ el: $(".leaflet-bottom.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide();
                         FMV.getMapView().resize(false);
                         FMV.getMapView().getMarkersView().inactiveMarkers();
@@ -81,6 +81,9 @@ var ForagingMap;
         };
         MapView.prototype.getSensorView = function () {
             return this.vSensor;
+        };
+        MapView.prototype.getAnimationToggleView = function () {
+            return this.vAnimation;
         };
         MapView.prototype.show = function () {
             $("#leaflet-view-map").removeClass("hidden");

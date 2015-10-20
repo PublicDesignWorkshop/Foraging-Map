@@ -59,13 +59,13 @@ var ForagingMap;
                     if (item.marker == null && item.circle == null) {
                         console.log("create new marker with type: " + (item.get("type")));
                         // Marker type: None (unregistered Item or new item)
-                        if (item.get("type") == ItemType.None) {
+                        if (item.get("type") == 0 /* None */) {
                             item.marker = new L.Marker(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), {
                                 icon: that.iconNew,
                                 draggable: false,
                                 riseOnHover: true,
                             }).bindPopup(item.get("name"), {
-                                closeButton: false,
+                                closeButton: true,
                             });
                             item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
                                 color: FMS.getTempCircleColor(),
@@ -230,7 +230,7 @@ var ForagingMap;
             var that = this;
             item.marker.on("click", function () {
                 if (that.isSelectable) {
-                    if (!FMV.getUIView().getIsLocked() || item.get("type") == ItemType.None) {
+                    if (!FMV.getUIView().getIsLocked() || item.get("type") == 0 /* None */) {
                         this.openPopup();
                         FMV.getUIView().render();
                     }
@@ -251,7 +251,7 @@ var ForagingMap;
                 item.circle.setLatLng(item.marker.getLatLng());
             });
             item.marker.on("dragend", function (event) {
-                if (item.get("type") == ItemType.None || item.id == undefined) {
+                if (item.get("type") == 0 /* None */ || item.id == undefined) {
                     item.set({ lat: item.marker.getLatLng().lat, lng: item.marker.getLatLng().lng });
                 }
                 else {
@@ -265,7 +265,7 @@ var ForagingMap;
                     });
                 }
                 // update ui if UIMode is Info or Add
-                if (FMV.getUIView().getMode() == UIMode.INFO || FMV.getUIView().getMode() == UIMode.ADD) {
+                if (FMV.getUIView().getMode() == 2 /* INFO */ || FMV.getUIView().getMode() == 1 /* ADD */) {
                     FMV.getUIView().$("#item-info-lat").val(item.marker.getLatLng().lat.toString());
                     FMV.getUIView().$("#item-info-lng").val(item.marker.getLatLng().lng.toString());
                 }

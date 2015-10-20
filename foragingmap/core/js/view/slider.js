@@ -22,6 +22,12 @@ var ForagingMap;
             this.timeInterval = 60 * 60; // 1 hour
             //this.render();
         }
+        SliderView.prototype.setDateToCurDate = function () {
+            var that = this;
+            that.curDate = moment(new Date()).format(FMS.getDateTimeFormat());
+            $("#date-slider").val(that.curDate.valueOf());
+            FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
+        };
         SliderView.prototype.getTimeInterval = function () {
             return this.timeInterval;
         };
@@ -53,8 +59,7 @@ var ForagingMap;
                 that.slider.slider("option", "min", moment(that.startDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
                 //$("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             $("#date-end", that.$el).datetimepicker({
                 defaultDate: that.endDate,
@@ -67,8 +72,7 @@ var ForagingMap;
                 that.slider.slider("option", "max", moment(that.endDate).valueOf());
                 that.slider.slider("value", that.slider.slider("value"));
                 //$("#date-slider", that.$el).slider('pips', { rest: 'label', last: true, step: (moment(that.endDate).valueOf() - moment(that.startDate).valueOf()) / (5 * 60 * 60 * 1000) });
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             that.slider = $("#date-slider", that.$el).slider({
                 min: moment(that.startDate).valueOf(),
@@ -83,8 +87,7 @@ var ForagingMap;
                 that.curDate = moment(ui.value).format(FMS.getDateTimeFormat());
                 FMV.getMsgView().renderSuccess("Slider Date: " + that.curDate);
                 FMV.getMapView().getMarkersView().render();
-                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval()
-                    + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
+                FMC.getRouter().navigate('map/' + FMV.getMapView().getMapZoom() + "/" + FMV.getMapView().getMapCenter().lat + "/" + FMV.getMapView().getMapCenter().lng + "/" + FMV.getSliderView().getTimeInterval() + "/" + FMV.getSliderView().getStartDateValue() + "/" + FMV.getSliderView().getEndDateValue() + "/" + FMV.getSliderView().getCurDateValue(), { trigger: false, replace: true });
             });
             if (that.isDraggable) {
                 that.slider.slider("enable");

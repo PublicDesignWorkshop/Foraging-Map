@@ -29,6 +29,7 @@ var ForagingMap;
             this.vGallery = new ForagingMap.GalleryView({ el: $("#leaflet-view-galleria") });
             this.vSlider = new ForagingMap.SliderView({ el: $("#fm-view-slider") });
             this.vMenu = new ForagingMap.MenuView({ el: $("#leaflet-view-menu") });
+            this.vAnimation = new ForagingMap.AnimationView({ el: $("#leaflet-view-animation") });
             this.addEventListener();
             this.resize();
         };
@@ -71,6 +72,12 @@ var ForagingMap;
         };
         View.prototype.getMenuView = function () {
             return this.vMenu;
+        };
+        View.prototype.getAnimationView = function () {
+            return this.vAnimation;
+        };
+        View.prototype.getWidth = function () {
+            return this.$el.innerWidth();
         };
         return View;
     })(Backbone.View);

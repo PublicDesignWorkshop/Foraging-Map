@@ -66,7 +66,7 @@ module ForagingMap {
                                 draggable: false,
                                 riseOnHover: true,
                             }).bindPopup(item.get("name"), {
-                                closeButton: false,
+                                closeButton: true,
                             });
                             item.circle = new L.Circle(new L.LatLng(parseFloat(item.get("lat")), parseFloat(item.get("lng"))), parseFloat(item.get("amount")) * FMS.getCircleRadiusMultiplier(), {
                                 color: FMS.getTempCircleColor(),

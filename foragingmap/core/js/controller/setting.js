@@ -7,8 +7,7 @@ var ForagingMap;
         }
         Setting.prototype.fetch = function (callback) {
             var that = this;
-            $.getJSON(Setting.BASE_URL + this.url, {})
-                .done(function (data) {
+            $.getJSON(Setting.BASE_URL + this.url, {}).done(function (data) {
                 that.data = data.setting;
                 // Intialize Controller after fetching Localization
                 FML.fetch(callback);

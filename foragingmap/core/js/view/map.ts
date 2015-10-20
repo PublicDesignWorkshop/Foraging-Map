@@ -5,6 +5,7 @@
         private vMarkers: MarkersView;
         private vControl: MapControlView;
         private vSensor: SensorSelect;
+        private vAnimation: AnimationToggle;
         constructor(options?: Backbone.ViewOptions<Backbone.Model>) {
             super(options);
             this.setElement(options.el);
@@ -45,6 +46,7 @@
                     that.vMarkers = new ForagingMap.MarkersView();
                     that.vControl = new ForagingMap.MapControlView({ el: $(".leaflet-top.leaflet-right") });
                     that.vSensor = new ForagingMap.SensorSelect({ el: $(".leaflet-top.leaflet-left") });
+                    that.vAnimation = new ForagingMap.AnimationToggle({ el: $(".leaflet-bottom.leaflet-left") });
                 });
                 that.lMap.on("dblclick", function () {
                     if (FMV.getUIView().getMode() != UIMode.ADD) {
@@ -78,6 +80,9 @@
         }
         getSensorView(): SensorSelect {
             return this.vSensor;
+        }
+        getAnimationToggleView(): AnimationToggle {
+            return this.vAnimation;
         }
         show(): void {
             $("#leaflet-view-map").removeClass("hidden");

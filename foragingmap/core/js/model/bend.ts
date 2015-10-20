@@ -89,12 +89,12 @@
             if (that.models.length > maxLength) {
                 $.each(that.models, function (index: number, model: Bend) {
                     if (that.models.length - index < maxLength) {
-                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormatSimple()));
                     }
                 });
             } else {
                 $.each(that.models, function (index: number, model: Bend) {
-                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormatSimple()));
                 });
             }
             

@@ -23,7 +23,7 @@ var ForagingMap;
                 "name": "",
                 "desc": "",
                 "serial": "",
-                "type": ItemType.None,
+                "type": 0 /* None */,
                 "sort": 0,
                 "amount": 0,
                 "lat": 0,
@@ -83,7 +83,9 @@ var ForagingMap;
             $.each(that.models, function (index, model) {
                 result.push(parseInt(model.id));
             });
-            return result.sort(function (a, b) { return a - b; }).join(",");
+            return result.sort(function (a, b) {
+                return a - b;
+            }).join(",");
         };
         Items.prototype.toArray = function () {
             var that = this;

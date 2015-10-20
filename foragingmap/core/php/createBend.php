@@ -57,8 +57,8 @@
         $data = json_decode(file_get_contents('php://input'));
         $params = array(
             "pid" => $pid,
-            "type" => 1,
             "value" => $_GET["value"],
+            "type" => $_GET["type"],
             "date" => date("Y-m-d H:i:s"),
             "update" => date("Y-m-d H:i:s"),
         );

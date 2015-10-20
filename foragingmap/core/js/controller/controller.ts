@@ -122,7 +122,7 @@
             });
         }
         // Fetch sensor values from the server with item ids (pids).
-        fetchBends(pids): void {    // TODO: change the function names as fetchSensorValues(pids).
+        fetchBends(pids: any): void {    // TODO: change the function names as fetchSensorValues(pids).
             var that: Controller = this;
             FMM.getBends().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.
@@ -140,9 +140,32 @@
                 }
             });
         }
+
+        fetchBend(pid: number, callback?: Function): void {    // TODO: change the function names as fetchSensorValues(pids).
+            var that: Controller = this;
+            FMM.getBends().fetch({
+                remove: false,	// if remove == false, it only adds new items, not removing old items.
+                processData: true,
+                data: {
+                    pids: pid,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
+                },
+                success(collection?: any, response?: any, options?: any): void {
+                    console.log("Fetched " + collection.models.length + " sensor values.");
+                    that.fetchThresholds(FMM.getItems().getIdsToString());
+
+                    if (callback != undefined) {
+                        callback();
+                    }
+                },
+                error(collection?: any, jqxhr?: JQueryXHR, options?: any): void {
+                    console.log("Error while fetching sensor data from the server.");
+                }
+            });
+        }
         // Fetch threshold values from the server with item ids (pids).
         fetchThresholds(pids): void {
-            console.log(parseInt(FMM.getSensors().getCurType().get("id")));
+            //console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that: Controller = this;
             FMM.getThresholds().fetch({
                 remove: false,	// if remove == false, it only adds new items, not removing old items.

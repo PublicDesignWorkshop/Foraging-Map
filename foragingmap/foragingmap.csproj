@@ -151,6 +151,7 @@
     <Content Include="core\lib\qrcode\qrcode.js" />
     <Content Include="core\lib\qrcode\rsdecoder.js" />
     <Content Include="core\lib\qrcode\version.js" />
+    <Content Include="core\lib\snap-svg\snap.svg.js" />
     <Content Include="core\lib\underscore\underscore.js" />
     <Content Include="core\php\database.php" />
     <Content Include="core\php\bends.php" />
@@ -219,6 +220,8 @@
     <TypeScriptCompile Include="core\js\model\sensor.ts" />
     <TypeScriptCompile Include="core\js\model\threshold.ts" />
     <TypeScriptCompile Include="core\js\model\user.ts" />
+    <TypeScriptCompile Include="core\js\view\animation.ts" />
+    <TypeScriptCompile Include="core\js\view\animationtoggle.ts" />
     <TypeScriptCompile Include="core\js\view\gallery.ts" />
     <TypeScriptCompile Include="core\js\view\map.ts" />
     <TypeScriptCompile Include="core\js\view\mapcontrol.ts" />
@@ -230,6 +233,7 @@
     <TypeScriptCompile Include="core\js\view\template.ts" />
     <TypeScriptCompile Include="core\js\view\ui.ts" />
     <TypeScriptCompile Include="core\js\view\view.ts" />
+    <TypeScriptCompile Include="Scripts\typings\snapsvg\snapsvg.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\backbone\backbone.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\backgrid\backgrid.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\bootstrap.v3.datetimepicker\bootstrap.v3.datetimepicker.d.ts" />

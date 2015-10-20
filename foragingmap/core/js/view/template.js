@@ -24,6 +24,7 @@ FMViewTemplate += '<div id="leaflet-view-msg"></div>';
 FMViewTemplate += '<div id="leaflet-view-menu"></div>';
 FMViewTemplate += '<div id="leaflet-view-galleria">';
 FMViewTemplate += '</div>';
+FMViewTemplate += '<div id="leaflet-view-animation"></div>';
 FMViewTemplate += '</div>';
 FMViewTemplate += '</div>';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,7 +248,7 @@ FMViewUIDataLayerTemplate += '<% if (isAdmin) { %>'; // if admin
 FMViewUIDataLayerTemplate += '<button type="button" data-toggle="collapse" data-target="#date-add-panel" class="btn btn-default col-xs-12"><span class="glyphicon glyphicon-plus"></span> Add New Data</button>';
 FMViewUIDataLayerTemplate += '<div class="collapse" id="date-add-panel">';
 FMViewUIDataLayerTemplate += '<% } %>';
-FMViewUIDataLayerTemplate += '</div>';
+FMViewUIDataLayerTemplate += '</div><div class="grid-data"></div>';
 FMViewUIDataLayerTemplate += '</div>';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

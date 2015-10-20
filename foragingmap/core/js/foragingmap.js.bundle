@@ -11,8 +11,8 @@
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
 
+    <file>/core/lib/snap-svg/snap.svg.js</file>
     <file>/core/lib/chart/Chart.js</file>
-
     <file>/core/lib/qrcode/grid.js</file>
     <file>/core/lib/qrcode/version.js</file>
     <file>/core/lib/qrcode/detector.js</file>
@@ -77,6 +77,8 @@
     <file>/core/js/view/gridformat.js</file>
     <file>/core/js/view/menu.js</file>
     <file>/core/js/view/sensorselect.js</file>
+    <file>/core/js/view/animation.js</file>
+    <file>/core/js/view/animationtoggle.js</file>
 
     
     <file>/core/js/model/model.js</file>

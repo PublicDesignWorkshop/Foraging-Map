@@ -66,7 +66,7 @@ var ForagingMap;
             $(document).keyup(function (e) {
                 // Add esc key listener to deselect item.
                 if (e.keyCode == 27) {
-                    if (FMV.getUIView().getMode() != UIMode.ADD) {
+                    if (FMV.getUIView().getMode() != 1 /* ADD */) {
                         FMV.getUIView().hide(); // Hide UI.
                         FMV.getMapView().resize(false); // Resize Map since UI the size of map changes since UI is hidden.
                         FMV.getMapView().getMarkersView().inactiveMarkers(); // Change marker to inactive style.
@@ -137,9 +137,30 @@ var ForagingMap;
                 }
             });
         };
+        Controller.prototype.fetchBend = function (pid, callback) {
+            var that = this;
+            FMM.getBends().fetch({
+                remove: false,
+                processData: true,
+                data: {
+                    pids: pid,
+                    type: parseInt(FMM.getSensors().getCurType().get("id")),
+                },
+                success: function (collection, response, options) {
+                    console.log("Fetched " + collection.models.length + " sensor values.");
+                    that.fetchThresholds(FMM.getItems().getIdsToString());
+                    if (callback != undefined) {
+                        callback();
+                    }
+                },
+                error: function (collection, jqxhr, options) {
+                    console.log("Error while fetching sensor data from the server.");
+                }
+            });
+        };
         // Fetch threshold values from the server with item ids (pids).
         Controller.prototype.fetchThresholds = function (pids) {
-            console.log(parseInt(FMM.getSensors().getCurType().get("id")));
+            //console.log(parseInt(FMM.getSensors().getCurType().get("id")));
             var that = this;
             FMM.getThresholds().fetch({
                 remove: false,
@@ -185,7 +206,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: "",
-                type: ItemType.None,
+                type: 0 /* None */,
                 sort: 0,
                 amount: 0,
                 lat: FMV.getMapView().getMap().getCenter().lat,
@@ -202,7 +223,7 @@ var ForagingMap;
                 name: FML.getViewUIAddTempName(),
                 desc: "",
                 serial: serialnumber,
-                type: ItemType.None,
+                type: 0 /* None */,
                 sort: 0,
                 amount: 0,
                 lat: latitude,

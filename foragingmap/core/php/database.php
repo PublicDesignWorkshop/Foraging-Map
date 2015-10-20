@@ -6,6 +6,6 @@
 	  public $username = "root";
     public $port = 3306;
 	  public $password = "";
-	  public $db_name = "foragingmap";
+	  public $db_name = "db564759461";
 	}
 ?>

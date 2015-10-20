@@ -467,6 +467,32 @@ module ForagingMap {
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        refreshDataGrid(): void {
+            var that: UIView = this;
+            var origData: Bends = new Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            // Grid instance for data
+            if (FMC.getUser().getIsAdmin()) {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn,
+                    collection: origData,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body .grid-data").html(gridData.el);
+            } else {
+                var gridData = new Backgrid.Grid({
+                    columns: dataColumn2,
+                    collection: origData,
+                    emptyText: FML.getViewUIDataNoDataMsg(),
+                });
+                gridData.render();
+                gridData.sort("date", "descending");
+                that.$(".ui-body .grid-data").html(gridData.el);
+            }
+        }
+
         renderUIData(): void {
             var that: UIView = this;
             var template = _.template(FMViewUIDataLayerTemplate);
@@ -525,7 +551,7 @@ module ForagingMap {
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body").append(gridData.el);
+                that.$(".ui-body .grid-data").html(gridData.el);
             } else {
                 var gridData = new Backgrid.Grid({
                     columns: dataColumn2,
@@ -534,7 +560,7 @@ module ForagingMap {
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body").append(gridData.el);
+                that.$(".ui-body .grid-data").html(gridData.el);
             }
 
 
@@ -803,10 +829,11 @@ module ForagingMap {
 
             // draw chart
             if (dataLength <= 15) {
-                $("#bendChart").width(460);
+                $("#bendChart").width(450);
             } else {
-                $("#bendChart").width(10 * dataLength);
+                $("#bendChart").width(30 * dataLength);
             }
+            $("#bendChart").height(500);
             var canvas: any = document.getElementById("bendChart");
             var ctx = canvas.getContext("2d");
 
@@ -842,7 +869,9 @@ module ForagingMap {
                 ]
             };
 
-            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 1 });
+            var myLineChart = new Chart(ctx).Line(chartData, { animation: false, pointHitDetectionRadius: 4, showTooltips: false, customTooltips: false,});
+
+            $("#bendWrapper").animate({ scrollLeft: 1000000 }, 0);
         }
     }
 }

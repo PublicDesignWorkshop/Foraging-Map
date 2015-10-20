@@ -44,7 +44,7 @@ var ForagingMap;
             that.$('#add-new-sensor').on("click", function (event) {
                 if (!$(this).hasClass("sensor-active")) {
                     $(this).addClass("sensor-active");
-                    FMV.getUIView().show(UIMode.ADDSENSOR);
+                    FMV.getUIView().show(7 /* ADDSENSOR */);
                     FMV.getMapView().resize(true);
                     setTimeout(function () {
                         FMV.getMapView().getMarkersView().render();

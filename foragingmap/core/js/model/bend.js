@@ -98,13 +98,13 @@ var ForagingMap;
             if (that.models.length > maxLength) {
                 $.each(that.models, function (index, model) {
                     if (that.models.length - index < maxLength) {
-                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                        result.push(moment(model.get("date")).format(FMS.getDateTimeFormatSimple()));
                     }
                 });
             }
             else {
                 $.each(that.models, function (index, model) {
-                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormat()));
+                    result.push(moment(model.get("date")).format(FMS.getDateTimeFormatSimple()));
                 });
             }
             return result;
