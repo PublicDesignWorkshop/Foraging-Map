@@ -452,8 +452,10 @@ var ForagingMap;
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         UIView.prototype.refreshDataGrid = function () {
+            console.log("!!!!!!!!!!");
             var that = this;
             var origData = new ForagingMap.Bends(FMM.getBends().where({ pid: FMC.getSelectedItem().id }));
+            console.log(origData);
             // Grid instance for data
             if (FMC.getUser().getIsAdmin()) {
                 var gridData = new Backgrid.Grid({
@@ -463,7 +465,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body .grid-data").html(gridData.el);
+                that.$(".grid-data").html(gridData.el);
             }
             else {
                 var gridData = new Backgrid.Grid({
@@ -473,7 +475,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body .grid-data").html(gridData.el);
+                that.$(".grid-data").html(gridData.el);
             }
         };
         UIView.prototype.renderUIData = function () {
@@ -531,7 +533,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body .grid-data").html(gridData.el);
+                that.$(".grid-data").html(gridData.el);
             }
             else {
                 var gridData = new Backgrid.Grid({
@@ -541,7 +543,7 @@ var ForagingMap;
                 });
                 gridData.render();
                 gridData.sort("date", "descending");
-                that.$(".ui-body .grid-data").html(gridData.el);
+                that.$(".grid-data").html(gridData.el);
             }
             // Grid instance for add Data
             if (FMC.getUser().getIsAdmin()) {
